@@ -23,14 +23,14 @@
   --page-bg: #034120;
   --step-inactive: #002403;
   --step-active: #276945;
-  --pill-w: 313px;
-  --pill-h: 48px;
-  --pill-radius: 24px;
+  --pill-w: 246px;
+  --pill-h: 47px;
+  --pill-radius: 22px;
   --pill-bg: #d9d9d9;
   --pill-bg-focus: #ececec;
   --placeholder-color: rgba(0, 0, 0, 0.5);
-  --btn-w: 206px;
-  --btn-h: 60px;
+  --btn-w: 200px;
+  --btn-h: 55px;
 }
 
 * {
@@ -133,7 +133,7 @@ button {
   padding: 0.5rem 1rem;
   border-radius: 24px;
   font-family: "w_Nian", sans-serif;
-  font-size: clamp(15px, 1.2vw, 18px);
+  font-size: clamp(15px, 2vw, 18px);
   line-height: 1;
   text-align: right;
   white-space: nowrap;
@@ -165,7 +165,7 @@ button {
 
 .main-nav a {
   font-size: clamp(14px, 1.3vw, 17px);
-  font-weight: 700;
+  font-weight: 400;
   white-space: nowrap;
 }
 
@@ -288,7 +288,8 @@ button {
   grid-template-columns: repeat(4, 1fr);
   direction: ltr;
   font-family: "w_Lotus";
-  font-size: clamp(28px, 5vh, 40px);
+  font-weight: 500;
+  font-size: clamp(32px, 5.5vh, 46px);
   line-height: 100%;
   letter-spacing: 0.08em;
   text-align: center;
@@ -300,7 +301,7 @@ button {
   direction: ltr;
   color: #d9d9d9;
   font-family: "w_Lotus";
-  font-size: 14px;
+  font-size: 15px;
   line-height: 100%;
   letter-spacing: 0.08em;
   text-align: center;
@@ -386,9 +387,22 @@ button {
   object-fit: contain;
   margin-top: -75px;
 }
+.logo-stack-small {
+  position: relative;
+  width: clamp(304px, 15vw, 146px);
+  aspect-ratio: 785 / 928;
+  margin: 140px auto -160px;
+}
+.logo-pm {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 131%;
 
-.logo-bg {
-  z-index: 1;
+  object-fit: contain;
+  margin-top: 75px;
+  max-width: 500px;
 }
 .logo-fg {
   z-index: 2;
@@ -435,6 +449,7 @@ button {
   list-style: none;
   display: flex;
   flex-direction: column;
+  justify-content: SPACE-AROUND;
   overflow: hidden;
   flex: 1;
   min-height: 0;
@@ -461,7 +476,7 @@ button {
 .info-column {
   display: flex;
   flex-direction: column;
-  gap: clamp(16px, 3vh, 32px);
+  gap: clamp(4px, 0vh, 32px);
   min-height: 0;
   overflow: hidden;
 }
@@ -506,25 +521,32 @@ button {
 }
 
 .cta-section {
-  margin-top: clamp(10px, 2vh, 20px);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  direction: rtl;
+  max-width: 1800px;
   width: 100%;
-  max-width: 480px;
+  margin: 0px auto;
+  padding: clamp(5px, 2.5vh, 21px) clamp(23px, 17vw, 124px)
+    clamp(18px, 15.5vh, 68px);
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 18px;
+  direction: rtl;
   flex-shrink: 0;
 }
 
 .agreement-check {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: #fff;
-  font-size: clamp(11px, 1.3vh, 13px);
+  font-size: clamp(12px, 1.4vh, 14px);
   line-height: 1.5;
   cursor: pointer;
+  white-space: nowrap;
+  background: var(--color-bg-dark);
+  border-radius: 24px;
+  padding: 10px 18px;
+  min-height: 48px;
 }
 
 .agreement-check .checkbox {
@@ -551,7 +573,7 @@ button {
 }
 
 .btn-secondary-second {
-  background: var(--color-bg-dark);
+  background: var(--color-gold);
   color: white;
   display: inline-flex;
   align-items: center;
@@ -561,7 +583,7 @@ button {
   min-height: 48px;
   padding: 0.6rem 1.4rem;
   border-radius: 24px;
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   transition: filter 0.2s ease;
@@ -576,7 +598,7 @@ button {
   display: grid;
   grid-template-columns: repeat(3, var(--pill-w));
   grid-auto-rows: var(--pill-h);
-  gap: 24px;
+  gap: 18px;
   justify-content: center;
 }
 
@@ -617,12 +639,19 @@ button {
   outline: none;
   background: transparent;
   border-radius: var(--pill-radius);
-  padding: 0 22px;
+  padding: 0 28px;
   direction: rtl;
   text-align: right;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 18px;
+  font-weight: 600;
   color: #000000;
+}
+
+.register-input::placeholder {
+  color: rgba(0, 0, 0, 0.65);
+  font-weight: 500;
+  font-size: 18px;
 }
 
 .register-input::placeholder {
@@ -632,7 +661,7 @@ button {
 .submit-row {
   display: flex;
   justify-content: flex-end;
-  margin-top: 28px;
+  margin-top: 10px;
 }
 
 .submit-btn {
@@ -660,47 +689,56 @@ button {
 
 /* ===== STEPS ===== */
 .steps {
-  min-height: 84px;
+  min-height: 60px;
   width: 100%;
-  max-width: 825px;
+  max-width: 700px;
   margin-inline: auto;
-  padding: 16px;
+  padding: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
   direction: rtl;
-  border-radius: 24px;
+  border-radius: 20px;
   background: var(--page-bg);
   flex-shrink: 0;
+  margin-top: 15px;
 }
 
 .step {
   width: 100%;
-  max-width: 196px;
-  min-height: 84px;
-  padding: 1rem;
+  max-width: 170px;
+  min-height: 60px;
+  padding: 0.7rem;
   flex: 1 1 0;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--step-inactive);
-  font-size: 18px;
-  font-weight: 500;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .step:first-child {
-  border-radius: 0 24px 24px 0;
+  border-radius: 0 20px 20px 0;
   background: var(--step-active);
 }
 .step:last-child {
-  border-radius: 24px 0 0 24px;
+  border-radius: 20px 0 0 20px;
 }
 .step.active {
   background: var(--step-active);
+}
+
+.step.disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .form-scroll-area {
@@ -857,5 +895,123 @@ button {
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
+  }
+}
+/* ===== استایل تقویم شمسی ===== */
+.persian-date-input {
+  cursor: pointer;
+}
+
+.rmdp-container {
+  width: 100%;
+  height: 100%;
+}
+
+.rmdp-wrapper {
+  font-family: "w_Lotus", sans-serif !important;
+  direction: rtl;
+}
+
+.rmdp-day.rmdp-selected span:not(.highlight) {
+  background-color: var(--color-gold) !important;
+  box-shadow: none !important;
+}
+
+.rmdp-arrow {
+  border-color: var(--color-gold) !important;
+}
+
+.rmdp-header-values {
+  color: var(--color-bg-dark) !important;
+}
+.input-error-message {
+  color: #b00101;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 6px;
+  padding-right: 22px;
+  text-align: right;
+  font-family: w_Lotus, Vazirmatn, sans-serif;
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.register-input:invalid {
+  border-color: #b00101;
+}
+
+.register-input:focus {
+  outline: none;
+  border-color: var(--primary-color, #2d5b3c);
+}
+/* ===== استایل حرفه‌ای Toast ===== */
+.Toastify__toast {
+  border-radius: 16px !important;
+  font-family: "w_Lotus", sans-serif !important;
+}
+
+.Toastify__toast--success {
+  background: linear-gradient(135deg, #034120, #0a5a2e) !important;
+  border: 1px solid rgba(164, 135, 77, 0.3) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3) !important;
+}
+
+.Toastify__progress-bar--success {
+  background: linear-gradient(90deg, #a4874d, #c9a84c) !important;
+}
+
+.Toastify__close-button {
+  color: #fff !important;
+  opacity: 0.6 !important;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1 !important;
+}
+/* ===== استایل صفحه سوم (ارسال آثار) ===== */
+.works-list-item {
+  display: grid;
+  grid-template-columns: 60px 1fr 1fr auto;
+  gap: 12px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 8px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.works-list-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(164, 135, 77, 0.2);
+}
+
+.works-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: #a4874d;
+  min-width: 60px;
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .works-list-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .works-number {
+    text-align: center;
   }
 }

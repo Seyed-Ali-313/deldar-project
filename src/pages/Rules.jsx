@@ -3,13 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import emtiaz from "../assets/images/emtiaz.svg";
 
 const RULES = [
-  "شرکت در این پروژه ملی برای همه هنرمندان و علاقه‌مندان از سراسر ایران آزاد و رایگان است.",
-  "هر عکاس می‌تواند حداکثر ۵۰ تک عکس ارائه کند و ابعاد هر فایل ارسالی حداقل ۱۰۰۰ و حداکثر ۱۵۰۰ پیکسل و در قالب فایل jpg باشد.",
-  "حجم هر فایل ارسالی باید کمتر از ۵ مگابایت باشد.",
-  "عکس‌ها می‌توانند با تلفن همراه گرفته شده باشند ولی باید دارای کیفیت لازم جهت داوری بوده و فایل اصلی آن برای چاپ در دسترس باشد.",
-  "آثار توسط خانه عکاسان ایران انتخاب خواهند شد.",
-  "شرکت‌کنندگان موظفند در صورت انتخاب آثار، اصل فایل را با کیفیت مناسب برای چاپ در اندازه حداقل ۳۰ در ۴۵ سانتی‌متر با کیفیت (رزولوشن) DPI ۳۰۰ برای دبیرخانه ارسال نمایند.",
-  "عکس‌ها باید کاملاً مستند بوده و ویرایش عکس‌ها باید به‌گونه‌ای باشد که در ماهیت و واقعیت عکس‌ها تغییری ایجاد نشود.",
   "استفاده از هوش مصنوعی در ویرایش عکس‌ها به دلیل خدشه وارد شدن به سندیت آثار جایز نیست. در صورت اثبات خلاف این امر، اثر از مرحله انتخاب کنار گذاشته شده و موضوع اطلاع‌رسانی عمومی خواهد شد.",
   "عکس‌های ارسالی حتماً باید حداقل شامل اطلاعات مکان و زمان باشند که همراه عکس بارگذاری می‌شود.",
   "اطلاعات فرم ثبت‌نام و عناوین آثار در تهیه مطالب انتشاراتی و نمایشگاهی مورد استفاده قرار خواهد گرفت. مسئولیت صحت اطلاعات آثار دریافتی بر عهده شرکت‌کننده می‌باشد.",
@@ -30,6 +23,12 @@ const CONDITIONS = [
   "شرکت در این پروژه ملی برای همه هنرمندان و علاقه‌مندان از سراسر ایران آزاد و رایگان است.",
   "هر عکاس می‌تواند حداکثر ۵۰ تک عکس ارائه کند.",
   "ابعاد هر فایل ارسالی حداقل ۱۰۰۰ و حداکثر ۱۵۰۰ پیکسل و در قالب فایل jpg باشد.",
+  "هر عکاس می‌تواند حداکثر ۵۰ تک عکس ارائه کند و ابعاد هر فایل ارسالی حداقل ۱۰۰۰ و حداکثر ۱۵۰۰ پیکسل و در قالب فایل jpg باشد.",
+  "حجم هر فایل ارسالی باید کمتر از ۵ مگابایت باشد.",
+  "عکس‌ها می‌توانند با تلفن همراه گرفته شده باشند ولی باید دارای کیفیت لازم جهت داوری بوده و فایل اصلی آن برای چاپ در دسترس باشد.",
+  "آثار توسط خانه عکاسان ایران انتخاب خواهند شد.",
+  "شرکت‌کنندگان موظفند در صورت انتخاب آثار، اصل فایل را با کیفیت مناسب برای چاپ در اندازه حداقل ۳۰ در ۴۵ سانتی‌متر با کیفیت (رزولوشن) DPI ۳۰۰ برای دبیرخانه ارسال نمایند.",
+  "عکس‌ها باید کاملاً مستند بوده و ویرایش عکس‌ها باید به‌گونه‌ای باشد که در ماهیت و واقعیت عکس‌ها تغییری ایجاد نشود.",
 ];
 
 export default function Rules() {
@@ -75,50 +74,50 @@ export default function Rules() {
               <li key={i}>{rule}</li>
             ))}
           </ul>
+        </div>
+      </div>
 
-          <div className="cta-section">
-            <label className="agreement-check">
-              <span
-                className={`checkbox ${agreed ? "checked" : ""}`}
-                onClick={() => setAgreed(!agreed)}
-              />
-              <span>
-                قوانین و&emsp;
-                <Link
-                  to="/announcement"
-                  style={{
-                    color: "#2563eb",
-                    fontSize: "1.125rem",
-                    fontWeight: "500",
-                    textDecoration: "none",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.color = "#1d4ed8";
-                    e.target.style.textDecoration = "underline";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.color = "#2563eb";
-                    e.target.style.textDecoration = "none";
-                  }}
-                >
-                  فراخوان
-                </Link>
-                &emsp;را مطالعه کرده و می‌پذیرم
-              </span>
-            </label>
-            <button
-              className="btn-secondary-second"
-              onClick={handleContinue}
-              disabled={!agreed}
+      <div className="cta-section">
+        <label className="agreement-check">
+          <span
+            className={`checkbox ${agreed ? "checked" : ""}`}
+            onClick={() => setAgreed(!agreed)}
+          />
+          <span>
+            قوانین و &emsp;
+            <Link
+              to="/announcement"
               style={{
-                opacity: agreed ? 1 : 0.5,
-                cursor: agreed ? "pointer" : "not-allowed",
+                color: "#2563eb",
+                fontWeight: "700",
+                textDecoration: "none",
+                fontSize: "1.1rem",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.color = "#1d4ed8";
+                e.target.style.textDecoration = "underline";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = "#2563eb";
+                e.target.style.textDecoration = "none";
               }}
             >
-              پذیرش و ادامه ثبت‌نام
-            </button>
-          </div>
-        </div>
+              فراخوان
+            </Link>{" "}
+            &emsp;را مطالعه کرده و می‌پذیرم
+          </span>
+        </label>
+        <button
+          className="btn-secondary-second"
+          onClick={handleContinue}
+          disabled={!agreed}
+          style={{
+            opacity: agreed ? 1 : 0.5,
+            cursor: agreed ? "pointer" : "not-allowed",
+          }}
+        >
+          پذیرش و ادامه ثبت‌ نام
+        </button>
       </div>
     </div>
   );
