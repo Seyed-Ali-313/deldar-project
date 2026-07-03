@@ -156,11 +156,14 @@ export default function Login() {
                   type="submit"
                   className="lg-submit-btn"
                   disabled={loading}
-                  whileHover={{ scale: loading ? 1 : 1.015 }}
+                  whileHover={{ scale: loading ? 1 : 1.02 }}
                   whileTap={{ scale: loading ? 1 : 0.97 }}
                   style={{ opacity: loading ? 0.75 : 1 }}
                 >
-                  <span>{loading ? "در حال ارسال..." : "دریافت کد ورود"}</span>
+                  <span className="lg-btn-text">
+                    {loading ? "در حال ارسال..." : "دریافت کد ورود"}
+                  </span>
+                  <span className="lg-btn-shine" aria-hidden="true" />
                 </motion.button>
 
                 <p className="lg-register-hint">
@@ -221,12 +224,14 @@ export default function Login() {
                   type="submit"
                   className="lg-submit-btn"
                   disabled={loading}
-                  whileHover={{ scale: loading ? 1 : 1.015 }}
+                  whileHover={{ scale: loading ? 1 : 1.02 }}
                   whileTap={{ scale: loading ? 1 : 0.97 }}
                   style={{ opacity: loading ? 0.75 : 1 }}
                 >
-                  <span>{loading ? "در حال بررسی..." : "تایید و ورود"}</span>
-                  {!loading && <span className="lg-btn-arrow">←</span>}
+                  <span className="lg-btn-text">
+                    {loading ? "در حال بررسی..." : "تایید و ورود"}
+                  </span>
+                  <span className="lg-btn-shine" aria-hidden="true" />
                 </motion.button>
 
                 <button
@@ -276,7 +281,6 @@ export default function Login() {
           overflow: hidden;
         }
 
-        /* پس‌زمینه با گرادیان شعاعی برای ایجاد عمق */
         .lg-bg-glow {
           position: absolute;
           inset: 0;
@@ -531,7 +535,9 @@ export default function Login() {
           font-family: "w_Lotus", sans-serif;
         }
 
+        /* ===== دکمه اصلی ===== */
         .lg-submit-btn {
+          position: relative;
           width: 100%;
           height: 54px;
           border: none;
@@ -542,61 +548,111 @@ export default function Login() {
           font-size: 16px;
           font-weight: 700;
           cursor: pointer;
-          transition: box-shadow 0.3s ease, transform 0.15s ease;
-          box-shadow: 0 6px 20px rgba(164, 135, 77, 0.28);
+          transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+          box-shadow: 0 6px 24px rgba(164, 135, 77, 0.3);
           margin-top: 4px;
           letter-spacing: 0.3px;
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
+          overflow: hidden;
         }
 
-        .lg-btn-arrow {
-          transition: transform 0.25s ease;
-          display: inline-block;
+        .lg-submit-btn .lg-btn-text {
+          position: relative;
+          z-index: 2;
         }
 
-        .lg-submit-btn:hover .lg-btn-arrow {
-          transform: translateX(-4px);
+        .lg-submit-btn .lg-btn-shine {
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+          transition: left 0.6s ease;
+          z-index: 1;
+          border-radius: 16px;
+        }
+
+        .lg-submit-btn:hover .lg-btn-shine {
+          left: 100%;
         }
 
         .lg-submit-btn:hover {
-          box-shadow: 0 8px 28px rgba(164, 135, 77, 0.4);
-        }
-
-        .lg-submit-btn:focus-visible {
-          outline: 2px solid #C9A84C;
-          outline-offset: 3px;
+          background: linear-gradient(135deg, #b59659, #d4b55a);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 32px rgba(164, 135, 77, 0.45);
         }
 
         .lg-submit-btn:active {
-          transform: scale(0.98);
+          transform: scale(0.97);
         }
 
+        .lg-submit-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        /* ===== ثبت‌نام - پررنگ و خوانا ===== */
         .lg-register-hint {
           margin-top: 24px;
           font-size: 15px;
-          font-weight: 600;
-          color: rgba(255, 255, 255, 0.62);
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.6);
           font-family: "w_Lotus", sans-serif;
           align-self: center;
+          white-space: nowrap;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
         }
 
         .lg-link-register {
-          color: #E0BE6B;
+          color: #E8D5A3;
           font-weight: 800;
           text-decoration: none;
-          transition: color 0.2s ease, background 0.2s ease;
-          padding: 3px 4px;
-          border-bottom: 2px solid rgba(201, 168, 76, 0.55);
+          font-size: 17px;
+          padding: 6px 14px;
+          border-radius: 14px;
+          background: rgba(201, 168, 76, 0.08);
+          border: 1.5px solid rgba(201, 168, 76, 0.15);
+          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+          display: inline-block;
+          position: relative;
+          letter-spacing: 0.3px;
+          text-shadow: 0 0 20px rgba(201, 168, 76, 0.05);
+        }
+
+        .lg-link-register::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(201, 168, 76, 0.1), transparent 50%);
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          border-radius: 14px;
         }
 
         .lg-link-register:hover {
-          color: #E8D5A3;
-          border-color: #E8D5A3;
+          color: #F5E8C0;
+          transform: translateY(-2px);
+          border-color: rgba(201, 168, 76, 0.35);
+          box-shadow: 0 6px 28px rgba(201, 168, 76, 0.2);
+          background: rgba(201, 168, 76, 0.12);
+          text-shadow: 0 0 30px rgba(201, 168, 76, 0.1);
         }
 
+        .lg-link-register:hover::before {
+          opacity: 1;
+        }
+
+        .lg-link-register:active {
+          transform: scale(0.97);
+        }
+
+        /* ===== برگشت ===== */
         .lg-back-link {
           margin-top: 18px;
           background: none;
@@ -637,7 +693,6 @@ export default function Login() {
           transition: border-color 0.25s ease, box-shadow 0.25s ease;
           box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
         }
-        
 
         .lg-otp-box:focus {
           border-color: #A4874D;
@@ -681,6 +736,13 @@ export default function Login() {
             font-size: 13px;
             margin-top: -52px;
           }
+          .lg-register-hint {
+            font-size: 14px;
+          }
+          .lg-link-register {
+            font-size: 16px;
+            padding: 4px 12px;
+          }
         }
 
         @media (max-width: 480px) {
@@ -701,6 +763,13 @@ export default function Login() {
           .lg-submit-btn {
             height: 50px;
             font-size: 15px;
+          }
+          .lg-register-hint {
+            font-size: 12px;
+          }
+          .lg-link-register {
+            font-size: 14px;
+            padding: 3px 8px;
           }
         }
 
