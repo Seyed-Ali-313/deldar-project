@@ -107,6 +107,7 @@ export default function Home() {
       </section>
 
       <style>{`
+        /* ===== صفحه اصلی - مثل حالت اولیه ===== */
         .hm-page {
           position: relative;
           overflow: hidden;
@@ -114,6 +115,7 @@ export default function Home() {
           display: flex;
           align-items: center;
           justify-content: center;
+          width: 100%;
         }
 
         .hm-bg-glow {
@@ -127,6 +129,7 @@ export default function Home() {
             radial-gradient(circle 600px at 50% 50%, rgba(164, 135, 77, 0.04), transparent);
         }
 
+        /* ===== Hero - دقیقاً مثل حالت اولیه ===== */
         .hm-hero {
           position: relative;
           z-index: 1;
@@ -158,6 +161,11 @@ export default function Home() {
           gap: clamp(16px, 3vh, 32px);
         }
 
+        .hm-hero-right {
+          text-align: center;
+        }
+
+        /* ===== تصویر شاخه - مثل حالت اولیه ===== */
         .hm-illustration {
           position: relative;
           width: clamp(180px, 15vw, 250px);
@@ -190,7 +198,7 @@ export default function Home() {
           filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.3));
         }
 
-        /* ===== Countdown ===== */
+        /* ===== تایمر - مثل حالت اولیه ===== */
         .hm-countdown-wrap {
           width: 100%;
           position: relative;
@@ -214,10 +222,7 @@ export default function Home() {
 
         .hm-countdown-wrap:hover .countdown-card {
           border-color: rgba(164, 135, 77, 0.35);
-          box-shadow: 
-            0 16px 50px rgba(2, 20, 10, 0.6),
-            0 0 0 1px rgba(164, 135, 77, 0.12),
-            inset 0 1px 0 rgba(255, 255, 255, 0.08);
+          box-shadow: 0 16px 50px rgba(2, 20, 10, 0.6), 0 0 0 1px rgba(164, 135, 77, 0.12);
         }
 
         .hm-countdown-wrap .countdown-numbers {
@@ -261,11 +266,6 @@ export default function Home() {
           transition: all 0.3s ease;
         }
 
-        .hm-countdown-wrap:hover .countdown-numbers span::after {
-          background: rgba(201, 168, 76, 0.8);
-          box-shadow: 0 0 14px rgba(201, 168, 76, 0.4);
-        }
-
         .hm-countdown-wrap .countdown-numbers span:last-child::after {
           display: none;
         }
@@ -289,11 +289,11 @@ export default function Home() {
           color: #c9a84c;
         }
 
-        /* ===== Buttons ===== */
+        /* ===== دکمه‌ها - مثل حالت اولیه ===== */
         .hm-cta-row {
           display: flex;
           align-items: center;
-          gap: 22px;
+          gap: 14px;
           flex-wrap: nowrap;
           width: 100%;
           max-width: 300px;
@@ -311,11 +311,10 @@ export default function Home() {
           overflow: hidden;
         }
 
-        /* ✅ دکمه طلایی - بزرگ‌تر */
         .hm-btn-primary {
           background: linear-gradient(135deg, #a4874d, #c9a84c);
           color: #fff;
-          flex: 1.5 1 0; /* ← بزرگ‌تر از دکمه دیگر */
+          flex: 1.5 1 0;
           min-height: 48px;
           display: flex;
           align-items: center;
@@ -324,10 +323,7 @@ export default function Home() {
           font-size: clamp(12px, 1.6vw, 18px);
           white-space: nowrap;
           padding: 12px 16px;
-          box-shadow: 
-            0 6px 24px rgba(164, 135, 77, 0.35),
-            inset 0 1px 0 rgba(255, 255, 255, 0.15);
-          position: relative;
+          box-shadow: 0 6px 24px rgba(164, 135, 77, 0.35);
         }
 
         .hm-btn-primary::before {
@@ -341,9 +337,7 @@ export default function Home() {
 
         .hm-btn-primary:hover {
           transform: translateY(-2px);
-          box-shadow: 
-            0 8px 32px rgba(164, 135, 77, 0.5),
-            0 0 0 1px rgba(201, 168, 76, 0.25);
+          box-shadow: 0 8px 32px rgba(164, 135, 77, 0.5);
           background: linear-gradient(135deg, #b59659, #d4b55a);
         }
 
@@ -351,36 +345,20 @@ export default function Home() {
           opacity: 1;
         }
 
-        /* ✅ دکمه خاکستری - کوچک‌تر */
         .hm-btn-secondary {
           background: rgba(255, 255, 255, 0.05);
           backdrop-filter: blur(8px);
           color: #f2e9d8;
           border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
-          flex: 0.8 1 0; /* ← کوچک‌تر از دکمه طلایی */
-          min-width: 0;
+          flex: 0.8 1 0;
           min-height: 48px;
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 12px 16px;
           font-size: clamp(12px, 1.6vw, 18px);
-          letter-spacing: -0.02em;
           white-space: nowrap;
-          box-shadow: 
-            0 4px 16px rgba(0, 0, 0, 0.15),
-            inset 0 1px 0 rgba(255, 255, 255, 0.06);
-        }
-
-        .hm-btn-secondary::before {
-          content: "";
-          position: absolute;
-          inset: -1px;
-          border-radius: 24px;
-          background: linear-gradient(135deg, rgba(164, 135, 77, 0.15), transparent 50%);
-          opacity: 0;
-          transition: opacity 0.4s ease;
-          z-index: -1;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
         }
 
         .hm-btn-secondary:hover {
@@ -388,24 +366,14 @@ export default function Home() {
           border-color: rgba(164, 135, 77, 0.35) !important;
           color: #fff;
           transform: translateY(-2px);
-          box-shadow: 
-            0 8px 24px rgba(0, 0, 0, 0.2),
-            0 0 0 1px rgba(164, 135, 77, 0.15);
-        }
-
-        .hm-btn-secondary:hover::before {
-          opacity: 1;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         }
 
         .hm-btn:active {
           transform: scale(0.97) !important;
         }
 
-        /* ===== Logo Stack ===== */
-        .hm-hero-right {
-          text-align: center;
-        }
-
+        /* ===== لوگو - مثل حالت اولیه ===== */
         .hm-logo-stack {
           position: relative;
           width: clamp(400px, 32vw, 620px);
@@ -465,9 +433,7 @@ export default function Home() {
           margin-left: 33px;
           width: 100%;
           max-width: 620px;
-          text-shadow: 
-            0 2px 16px rgba(164, 135, 77, 0.3),
-            0 0 40px rgba(164, 135, 77, 0.1);
+          text-shadow: 0 2px 16px rgba(164, 135, 77, 0.3);
           letter-spacing: 0.3px;
           transition: all 0.4s ease;
         }
@@ -493,24 +459,69 @@ export default function Home() {
 
         .hm-caption:hover {
           color: #c9a84c;
-          text-shadow: 
-            0 2px 20px rgba(201, 168, 76, 0.4),
-            0 0 50px rgba(201, 168, 76, 0.2);
         }
 
-        /* ===== Responsive ===== */
-        @media (max-width: 900px) {
+        /* ============================================================ */
+        /* ===== ریسپانسیو - فقط برای کوچک شدن ===== */
+        /* ============================================================ */
+
+        @media (max-width: 1200px) {
           .hm-hero {
-            flex-direction: column;
-            gap: 40px;
-            padding: 30px 16px;
-          }
-          .hm-hero-right {
-            order: -1;
+            gap: 80px;
           }
           .hm-logo-stack {
-            width: min(85vw, 420px);
+            width: clamp(320px, 28vw, 500px);
+          }
+          .hm-caption {
+            margin-left: 0;
+          }
+        }
+
+        @media (max-width: 1024px) {
+          .hm-hero {
+            gap: 50px;
+            padding: 20px clamp(16px, 2vw, 32px);
+            margin-top: -80px;
+          }
+          .hm-logo-stack {
+            width: clamp(280px, 30vw, 400px);
+          }
+          .hm-illustration {
+            width: clamp(160px, 18vw, 200px);
+            height: clamp(220px, 25vh, 280px);
+          }
+          .hm-bird-art {
+            width: 60px;
+            height: 61px;
+            left: 180px;
+          }
+        }
+
+        @media (max-width: 900px) {
+          .hm-hero {
+            flex-direction: column-reverse;
+            gap: 30px;
+            padding: 24px 16px;
+            margin-top: 0;
+          }
+          .hm-logo-stack {
+            width: clamp(240px, 40vw, 360px);
             max-height: none;
+          }
+          .hm-illustration {
+            width: clamp(150px, 25vw, 200px);
+            height: clamp(200px, 35vh, 280px);
+          }
+          .hm-bird-art {
+            width: 55px;
+            height: 56px;
+            left: 140px;
+          }
+          .hm-countdown-wrap .countdown-card {
+            max-width: 100%;
+          }
+          .hm-cta-row {
+            max-width: 100%;
           }
           .hm-caption {
             margin-left: 0;
@@ -523,45 +534,165 @@ export default function Home() {
 
         @media (max-width: 640px) {
           .hm-hero {
-            padding: 20px 16px;
+            padding: 16px 12px;
             gap: 24px;
           }
           .hm-illustration {
-            width: 160px;
-            height: 220px;
+            width: clamp(120px, 28vw, 160px);
+            height: clamp(160px, 38vh, 220px);
           }
           .hm-bird-art {
-            top: -14px;
-            left: 130px;
-            width: 50px;
-            height: 51px;
+            width: clamp(40px, 8vw, 48px);
+            height: clamp(40px, 8vw, 49px);
+            left: clamp(70px, 18vw, 100px);
           }
           .hm-countdown-wrap .countdown-card {
-            max-width: 100%;
-            padding: 18px 14px;
+            padding: 14px 10px;
+            border-radius: 18px;
           }
           .hm-countdown-wrap .countdown-numbers {
-            font-size: 28px;
+            font-size: clamp(22px, 4.5vh, 30px);
           }
-          .hm-cta-row {
-            max-width: 100%;
-            flex-wrap: wrap;
-          }
-          .hm-cta-row .hm-btn {
-            flex: 1 1 120px !important;
-            min-width: 100px;
-          }
-          .hm-logo-stack {
-            width: min(85vw, 320px);
-          }
-          .hm-caption {
-            font-size: 14px;
-            margin-left: 0;
+          .hm-countdown-wrap .countdown-labels {
+            font-size: clamp(10px, 1.8vh, 13px);
           }
           .hm-countdown-wrap .countdown-numbers span::after {
             right: -3px;
             width: 3px;
             height: 3px;
+          }
+          .hm-cta-row {
+            flex-wrap: wrap;
+            gap: 10px;
+          }
+          .hm-btn {
+            min-height: 38px;
+            padding: 6px 12px;
+            font-size: 12px;
+          }
+          .hm-cta-row .hm-btn {
+            flex: 1 1 120px !important;
+          }
+          .hm-logo-stack {
+            width: clamp(160px, 40vw, 240px);
+          }
+          .hm-caption {
+            font-size: 13px;
+            margin-top: -16px;
+            margin-bottom: 12px;
+            margin-left: 0;
+          }
+          .hm-caption br {
+            display: none;
+          }
+          .hm-caption::after {
+            width: 35px;
+            bottom: -6px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .hm-hero {
+            padding: 12px 8px;
+            gap: 18px;
+          }
+          .hm-illustration {
+            width: clamp(90px, 22vw, 120px);
+            height: clamp(120px, 30vh, 160px);
+          }
+          .hm-bird-art {
+            width: clamp(30px, 6vw, 38px);
+            height: clamp(30px, 6vw, 39px);
+            left: clamp(50px, 14vw, 70px);
+          }
+          .hm-countdown-wrap .countdown-numbers {
+            font-size: clamp(18px, 4vh, 24px);
+          }
+          .hm-countdown-wrap .countdown-labels {
+            font-size: clamp(9px, 1.6vh, 11px);
+          }
+          .hm-countdown-wrap .countdown-card {
+            padding: 10px 8px;
+            border-radius: 14px;
+          }
+          .hm-cta-row {
+            flex-direction: column;
+            gap: 8px;
+          }
+          .hm-cta-row .hm-btn {
+            flex: 1 1 100% !important;
+            width: 100%;
+            min-height: 34px;
+            padding: 4px 10px;
+            font-size: 11px;
+          }
+          .hm-logo-stack {
+            width: clamp(120px, 35vw, 180px);
+          }
+          .hm-caption {
+            font-size: 11px;
+            margin-top: -10px;
+            margin-bottom: 8px;
+            margin-left: 0;
+          }
+          .hm-caption::after {
+            width: 25px;
+            bottom: -4px;
+          }
+          .hm-btn-primary {
+            order: 1;
+          }
+          .hm-btn-secondary {
+            order: 2;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .hm-hero {
+            padding: 8px 6px;
+            gap: 14px;
+          }
+          .hm-illustration {
+            width: clamp(70px, 18vw, 90px);
+            height: clamp(95px, 25vh, 125px);
+          }
+          .hm-bird-art {
+            width: clamp(22px, 5vw, 28px);
+            height: clamp(22px, 5vw, 29px);
+            left: clamp(35px, 12vw, 50px);
+          }
+          .hm-countdown-wrap .countdown-numbers {
+            font-size: 16px;
+          }
+          .hm-countdown-wrap .countdown-labels {
+            font-size: 8px;
+          }
+          .hm-countdown-wrap .countdown-numbers span::after {
+            right: -2px;
+            width: 2px;
+            height: 2px;
+          }
+          .hm-logo-stack {
+            width: clamp(90px, 30vw, 140px);
+          }
+          .hm-caption {
+            font-size: 10px;
+            margin-top: -8px;
+            margin-bottom: 6px;
+          }
+          .hm-btn {
+            font-size: 10px;
+            min-height: 28px;
+            padding: 3px 8px;
+          }
+        }
+
+        @media (min-height: 900px) {
+          .hm-illustration {
+            height: clamp(280px, 30vh, 340px);
+          }
+          .hm-logo-stack {
+            max-height: 62vh;
           }
         }
 
