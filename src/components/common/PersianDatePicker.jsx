@@ -192,8 +192,9 @@ export default function PersianDatePicker({
   const firstWeekday = getFirstWeekday(viewYear, viewMonth);
 
   const handleSelectDay = (day) => {
+    // ✅ فرمت: YYYY-MM-DD (مثلاً 1400-01-01)
     const formatted = `${viewYear}-${pad2(viewMonth)}-${pad2(day)}`;
-    onChange && onChange(formatted);
+    onChange(formatted);
     setOpen(false);
     setView("days");
   };

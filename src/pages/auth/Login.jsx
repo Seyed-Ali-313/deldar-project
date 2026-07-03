@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import logoBg from "../../assets/images/logo-bg.png";
 import logoGold from "../../assets/images/logo-gold.png";
+import { requestLoginOtp, verifyLoginOtp } from "../../services/authService";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -16,9 +17,18 @@ export default function Login() {
 
   const handleIdentifierChange = (e) => {
     const value = e.target.value;
+    // ✅ فقط عدد مجاز
     const cleaned = value.replace(/[^0-9۰-۹]/g, "");
+
+    // ✅ محدودیت ۱۱ رقم (برای موبایل) یا ۱۰ رقم (برای کدملی)
+    if (cleaned.length > 11) {
+      setError("❌ شماره موبایل یا کدملی معتبر نیست");
+      setTimeout(() => setError(""), 2500);
+      return;
+    }
+
     if (value !== cleaned) {
-      setError("لطفاً فقط از اعداد استفاده کنید.");
+      setError("❌ لطفاً فقط از اعداد استفاده کنید");
       setTimeout(() => setError(""), 2500);
     } else {
       setError("");
@@ -28,28 +38,55 @@ export default function Login() {
 
   const handleRequestOtp = async (e) => {
     e.preventDefault();
-    if (!identifier) {
-      toast.error("لطفاً شماره موبایل یا کدملی را وارد کنید");
+
+    // ✅ اعتبارسنجی: شماره موبایل باید ۱۱ رقم یا کدملی ۱۰ رقم باشد
+    const cleanIdentifier = identifier.replace(/[^0-9]/g, "");
+    if (
+      !cleanIdentifier ||
+      (cleanIdentifier.length !== 11 && cleanIdentifier.length !== 10)
+    ) {
+      toast.error("❌ شماره موبایل (۱۱ رقم) یا کدملی (۱۰ رقم) را وارد کنید");
       return;
     }
+
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-    toast.success("کد تایید به شماره شما ارسال شد");
-    setStep("otp");
+    try {
+      await requestLoginOtp(identifier);
+      toast.success("✅ کد تایید به شماره شما ارسال شد");
+      setStep("otp");
+    } catch (err) {
+      const msg = err.response?.data?.detail || "❌ خطا در ارسال کد";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (otpCode.length !== 4) {
-      toast.error("کد ۴ رقمی را کامل وارد کنید");
+
+    const cleanOtp = otpCode.replace(/[^0-9]/g, "");
+    if (cleanOtp.length !== 4) {
+      toast.error("❌ کد ۴ رقمی را کامل وارد کنید");
       return;
     }
+
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-    toast.success("ورود با موفقیت انجام شد");
-    navigate("/dashboard");
+    try {
+      const res = await verifyLoginOtp(identifier, cleanOtp);
+      const { access, refresh } = res.data;
+
+      localStorage.setItem("access_token", access);
+      localStorage.setItem("refresh_token", refresh);
+
+      toast.success("✅ ورود با موفقیت انجام شد");
+      navigate("/dashboard");
+    } catch (err) {
+      const msg = err.response?.data?.detail || "❌ کد وارد شده صحیح نیست";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

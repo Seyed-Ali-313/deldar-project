@@ -1,6 +1,7 @@
 // src/pages/dashboard/PersonalInfo.jsx
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { motion } from "framer-motion";
 import FormInput from "../../components/common/FormInput";
 import {
   getProfile,
@@ -16,13 +17,27 @@ export default function PersonalInfo() {
   const [mobileVerified, setMobileVerified] = useState(true);
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [otpCode, setOtpCode] = useState("");
+  const [loading, setLoading] = useState(true);
   const currentMobile = watch("mobile");
 
+  // ✅ دریافت پروفایل از سرور
   useEffect(() => {
-    getProfile().then((res) => {
-      reset(res.data);
-      setOriginalMobile(res.data.mobile);
-    });
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    getProfile()
+      .then((res) => {
+        reset(res.data);
+        setOriginalMobile(res.data.mobile);
+        setLoading(false);
+      })
+      .catch(() => {
+        toast.error("خطا در دریافت اطلاعات");
+        setLoading(false);
+      });
   }, [reset]);
 
   useEffect(() => {
@@ -34,41 +49,70 @@ export default function PersonalInfo() {
   }, [currentMobile, originalMobile]);
 
   const handleRequestMobileVerify = async () => {
+    if (!currentMobile || currentMobile.length !== 11) {
+      toast.error("شماره موبایل معتبر نیست");
+      return;
+    }
     try {
       await requestMobileChange(currentMobile);
-      toast.success("کد تایید ارسال شد");
+      toast.success("✅ کد تایید به شماره جدید ارسال شد");
       setShowOtpBox(true);
-    } catch {
-      toast.error("خطا در ارسال کد");
+    } catch (err) {
+      const msg = err.response?.data?.detail || "خطا در ارسال کد";
+      toast.error(msg);
     }
   };
 
   const handleVerifyMobile = async () => {
+    if (!otpCode || otpCode.length !== 4) {
+      toast.error("کد ۴ رقمی را وارد کنید");
+      return;
+    }
     try {
       await verifyMobileChange(currentMobile, otpCode);
       setMobileVerified(true);
       setShowOtpBox(false);
-      toast.success("شماره موبایل تایید شد");
-    } catch {
-      toast.error("کد وارد شده صحیح نیست");
+      setOtpCode("");
+      toast.success("✅ شماره موبایل تایید شد");
+    } catch (err) {
+      const msg = err.response?.data?.detail || "کد وارد شده صحیح نیست";
+      toast.error(msg);
     }
   };
 
   const onSubmit = async (data) => {
     if (!mobileVerified) {
       toast.error(
-        "ابتدا شماره تلفن همراه خود را تایید کنید سپس دکمه ثبت تغییرات رو بزنید.",
+        "ابتدا شماره تلفن همراه خود را تایید کنید سپس دکمه ثبت تغییرات را بزنید.",
       );
       return;
     }
     try {
       await updateProfile(data);
       setOriginalMobile(data.mobile);
-      toast.success("اطلاعات با موفقیت بروزرسانی شد");
-    } catch {
-      toast.error("خطا در بروزرسانی اطلاعات");
+      toast.success("✅ اطلاعات با موفقیت بروزرسانی شد");
+    } catch (err) {
+      const msg = err.response?.data?.detail || "خطا در بروزرسانی اطلاعات";
+      toast.error(msg);
     }
   };
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "200px",
+          color: "rgba(255,255,255,0.2)",
+          fontFamily: "w_Lotus, sans-serif",
+        }}
+      >
+        در حال بارگذاری...
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pill-grid">
@@ -93,18 +137,20 @@ export default function PersonalInfo() {
           {...register("mobile")}
         />
         {!mobileVerified && (
-          <span
+          <motion.span
             onClick={handleRequestMobileVerify}
+            whileHover={{ scale: 1.05 }}
             style={{
               position: "absolute",
               left: 14,
-              color: "var(--color-gold)",
+              color: "#C9A84C",
               cursor: "pointer",
               fontSize: 12,
+              fontWeight: 700,
             }}
           >
             تایید شماره همراه
-          </span>
+          </motion.span>
         )}
       </div>
 
@@ -156,12 +202,15 @@ export default function PersonalInfo() {
       />
 
       {showOtpBox && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
           style={{
             gridColumn: "1 / -1",
             display: "flex",
             gap: 10,
             alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <div className="pill" style={{ maxWidth: 150 }}>
@@ -170,22 +219,32 @@ export default function PersonalInfo() {
               placeholder="کد تایید"
               value={otpCode}
               onChange={(e) => setOtpCode(e.target.value)}
+              maxLength={4}
+              inputMode="numeric"
             />
           </div>
-          <button
+          <motion.button
             type="button"
             className="submit-btn"
             onClick={handleVerifyMobile}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            style={{ minWidth: "100px", height: "42px" }}
           >
             تایید کد
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       )}
 
       <div className="submit-row" style={{ gridColumn: "1 / -1" }}>
-        <button type="submit" className="submit-btn">
+        <motion.button
+          type="submit"
+          className="submit-btn"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+        >
           ثبت اطلاعات
-        </button>
+        </motion.button>
       </div>
     </form>
   );

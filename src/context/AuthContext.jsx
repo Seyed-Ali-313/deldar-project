@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    // ✅ اگه توکن تستی هست، نیازی به درخواست سرور نیست
+    // ✅ اگه توکن تستی هست
     if (token === "test_token_123") {
       setUser({
         first_name: "کاربر",
@@ -27,16 +27,17 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    // 🔴 API واقعی - وقتی بک‌اند وصل شد
-    /*
+    // ✅ API واقعی - دریافت پروفایل کاربر
     getProfile()
-      .then((res) => setUser(res.data))
-      .catch(() => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+      .then((res) => {
+        setUser(res.data);
+        setIsLoading(false);
       })
-      .finally(() => setIsLoading(false));
-    */
+      .catch(() => {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        setIsLoading(false);
+      });
   }, []);
 
   const login = (accessToken, refreshToken, userData) => {

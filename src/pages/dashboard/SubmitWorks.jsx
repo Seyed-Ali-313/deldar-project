@@ -107,6 +107,7 @@ export default function SubmitWorks() {
 
     setUploading(true);
     try {
+      // ✅ آپلود واقعی به سرور
       for (const work of uploadedWorks) {
         const formData = new FormData();
         formData.append("image", work.file);
@@ -124,10 +125,10 @@ export default function SubmitWorks() {
               color: "#C9A84C",
             }}
           >
-            {uploadedWorks.length} اثر با موفقیت ارسال شد
+            {uploadedWorks.length} اثر با موفقیت اضافه شد
           </div>
           <div style={{ fontSize: "14px", opacity: 0.9 }}>
-            در حال انتقال به صفحه تایید...
+            آثار جدید به لیست شما اضافه شد
           </div>
         </div>,
         {
@@ -151,12 +152,12 @@ export default function SubmitWorks() {
 
       setUploadedWorks([]);
     } catch (err) {
-      toast.error("خطا در ارسال آثار");
+      const msg = err.response?.data?.detail || "خطا در ارسال آثار";
+      toast.error(msg);
     } finally {
       setUploading(false);
     }
   };
-
   return (
     <div
       style={{

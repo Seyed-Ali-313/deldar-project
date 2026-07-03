@@ -3,58 +3,65 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { useRef } from "react";
 import FormInput from "../common/FormInput";
-// import { submitStep2 } from "../../services/onboardingService";
+import { submitStep2 } from "../../services/onboardingService"; // ✅ فعال شد
 import { toast } from "react-toastify";
 
 export default function AdditionalInfoForm({ onSuccess }) {
   const { register, handleSubmit } = useForm();
-  const isSubmitting = useRef(false); // ← این رو اضافه کن
+  const isSubmitting = useRef(false);
 
   const onSubmit = async (data) => {
-    // جلوگیری از اجرای دوباره
     if (isSubmitting.current) return;
     isSubmitting.current = true;
 
-    console.log("📝 اطلاعات مرحله دوم:", data);
+    try {
+      // ✅ ارسال به API واقعی
+      await submitStep2({
+        province: data.province,
+        city: data.city,
+        address: data.address,
+        postal_code: data.postal_code,
+        bale_id: data.bale_id || "",
+        telegram_id: data.telegram_id || "",
+      });
 
-    toast.success(
-      <div style={{ textAlign: "right", fontFamily: "w_Lotus, sans-serif" }}>
-        <div style={{ fontSize: "18px", fontWeight: 700, marginBottom: "4px" }}>
-          ✅ اطلاعات تکمیلی ثبت شد
-        </div>
-        <div style={{ fontSize: "13px", opacity: 0.8 }}>
-          در حال انتقال به مرحله ارسال آثار...
-        </div>
-      </div>,
-      {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        style: {
-          background: "linear-gradient(135deg, #034120, #0a5a2e)",
-          color: "#ffffff",
-          borderRadius: "16px",
-          padding: "16px 24px",
-          boxShadow:
-            "0 12px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(164,135,77,0.2)",
-          border: "1px solid rgba(164,135,77,0.3)",
-          fontFamily: "w_Lotus, sans-serif",
+      toast.success(
+        <div style={{ textAlign: "right", fontFamily: "w_Lotus, sans-serif" }}>
+          <div
+            style={{ fontSize: "18px", fontWeight: 700, marginBottom: "4px" }}
+          >
+            ✅ اطلاعات تکمیلی ثبت شد
+          </div>
+          <div style={{ fontSize: "13px", opacity: 0.8 }}>
+            در حال انتقال به مرحله ارسال آثار...
+          </div>
+        </div>,
+        {
+          position: "top-center",
+          autoClose: 2000,
+          style: {
+            background: "linear-gradient(135deg, #034120, #0a5a2e)",
+            color: "#ffffff",
+            borderRadius: "16px",
+            padding: "16px 24px",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.3)",
+            border: "1px solid rgba(164,135,77,0.3)",
+            fontFamily: "w_Lotus, sans-serif",
+          },
+          progressStyle: {
+            background: "linear-gradient(90deg, #A4874D, #C9A84C)",
+            height: "3px",
+          },
         },
-        progressStyle: {
-          background: "linear-gradient(90deg, #A4874D, #C9A84C)",
-          height: "3px",
-          borderRadius: "0 0 16px 16px",
-        },
-      },
-    );
+      );
 
-    setTimeout(() => {
       isSubmitting.current = false;
       onSuccess();
-    }, 1500);
+    } catch (err) {
+      const msg = err.response?.data?.detail || "خطا در ثبت اطلاعات";
+      toast.error(msg);
+      isSubmitting.current = false;
+    }
   };
 
   return (

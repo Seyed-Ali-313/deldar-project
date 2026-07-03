@@ -2,6 +2,11 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
+import {
+  uploadWork,
+  deleteWork,
+  submitAllWorks,
+} from "../../services/onboardingService"; // ✅ اضافه شد
 
 const MAX_WORKS = 50;
 const MAX_DESCRIPTION_LENGTH = 200;
@@ -92,7 +97,7 @@ export default function WorksForm({
     }, 150);
 
     setCurrentWork({ file: null, description: "", preview: null });
-    toast.success("عکس با موفقیت اضافه شد");
+    toast.success("✅ عکس با موفقیت اضافه شد");
   };
 
   const removeWork = (index) => {
@@ -111,7 +116,23 @@ export default function WorksForm({
 
     setUploading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // ✅ آپلود واقعی عکس‌ها به سرور
+      const uploader = uploadFn || uploadWork;
+      const remover = deleteFn || deleteWork;
+
+      for (const work of uploadedWorks) {
+        if (work.file && !work.id) {
+          const formData = new FormData();
+          formData.append("image", work.file);
+          formData.append("description", work.description);
+          await uploader(formData);
+        }
+      }
+
+      // ✅ ارسال نهایی (اگر در مرحله ثبت‌نام باشیم)
+      if (showFinalSubmit) {
+        await submitAllWorks();
+      }
 
       toast.success(
         <div style={{ textAlign: "right", fontFamily: "w_Lotus, sans-serif" }}>
@@ -152,7 +173,8 @@ export default function WorksForm({
         onSuccess();
       }, 1500);
     } catch (err) {
-      toast.error("خطا در ارسال آثار");
+      const msg = err.response?.data?.detail || "خطا در ارسال آثار";
+      toast.error(msg);
     } finally {
       setUploading(false);
     }

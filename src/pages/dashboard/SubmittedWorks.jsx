@@ -2,47 +2,41 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
+import { getWorks, deleteWork } from "../../services/dashboardService"; // ✅ اضافه شد
 
 export default function SubmittedWorks() {
   const [works, setWorks] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // ✅ دریافت آثار از سرور
   useEffect(() => {
-    setTimeout(() => {
-      setWorks([
-        {
-          id: 1,
-          image: "/src/assets/images/logo-bg.png",
-          description: "وداع با رهبر شهید - لحظه بدرقه",
-        },
-        {
-          id: 2,
-          image: "/src/assets/images/logo-gold.png",
-          description: "مراسم وداع با رهبر شهید انقلاب اسلامی",
-        },
-        {
-          id: 3,
-          image: "/src/assets/images/logo-bg.png",
-          description: "جمعیت عظیم در مراسم وداع",
-        },
-        {
-          id: 4,
-          image: "/src/assets/images/logo-gold.png",
-          description: "لحظه احساسی وداع با رهبر شهید",
-        },
-        {
-          id: 5,
-          image: "/src/assets/images/logo-bg.png",
-          description: "تصویر مستند از مراسم بدرقه",
-        },
-      ]);
+    const token = localStorage.getItem("access_token");
+    if (!token) {
       setLoading(false);
-    }, 500);
+      return;
+    }
+
+    getWorks()
+      .then((res) => {
+        setWorks(res.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        toast.error("خطا در دریافت آثار");
+        setLoading(false);
+      });
   }, []);
 
-  const handleDelete = (id) => {
-    setWorks((prev) => prev.filter((w) => w.id !== id));
-    toast.success("اثر با موفقیت حذف شد");
+  // ✅ حذف اثر از سرور
+  const handleDelete = async (id) => {
+    try {
+      await deleteWork(id);
+      setWorks((prev) => prev.filter((w) => w.id !== id));
+      toast.success("✅ اثر با موفقیت حذف شد");
+    } catch (err) {
+      const msg = err.response?.data?.detail || "خطا در حذف اثر";
+      toast.error(msg);
+    }
   };
 
   if (loading) {
@@ -88,10 +82,10 @@ export default function SubmittedWorks() {
         width: "100%",
         maxWidth: "680px",
         margin: "0 auto",
-        marginTop: "-25px", // ← بالاتر رفت
+        marginTop: "-25px",
       }}
     >
-      {/* هدر با تعداد آثار - بزرگ‌تر و پررنگ‌تر */}
+      {/* هدر */}
       <div
         style={{
           display: "flex",
@@ -145,7 +139,6 @@ export default function SubmittedWorks() {
               padding: "2px 14px",
               borderRadius: "10px",
               border: "1px solid rgba(201, 168, 76, 0.1)",
-              textShadow: "0 0 30px rgba(201, 168, 76, 0.1)",
             }}
           >
             {works.length}
@@ -153,7 +146,7 @@ export default function SubmittedWorks() {
         </div>
       </div>
 
-      {/* لیست آثار - آیتم‌ها بزرگ‌تر با UI بهتر */}
+      {/* لیست */}
       <div
         style={{
           maxHeight: "280px",
@@ -183,7 +176,6 @@ export default function SubmittedWorks() {
                 borderRadius: "12px",
                 border: "1px solid rgba(255,255,255,0.04)",
                 transition: "all 0.25s ease",
-                cursor: "default",
               }}
               whileHover={{
                 borderColor: "rgba(164, 135, 77, 0.15)",
@@ -192,7 +184,7 @@ export default function SubmittedWorks() {
                 boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
               }}
             >
-              {/* تصویر - بزرگ‌تر */}
+              {/* تصویر */}
               <div
                 style={{
                   width: "44px",
@@ -202,11 +194,10 @@ export default function SubmittedWorks() {
                   background: "rgba(255,255,255,0.04)",
                   border: "1px solid rgba(255,255,255,0.05)",
                   flexShrink: 0,
-                  boxShadow: "inset 0 1px 3px rgba(0,0,0,0.1)",
                 }}
               >
                 <img
-                  src={work.image}
+                  src={work.image || "/src/assets/images/logo-bg.png"}
                   alt=""
                   style={{
                     width: "100%",
@@ -214,12 +205,12 @@ export default function SubmittedWorks() {
                     objectFit: "cover",
                   }}
                   onError={(e) => {
-                    e.target.style.display = "none";
+                    e.target.src = "/src/assets/images/logo-bg.png";
                   }}
                 />
               </div>
 
-              {/* توضیحات - بزرگ‌تر */}
+              {/* توضیحات */}
               <div
                 style={{
                   display: "flex",
@@ -237,7 +228,6 @@ export default function SubmittedWorks() {
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
-                    letterSpacing: "0.2px",
                   }}
                 >
                   {work.description || "بدون شرح"}
@@ -247,22 +237,21 @@ export default function SubmittedWorks() {
                     fontSize: "10px",
                     color: "rgba(255,255,255,0.2)",
                     fontFamily: "w_Lotus, sans-serif",
-                    letterSpacing: "0.3px",
                   }}
                 >
                   شناسه: {String(work.id).padStart(3, "0")}
                 </span>
               </div>
 
-              {/* دکمه حذف - قشنگ‌تر و مشخص‌تر */}
+              {/* دکمه حذف */}
               <button
                 onClick={() => handleDelete(work.id)}
                 style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.06)",
+                  background: "rgba(176, 1, 1, 0.06)",
+                  border: "1px solid rgba(176, 1, 1, 0.1)",
                   padding: "6px",
                   cursor: "pointer",
-                  color: "rgba(255,255,255,0.25)",
+                  color: "#B00101",
                   fontSize: "14px",
                   borderRadius: "8px",
                   transition: "all 0.25s ease",
@@ -274,16 +263,19 @@ export default function SubmittedWorks() {
                   height: "30px",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.12)";
-                  e.currentTarget.style.borderColor = "rgba(176, 1, 1, 0.2)";
-                  e.currentTarget.style.color = "#B00101";
-                  e.currentTarget.style.transform = "scale(1.05)";
+                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.15)";
+                  e.currentTarget.style.borderColor = "rgba(176, 1, 1, 0.3)";
+                  e.currentTarget.style.color = "#ff3333";
+                  e.currentTarget.style.transform = "scale(1.08)";
+                  e.currentTarget.style.boxShadow =
+                    "0 4px 16px rgba(176, 1, 1, 0.2)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
-                  e.currentTarget.style.color = "rgba(255,255,255,0.25)";
+                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.06)";
+                  e.currentTarget.style.borderColor = "rgba(176, 1, 1, 0.1)";
+                  e.currentTarget.style.color = "#B00101";
                   e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow = "none";
                 }}
               >
                 <svg
@@ -302,7 +294,6 @@ export default function SubmittedWorks() {
         </AnimatePresence>
       </div>
 
-      {/* استایل اسکرول */}
       <style>{`
         .submitted-scroll::-webkit-scrollbar {
           width: 4px;

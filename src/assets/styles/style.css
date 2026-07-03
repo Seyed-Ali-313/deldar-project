@@ -1015,3 +1015,262 @@ button {
     text-align: center;
   }
 }
+/* ===== ریسپانسیو کامل برای موبایل ===== */
+
+/* آیفون SE / کوچک */
+@media (max-width: 380px) {
+  .hero-illustration {
+    width: 120px !important;
+    height: 170px !important;
+  }
+  .bird-art {
+    width: 35px !important;
+    height: 35px !important;
+    left: 95px !important;
+  }
+  .countdown-numbers {
+    font-size: 22px !important;
+  }
+  .countdown-labels {
+    font-size: 10px !important;
+  }
+  .btn {
+    font-size: 11px !important;
+    padding: 8px 12px !important;
+    min-height: 34px !important;
+  }
+  .logo-stack {
+    width: 140px !important;
+  }
+  .hero-caption {
+    font-size: 11px !important;
+  }
+  .lg-title {
+    font-size: 22px !important;
+  }
+  .lg-otp-box {
+    width: 40px !important;
+    height: 48px !important;
+    font-size: 18px !important;
+  }
+  .lg-pill {
+    height: 42px !important;
+  }
+  .lg-input {
+    font-size: 14px !important;
+  }
+}
+
+/* آیفون 12/13/14 */
+@media (min-width: 381px) and (max-width: 430px) {
+  .hero-illustration {
+    width: 150px !important;
+    height: 210px !important;
+  }
+  .bird-art {
+    width: 45px !important;
+    height: 45px !important;
+    left: 120px !important;
+  }
+  .countdown-numbers {
+    font-size: 28px !important;
+  }
+  .countdown-labels {
+    font-size: 12px !important;
+  }
+  .btn {
+    font-size: 12px !important;
+    padding: 10px 16px !important;
+    min-height: 38px !important;
+  }
+  .logo-stack {
+    width: 180px !important;
+  }
+  .hero-caption {
+    font-size: 13px !important;
+  }
+  .lg-title {
+    font-size: 24px !important;
+  }
+  .lg-otp-box {
+    width: 46px !important;
+    height: 54px !important;
+    font-size: 20px !important;
+  }
+  .lg-pill {
+    height: 44px !important;
+  }
+  .lg-input {
+    font-size: 15px !important;
+  }
+}
+
+/* آیفون 15/16 و بزرگتر */
+@media (min-width: 431px) and (max-width: 768px) {
+  .hero-illustration {
+    width: 180px !important;
+    height: 250px !important;
+  }
+  .bird-art {
+    width: 55px !important;
+    height: 55px !important;
+    left: 145px !important;
+  }
+  .countdown-numbers {
+    font-size: 34px !important;
+  }
+  .countdown-labels {
+    font-size: 14px !important;
+  }
+  .btn {
+    font-size: 13px !important;
+    padding: 12px 20px !important;
+    min-height: 42px !important;
+  }
+  .logo-stack {
+    width: 220px !important;
+  }
+  .hero-caption {
+    font-size: 14px !important;
+  }
+}
+
+/* ===== منو همبرگری در موبایل ===== */
+@media (max-width: 900px) {
+  .header-inner {
+    padding: 12px 16px !important;
+  }
+  .main-nav {
+    position: fixed !important;
+    top: 0 !important;
+    right: -100% !important;
+    width: 75% !important;
+    height: 100vh !important;
+    background: #0a1a12 !important;
+    padding: 80px 24px 24px !important;
+    transition: right 0.3s ease !important;
+    z-index: 1000 !important;
+  }
+  .main-nav.is-open {
+    right: 0 !important;
+  }
+  .main-nav ul {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .main-nav a {
+    font-size: 16px !important;
+    color: #fff !important;
+  }
+  .menu-toggle {
+    display: flex !important;
+  }
+  .login-btn {
+    font-size: 13px !important;
+    padding: 6px 14px !important;
+    min-height: 32px !important;
+  }
+}
+
+/* ===== فرم‌ها در موبایل ===== */
+@media (max-width: 640px) {
+  .pill-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .pill {
+    max-width: 100% !important;
+  }
+  .submit-row {
+    justify-content: center !important;
+  }
+  .submit-btn {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .logo-stack-small {
+    width: 120px !important;
+  }
+  .steps {
+    flex-direction: row !important;
+    padding: 8px !important;
+    min-height: 50px !important;
+  }
+  .step {
+    font-size: 12px !important;
+    padding: 6px !important;
+    min-height: 40px !important;
+  }
+}
+
+/* ===== داشبورد در موبایل ===== */
+@media (max-width: 500px) {
+  .submitted-scroll > div {
+    grid-template-columns: 40px 1fr 30px !important;
+    gap: 8px !important;
+    padding: 6px 8px !important;
+  }
+  .submitted-scroll > div > div:first-child {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .submitted-scroll > div > div:nth-child(2) span:first-child {
+    font-size: 11px !important;
+  }
+  .works-scroll-container > div {
+    grid-template-columns: 30px 1fr 1fr 24px !important;
+    gap: 4px !important;
+    padding: 4px 6px !important;
+  }
+  .works-scroll-container > div span {
+    font-size: 10px !important;
+  }
+  .works-scroll-container > div img {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
+/* ===== بهبود فاصله‌ها در موبایل ===== */
+@media (max-width: 768px) {
+  .page {
+    padding: 12px !important;
+  }
+  .lg-layout {
+    padding: 12px !important;
+    gap: 20px !important;
+  }
+  .lg-form {
+    max-width: 100% !important;
+  }
+  .lg-logo-stack {
+    width: 200px !important;
+  }
+  .lg-caption {
+    font-size: 12px !important;
+    margin-top: -30px !important;
+  }
+  .hero {
+    padding: 20px 12px !important;
+  }
+  .cta-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  .cta-row .btn {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ===== بهبود OTP در موبایل ===== */
+@media (max-width: 480px) {
+  .lg-otp-row {
+    gap: 8px !important;
+  }
+  .lg-otp-box {
+    width: 44px !important;
+    height: 50px !important;
+    font-size: 20px !important;
+  }
+}

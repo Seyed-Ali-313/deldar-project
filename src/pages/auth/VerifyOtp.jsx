@@ -2,8 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-// import { verifyOtp } from "../../services/onboardingService";
-// 🔴 API کامنت شد - وقتی بک‌اند آماده شد، این خط رو از کامنت خارج کن
+import { verifyOtp } from "../../services/onboardingService"; // ✅ فعال شد
 import { toast } from "react-toastify";
 
 const RESEND_SECONDS = 124;
@@ -18,6 +17,7 @@ export default function VerifyOtp() {
   const [timeLeft, setTimeLeft] = useState(RESEND_SECONDS);
   const [activeIndex, setActiveIndex] = useState(null);
   const [shake, setShake] = useState(false);
+  const [loading, setLoading] = useState(false);
   const inputsRef = useRef([]);
 
   useEffect(() => {
@@ -56,70 +56,60 @@ export default function VerifyOtp() {
       return;
     }
 
-    /* ============================================================
-       🔴 API واقعی - وقتی بک‌اند آماده شد، این بخش رو از کامنت خارج کن
-       و قسمت شبیه‌سازی رو حذف کن
-       ============================================================ */
-    /*
+    setLoading(true);
     try {
+      // ✅ ارسال به API واقعی
       const res = await verifyOtp(code);
-      localStorage.setItem("access_token", res.data.access);
-      localStorage.setItem("refresh_token", res.data.refresh);
-      
-      toast.success("✅ ثبت‌نام با موفقیت انجام شد");
-      
+      const { access, refresh } = res.data;
+
+      localStorage.setItem("access_token", access);
+      localStorage.setItem("refresh_token", refresh);
+
+      toast.success(
+        <div style={{ textAlign: "right", fontFamily: "w_Lotus, sans-serif" }}>
+          <div
+            style={{
+              fontSize: "18px",
+              fontWeight: 700,
+              marginBottom: "4px",
+              color: "#C9A84C",
+            }}
+          >
+            ✅ ثبت‌نام با موفقیت انجام شد
+          </div>
+          <div style={{ fontSize: "13px", opacity: 0.9 }}>
+            در حال انتقال به صفحه موفقیت...
+          </div>
+        </div>,
+        {
+          position: "top-center",
+          autoClose: 2000,
+          style: {
+            background: "linear-gradient(135deg, #034120, #0a5a2e)",
+            color: "#ffffff",
+            borderRadius: "16px",
+            padding: "20px 28px",
+            boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
+            border: "1px solid rgba(164,135,77,0.3)",
+            fontFamily: "w_Lotus, sans-serif",
+          },
+          progressStyle: {
+            background: "linear-gradient(90deg, #A4874D, #C9A84C)",
+            height: "4px",
+          },
+        },
+      );
+
       setTimeout(() => {
         navigate("/upload-success");
       }, 1500);
     } catch (err) {
-      toast.error("❌ کد وارد شده صحیح نیست");
+      const msg = err.response?.data?.detail || "کد وارد شده صحیح نیست";
+      toast.error(msg);
       triggerShake();
+    } finally {
+      setLoading(false);
     }
-    */
-
-    console.log("📝 کد وارد شده:", code);
-
-    toast.success(
-      <div style={{ textAlign: "right", fontFamily: "w_Lotus, sans-serif" }}>
-        <div
-          style={{
-            fontSize: "18px",
-            fontWeight: 700,
-            marginBottom: "4px",
-            color: "#C9A84C",
-          }}
-        >
-          ✅ ثبت‌نام با موفقیت انجام شد
-        </div>
-        <div style={{ fontSize: "13px", opacity: 0.9 }}>
-          در حال انتقال به صفحه موفقیت...
-        </div>
-      </div>,
-      {
-        position: "top-center",
-        autoClose: 2000,
-        style: {
-          background: "linear-gradient(135deg, #034120, #0a5a2e)",
-          color: "#ffffff",
-          borderRadius: "16px",
-          padding: "20px 28px",
-          boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
-          border: "1px solid rgba(164,135,77,0.3)",
-          fontFamily: "w_Lotus, sans-serif",
-        },
-        progressStyle: {
-          background: "linear-gradient(90deg, #A4874D, #C9A84C)",
-          height: "4px",
-        },
-      },
-    );
-
-    localStorage.setItem("access_token", "test_token_123");
-    localStorage.setItem("refresh_token", "test_refresh_456");
-
-    setTimeout(() => {
-      navigate("/upload-success");
-    }, 1500);
   };
 
   const handleResend = () => {
