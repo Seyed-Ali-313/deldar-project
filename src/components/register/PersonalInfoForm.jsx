@@ -7,6 +7,7 @@ import NumericInput from "../common/NumericInput";
 import PersianDatePicker from "../common/PersianDatePicker";
 import { submitStep1 } from "../../services/onboardingService";
 import { toast } from "react-toastify";
+import { showError } from "../../utils/errorHandler";
 
 export default function PersonalInfoForm({ onSuccess }) {
   const { register, handleSubmit, control } = useForm();
@@ -17,72 +18,38 @@ export default function PersonalInfoForm({ onSuccess }) {
     isSubmitting.current = true;
 
     try {
-      // ✅ آماده‌سازی داده‌ها برای ارسال
       const payload = {
         first_name: data.first_name,
         last_name: data.last_name,
         job: data.job,
-        birth_date: data.birth_date, // فرمت: YYYY-MM-DD
-        national_code: data.national_code, // قبلاً به انگلیسی تبدیل شده
-        mobile: data.mobile, // قبلاً به انگلیسی تبدیل شده
+        birth_date: data.birth_date,
+        national_code: data.national_code,
+        mobile: data.mobile,
       };
 
-      // ✅ لاگ برای دیباگ
-      console.log("📤 ارسال به سرور:", JSON.stringify(payload, null, 2));
+      await submitStep1(payload);
 
-      const response = await submitStep1(payload);
-
-      console.log("✅ پاسخ سرور:", response.data);
-
-      toast.success("✅ اطلاعات با موفقیت ثبت شد");
-
-      isSubmitting.current = false;
-      onSuccess(data);
-    } catch (err) {
-      // ✅ نمایش کامل خطا
-      console.log("❌ خطای کامل:", err);
-      console.log("❌ پاسخ خطا:", err.response);
-
-      let errorMsg = "خطا در ثبت اطلاعات";
-
-      // بررسی انواع خطاهای احتمالی
-      if (err.response?.data?.detail) {
-        errorMsg = err.response.data.detail;
-      } else if (err.response?.data?.message) {
-        errorMsg = err.response.data.message;
-      } else if (err.response?.data?.errors) {
-        // نمایش خطاهای فیلدها
-        const fieldErrors = Object.entries(err.response.data.errors)
-          .map(([field, msgs]) => {
-            const fieldName =
-              {
-                first_name: "نام",
-                last_name: "نام خانوادگی",
-                job: "شغل",
-                birth_date: "تاریخ تولد",
-                national_code: "کد ملی",
-                mobile: "شماره موبایل",
-              }[field] || field;
-            return `${fieldName}: ${msgs.join(", ")}`;
-          })
-          .join(" | ");
-        errorMsg = fieldErrors;
-      } else if (typeof err.response?.data === "string") {
-        errorMsg = err.response.data;
-      }
-
-      toast.error(errorMsg, {
+      toast.success("✅ اطلاعات با موفقیت ثبت شد", {
         position: "top-center",
-        autoClose: 5000,
+        autoClose: 2000,
         style: {
-          background: "#2a0a0a",
+          background: "linear-gradient(135deg, #034120, #0a5a2e)",
           color: "#ffffff",
           borderRadius: "16px",
           padding: "16px 24px",
           fontFamily: "w_Lotus, sans-serif",
         },
+        progressStyle: {
+          background: "linear-gradient(90deg, #A4874D, #C9A84C)",
+          height: "3px",
+        },
       });
 
+      isSubmitting.current = false;
+      onSuccess(data);
+    } catch (err) {
+      // ✅ نمایش خطا با errorHandler
+      showError(err);
       isSubmitting.current = false;
     }
   };

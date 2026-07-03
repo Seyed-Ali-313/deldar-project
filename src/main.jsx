@@ -1,3 +1,4 @@
+// src/main.jsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
@@ -13,5 +14,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <RouterProvider router={router} />
     </AuthProvider>
     <ToastContainer position="top-center" rtl />
-  </React.StrictMode>,
+  </React.StrictMode>
 );

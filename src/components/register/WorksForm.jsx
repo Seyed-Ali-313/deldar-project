@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
+import { showError } from "../../utils/errorHandler";
 import {
   uploadWork,
   deleteWork,
@@ -174,7 +175,7 @@ export default function WorksForm({
       }, 1500);
     } catch (err) {
       const msg = err.response?.data?.detail || "خطا در ارسال آثار";
-      toast.error(msg);
+      showError(err);
     } finally {
       setUploading(false);
     }

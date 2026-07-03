@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { verifyOtp } from "../../services/onboardingService"; // ✅ فعال شد
 import { toast } from "react-toastify";
+import { showError } from "../../utils/errorHandler";
 
 const RESEND_SECONDS = 124;
 
@@ -105,7 +106,7 @@ export default function VerifyOtp() {
       }, 1500);
     } catch (err) {
       const msg = err.response?.data?.detail || "کد وارد شده صحیح نیست";
-      toast.error(msg);
+      showError(err);
       triggerShake();
     } finally {
       setLoading(false);

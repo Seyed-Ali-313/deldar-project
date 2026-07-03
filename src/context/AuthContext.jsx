@@ -27,7 +27,7 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    // ✅ API واقعی - دریافت پروفایل کاربر
+    // ✅ API واقعی
     getProfile()
       .then((res) => {
         setUser(res.data);

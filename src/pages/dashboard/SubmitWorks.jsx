@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import { addWork } from "../../services/dashboardService";
+import { showError } from "../../utils/errorHandler";
 
 const MAX_WORKS = 50;
 const MAX_DESCRIPTION_LENGTH = 200;
@@ -153,7 +154,7 @@ export default function SubmitWorks() {
       setUploadedWorks([]);
     } catch (err) {
       const msg = err.response?.data?.detail || "خطا در ارسال آثار";
-      toast.error(msg);
+      showError(err);
     } finally {
       setUploading(false);
     }

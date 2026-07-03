@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import FormInput from "../../components/common/FormInput";
+import SkeletonForm from "../../components/common/SkeletonForm";
 import {
   getProfile,
   updateProfile,
@@ -98,20 +99,7 @@ export default function PersonalInfo() {
   };
 
   if (loading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "200px",
-          color: "rgba(255,255,255,0.2)",
-          fontFamily: "w_Lotus, sans-serif",
-        }}
-      >
-        در حال بارگذاری...
-      </div>
-    );
+    return <SkeletonForm fields={9} />;
   }
 
   return (

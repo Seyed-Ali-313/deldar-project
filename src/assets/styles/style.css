@@ -3,6 +3,7 @@
   src: url("../fonts/w_Lotus.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+  font-display: swap; /* ← اضافه کن */
 }
 
 @font-face {
@@ -10,6 +11,7 @@
   src: url("../fonts/w_Nian.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+  font-display: swap; /* ← اضافه کن */
 }
 
 :root {

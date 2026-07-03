@@ -3,8 +3,9 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { useRef } from "react";
 import FormInput from "../common/FormInput";
-import { submitStep2 } from "../../services/onboardingService"; // ✅ فعال شد
+import { submitStep2 } from "../../services/onboardingService";
 import { toast } from "react-toastify";
+import { showError } from "../../utils/errorHandler";
 
 export default function AdditionalInfoForm({ onSuccess }) {
   const { register, handleSubmit } = useForm();
@@ -15,7 +16,6 @@ export default function AdditionalInfoForm({ onSuccess }) {
     isSubmitting.current = true;
 
     try {
-      // ✅ ارسال به API واقعی
       await submitStep2({
         province: data.province,
         city: data.city,
@@ -25,41 +25,27 @@ export default function AdditionalInfoForm({ onSuccess }) {
         telegram_id: data.telegram_id || "",
       });
 
-      toast.success(
-        <div style={{ textAlign: "right", fontFamily: "w_Lotus, sans-serif" }}>
-          <div
-            style={{ fontSize: "18px", fontWeight: 700, marginBottom: "4px" }}
-          >
-            ✅ اطلاعات تکمیلی ثبت شد
-          </div>
-          <div style={{ fontSize: "13px", opacity: 0.8 }}>
-            در حال انتقال به مرحله ارسال آثار...
-          </div>
-        </div>,
-        {
-          position: "top-center",
-          autoClose: 2000,
-          style: {
-            background: "linear-gradient(135deg, #034120, #0a5a2e)",
-            color: "#ffffff",
-            borderRadius: "16px",
-            padding: "16px 24px",
-            boxShadow: "0 12px 40px rgba(0,0,0,0.3)",
-            border: "1px solid rgba(164,135,77,0.3)",
-            fontFamily: "w_Lotus, sans-serif",
-          },
-          progressStyle: {
-            background: "linear-gradient(90deg, #A4874D, #C9A84C)",
-            height: "3px",
-          },
+      toast.success("✅ اطلاعات تکمیلی با موفقیت ثبت شد", {
+        position: "top-center",
+        autoClose: 2000,
+        style: {
+          background: "linear-gradient(135deg, #034120, #0a5a2e)",
+          color: "#ffffff",
+          borderRadius: "16px",
+          padding: "16px 24px",
+          fontFamily: "w_Lotus, sans-serif",
         },
-      );
+        progressStyle: {
+          background: "linear-gradient(90deg, #A4874D, #C9A84C)",
+          height: "3px",
+        },
+      });
 
       isSubmitting.current = false;
       onSuccess();
     } catch (err) {
-      const msg = err.response?.data?.detail || "خطا در ثبت اطلاعات";
-      toast.error(msg);
+      // ✅ نمایش خطا با errorHandler
+      showError(err);
       isSubmitting.current = false;
     }
   };

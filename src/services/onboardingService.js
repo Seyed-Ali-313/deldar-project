@@ -1,10 +1,10 @@
 // src/services/onboardingService.js
 import api from "./api";
 
-// ارسال مرحله اول (اطلاعات شخصی)
+// مرحله اول - اطلاعات شخصی
 export const submitStep1 = (data) => api.post("/onboarding/step-1/", data);
 
-// ارسال مرحله دوم (اطلاعات تکمیلی)
+// مرحله دوم - اطلاعات تکمیلی
 export const submitStep2 = (data) => api.post("/onboarding/step-2/", data);
 
 // آپلود عکس در مرحله ثبت‌نام
@@ -13,16 +13,16 @@ export const uploadWork = (formData) =>
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-// حذف عکس در مرحله ثبت‌نام
+// حذف عکس از پیش‌نویس
 export const deleteWork = (workId) =>
   api.delete(`/onboarding/works/${workId}/`);
 
-// ارسال نهایی همه آثار
+// ارسال نهایی و درخواست OTP
 export const submitAllWorks = () => api.post("/onboarding/submit/");
 
 // دریافت وضعیت پیش‌نویس
 export const getDraft = () => api.get("/onboarding/draft/");
 
-// تایید کد OTP
+// تایید OTP و ساخت اکانت
 export const verifyOtp = (otp_code) =>
   api.post("/onboarding/verify/", { otp_code });

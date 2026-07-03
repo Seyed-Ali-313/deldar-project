@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import logoBg from "../../assets/images/logo-bg.png";
 import logoGold from "../../assets/images/logo-gold.png";
 import { requestLoginOtp, verifyLoginOtp } from "../../services/authService";
+import { showError } from "../../utils/errorHandler";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,10 +18,8 @@ export default function Login() {
 
   const handleIdentifierChange = (e) => {
     const value = e.target.value;
-    // ✅ فقط عدد مجاز
     const cleaned = value.replace(/[^0-9۰-۹]/g, "");
 
-    // ✅ محدودیت ۱۱ رقم (برای موبایل) یا ۱۰ رقم (برای کدملی)
     if (cleaned.length > 11) {
       setError("❌ شماره موبایل یا کدملی معتبر نیست");
       setTimeout(() => setError(""), 2500);
@@ -39,7 +38,6 @@ export default function Login() {
   const handleRequestOtp = async (e) => {
     e.preventDefault();
 
-    // ✅ اعتبارسنجی: شماره موبایل باید ۱۱ رقم یا کدملی ۱۰ رقم باشد
     const cleanIdentifier = identifier.replace(/[^0-9]/g, "");
     if (
       !cleanIdentifier ||
@@ -52,11 +50,20 @@ export default function Login() {
     setLoading(true);
     try {
       await requestLoginOtp(identifier);
-      toast.success("✅ کد تایید به شماره شما ارسال شد");
+      toast.success("✅ کد تایید به شماره شما ارسال شد", {
+        position: "top-center",
+        autoClose: 3000,
+        style: {
+          background: "linear-gradient(135deg, #034120, #0a5a2e)",
+          color: "#ffffff",
+          borderRadius: "16px",
+          padding: "16px 24px",
+          fontFamily: "w_Lotus, sans-serif",
+        },
+      });
       setStep("otp");
     } catch (err) {
-      const msg = err.response?.data?.detail || "❌ خطا در ارسال کد";
-      toast.error(msg);
+      showError(err);
     } finally {
       setLoading(false);
     }
@@ -82,8 +89,7 @@ export default function Login() {
       toast.success("✅ ورود با موفقیت انجام شد");
       navigate("/dashboard");
     } catch (err) {
-      const msg = err.response?.data?.detail || "❌ کد وارد شده صحیح نیست";
-      toast.error(msg);
+      showError(err);
     } finally {
       setLoading(false);
     }
@@ -631,6 +637,7 @@ export default function Login() {
           transition: border-color 0.25s ease, box-shadow 0.25s ease;
           box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
         }
+        
 
         .lg-otp-box:focus {
           border-color: #A4874D;
