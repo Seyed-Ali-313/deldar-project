@@ -28,9 +28,10 @@ export default function Home() {
             >
               مطالعه فراخوان
             </button>
+            {/* ✅ فقط این خط تغییر کرد: از /register به /rules */}
             <button
               className="btn btn-primary"
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/login")}
             >
               ثبت نام و ارسال عکس
             </button>

@@ -1,5 +1,7 @@
 // src/pages/dashboard/UploadSuccess.jsx
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import successCard from "../../assets/images/success-card.png";
 
 export default function UploadSuccess() {
   const navigate = useNavigate();
@@ -8,6 +10,7 @@ export default function UploadSuccess() {
     <div
       style={{
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         minHeight: "100vh",
@@ -16,86 +19,153 @@ export default function UploadSuccess() {
         padding: "20px",
       }}
     >
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
         style={{
-          maxWidth: "440px",
+          maxWidth: "687px",
           width: "100%",
-          textAlign: "center",
-          padding: "40px 32px",
-          background: "rgba(2, 33, 16, 0.8)",
-          borderRadius: "24px",
-          border: "1px solid rgba(164, 135, 77, 0.08)",
-          marginTop: "-150px", // ← اضافه شد: یکم به بالا میبره
+          position: "relative",
+          marginTop: "-190px",
         }}
       >
-        <h1
-          style={{
-            fontSize: "22px",
-            fontWeight: 700,
-            color: "#ffffff",
-            fontFamily: "w_Nian, sans-serif",
-            marginBottom: "20px",
-            lineHeight: "1.6",
-          }}
-        >
-          عکس‌های شما با موفقیت بارگذاری شد.
-        </h1>
-
-        <p
-          style={{
-            fontSize: "15px",
-            color: "rgba(255,255,255,0.65)",
-            fontFamily: "w_Lotus, sans-serif",
-            lineHeight: "2",
-            marginBottom: "24px",
-            direction: "rtl",
-          }}
-        >
-          تا پایان مرداد ۱۴۰۵، با ورود مجدد به سایت
-          <br />
-          می‌توانید عکس‌های خود را ویرایش کنید.
-        </p>
-
-        <p
-          style={{
-            fontSize: "15px",
-            color: "rgba(201, 168, 76, 0.9)",
-            fontFamily: "w_Lotus, sans-serif",
-            fontWeight: 500,
-            marginBottom: "28px",
-          }}
-        >
-          از همراهی شما سپاسگزاریم.
-        </p>
-
-        <button
-          onClick={() => navigate("/")}
+        {/* تصویر PNG */}
+        <img
+          src={successCard}
+          alt=""
           style={{
             width: "100%",
-            maxWidth: "200px",
-            minHeight: "44px",
-            background: "rgba(165, 135, 77, 1)",
-            color: "#ffffff",
-            borderRadius: "24px",
-            border: "none",
-            fontSize: "15px",
-            fontWeight: 600,
-            fontFamily: "w_Lotus, sans-serif",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-            margin: "0 auto",
+            height: "auto",
             display: "block",
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(178, 148, 90, 1)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(165, 135, 77, 1)";
+        />
+
+        {/* محتوای داخل تصویر - با پدینگ بیشتر */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "60px 50px 50px", // ← پدینگ بیشتر
+            textAlign: "center",
           }}
         >
-          بازگشت به صفحه اصلی
-        </button>
-      </div>
+          {/* عنوان - کوچک‌تر */}
+          <motion.h1
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            style={{
+              fontSize: "22px",
+              fontWeight: 700,
+              color: "#ffffff",
+              fontFamily: "w_Nian, sans-serif",
+              marginBottom: "1px",
+              marginTop: "-18px",
+              lineHeight: "1.6",
+              letterSpacing: "0.5px",
+            }}
+          >
+            عکس‌های شما با موفقیت بارگذاری شد.
+          </motion.h1>
+
+          {/* خط جداکننده */}
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: "50px" }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            style={{
+              height: "2px",
+              background: "linear-gradient(90deg, #A4874D, #C9A84C)",
+              margin: "0 auto 14px",
+              borderRadius: "2px",
+            }}
+          />
+
+          {/* متن اصلی - کوچک‌تر */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            style={{
+              fontSize: "17px",
+              color: "rgba(255,255,255,0.75)",
+              fontFamily: "w_Lotus, sans-serif",
+              lineHeight: "2",
+              marginBottom: "12px",
+              direction: "rtl",
+            }}
+          >
+            تا پایان مرداد ۱۴۰۵، با ورود مجدد به سایت
+            <br />
+            می‌توانید عکس‌های خود را ویرایش کنید.
+          </motion.p>
+
+          {/* پیام تشکر */}
+          <motion.p
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.4 }}
+            style={{
+              fontSize: "15px",
+              color: "#C9A84C",
+              fontFamily: "w_Lotus, sans-serif",
+              fontWeight: 600,
+              marginBottom: 0,
+              // background: "rgba(201, 168, 76, 0.08)",
+              padding: "4px 20px",
+              borderRadius: "16px",
+              display: "inline-block",
+            }}
+          >
+            از همراهی شما سپاسگزاریم
+          </motion.p>
+        </div>
+      </motion.div>
+
+      {/* ✅ دکمه بیرون از عکس - پایین */}
+      <motion.button
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.5 }}
+        onClick={() => navigate("/dashboard")}
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+        style={{
+          width: "100%",
+          maxWidth: "300px",
+          minHeight: "50px",
+          background: "linear-gradient(135deg, #A4874D, #C9A84C)",
+          color: "#ffffff",
+          borderRadius: "24px",
+          border: "none",
+          fontSize: "17px",
+          fontWeight: 600,
+          fontFamily: "w_Lotus, sans-serif",
+          cursor: "pointer",
+          boxShadow: "0 4px 24px rgba(164,135,77,0.35)",
+          marginTop: "24px",
+          transition: "all 0.3s ease",
+          letterSpacing: "0.5px",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = "0 8px 40px rgba(164,135,77,0.5)";
+          e.currentTarget.style.transform = "translateY(-3px)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = "0 4px 24px rgba(164,135,77,0.35)";
+          e.currentTarget.style.transform = "translateY(0)";
+        }}
+      >
+        ورود به صفحه کاربری
+      </motion.button>
     </div>
   );
 }

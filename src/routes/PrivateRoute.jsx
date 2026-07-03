@@ -1,16 +1,15 @@
+// src/routes/PrivateRoute.jsx
 import { Navigate, Outlet } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
 
 export default function PrivateRoute() {
-  const { isLoggedIn, isLoading } = useAuth();
+  // ✅ چک کن توکن وجود داره یا نه (حتی توکن تستی)
+  const token = localStorage.getItem("access_token");
 
-  if (isLoading) {
-    return (
-      <div className="page" style={{ textAlign: "center", paddingTop: 100 }}>
-        در حال بارگذاری...
-      </div>
-    );
+  // اگه توکن وجود نداشته باشه، به لاگین بره
+  if (!token) {
+    return <Navigate to="/login" replace />;
   }
 
-  return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />;
+  // اگه توکن وجود داشته باشه، صفحه رو نشون بده
+  return <Outlet />;
 }

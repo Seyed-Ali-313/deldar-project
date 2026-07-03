@@ -26,10 +26,7 @@ const router = createBrowserRouter([
       { path: "register", element: <Register /> },
       { path: "login", element: <Login /> },
       { path: "verify-otp", element: <VerifyOtp /> },
-
-      // ✅ صفحه موفقیت رو از محافظت خارج کردیم (عمومی شد)
       { path: "upload-success", element: <UploadSuccess /> },
-
       {
         path: "dashboard",
         element: <PrivateRoute />,

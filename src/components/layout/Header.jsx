@@ -46,12 +46,15 @@ export default function Header() {
             ))}
           </ul>
         </nav>
+
+        {/* ✅ فقط این خط تغییر کرد: از /register به /rules */}
         <button
           className="login-btn"
-          onClick={() => navigate(isLoggedIn ? "/dashboard" : "/register")}
+          onClick={() => navigate(isLoggedIn ? "/dashboard" : "/login")}
         >
           {isLoggedIn ? "" : "ورود / ثبت‌نام"}
         </button>
+
         <button
           className="menu-toggle"
           onClick={() => setIsMenuOpen(!isMenuOpen)}

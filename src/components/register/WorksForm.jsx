@@ -92,7 +92,7 @@ export default function WorksForm({
     }, 150);
 
     setCurrentWork({ file: null, description: "", preview: null });
-    toast.success("✅ عکس با موفقیت اضافه شد");
+    toast.success("عکس با موفقیت اضافه شد");
   };
 
   const removeWork = (index) => {
@@ -123,7 +123,7 @@ export default function WorksForm({
               color: "#C9A84C",
             }}
           >
-            ✅ {uploadedWorks.length} اثر با موفقیت ارسال شد
+            {uploadedWorks.length} اثر با موفقیت ارسال شد
           </div>
           <div style={{ fontSize: "14px", opacity: 0.9 }}>
             در حال انتقال به صفحه تایید...
@@ -163,15 +163,15 @@ export default function WorksForm({
       style={{
         width: "100%",
         maxWidth: "780px",
-        margin: "0 auto",
+        margin: " -5px auto",
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        maxHeight: "430px", // ← از 480 به 430 کاهش یافت
-        paddingTop: "4px", // ← از 8 به 4 کاهش
+        maxHeight: "430px",
+        paddingTop: "4px",
       }}
     >
-      {/* 📌 توجه - کوچک‌تر */}
+      {/* توجه */}
       <div
         style={{
           textAlign: "right",
@@ -202,7 +202,7 @@ export default function WorksForm({
               fontSize: "13px",
             }}
           >
-            📌 توجه:
+            توجه:
           </span>
           <br />
           <span style={{ color: "rgba(255,255,255,0.7)" }}>
@@ -247,7 +247,7 @@ export default function WorksForm({
             fontWeight: 500,
           }}
         >
-          📸 تعداد آثار:
+          تعداد آثار:
         </span>
         <span
           style={{
@@ -276,7 +276,7 @@ export default function WorksForm({
         </span>
       </div>
 
-      {/* ✅ ردیف آپلود فعلی */}
+      {/* ردیف آپلود فعلی */}
       <div
         style={{
           display: "grid",
@@ -297,7 +297,7 @@ export default function WorksForm({
           <input
             type="text"
             className="register-input"
-            placeholder="✏️ شرح عکس جدید..."
+            placeholder="شرح عکس جدید..."
             value={currentWork.description}
             onChange={(e) =>
               setCurrentWork({ ...currentWork, description: e.target.value })
@@ -379,7 +379,7 @@ export default function WorksForm({
                 </>
               ) : (
                 <>
-                  <span style={{ fontSize: "14px" }}>🖼️</span>
+                  <span style={{ fontSize: "14px" }}>🖼</span>
                   <span style={{ fontSize: "11px", color: "rgba(0,0,0,0.5)" }}>
                     انتخاب عکس
                   </span>
@@ -429,11 +429,11 @@ export default function WorksForm({
         </motion.button>
       </div>
 
-      {/* 📋 لیست عکس‌ها - ارتفاع کمتر */}
+      {/* لیست عکس‌ها */}
       <div
         ref={containerRef}
         style={{
-          height: "140px", // ← از 180 به 140 کاهش
+          height: "140px",
           overflowY: "auto",
           paddingRight: "2px",
           marginBottom: "8px",
@@ -581,7 +581,7 @@ export default function WorksForm({
               gap: "2px",
             }}
           >
-            <span style={{ fontSize: "28px" }}>🖼️</span>
+            <span style={{ fontSize: "28px" }}>🖼</span>
             <span>هیچ عکسی انتخاب نشده است</span>
           </div>
         )}

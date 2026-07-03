@@ -1,7 +1,7 @@
 // src/pages/auth/VerifyOtp.jsx
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 // import { verifyOtp } from "../../services/onboardingService";
 // 🔴 API کامنت شد - وقتی بک‌اند آماده شد، این خط رو از کامنت خارج کن
 import { toast } from "react-toastify";
@@ -16,6 +16,8 @@ export default function VerifyOtp() {
 
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(RESEND_SECONDS);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const [shake, setShake] = useState(false);
   const inputsRef = useRef([]);
 
   useEffect(() => {
@@ -41,13 +43,16 @@ export default function VerifyOtp() {
     }
   };
 
-  // ============================================================
-  // 📌 تابع تأیید کد
-  // ============================================================
+  const triggerShake = () => {
+    setShake(true);
+    setTimeout(() => setShake(false), 500);
+  };
+
   const handleSubmit = async () => {
     const code = otp.join("");
     if (code.length !== 4) {
       toast.error("❌ کد ۴ رقمی را کامل وارد کنید");
+      triggerShake();
       return;
     }
 
@@ -68,12 +73,10 @@ export default function VerifyOtp() {
       }, 1500);
     } catch (err) {
       toast.error("❌ کد وارد شده صحیح نیست");
+      triggerShake();
     }
     */
 
-    // ============================================================
-    // ✅ شبیه‌سازی موفقیت (فعلاً برای تست - هر کدی قبول میشه)
-    // ============================================================
     console.log("📝 کد وارد شده:", code);
 
     toast.success(
@@ -111,11 +114,9 @@ export default function VerifyOtp() {
       },
     );
 
-    // ذخیره توکن تستی (برای دسترسی به داشبورد)
     localStorage.setItem("access_token", "test_token_123");
     localStorage.setItem("refresh_token", "test_refresh_456");
 
-    // ✅ بعد از تأیید، به صفحه موفقیت میره
     setTimeout(() => {
       navigate("/upload-success");
     }, 1500);
@@ -124,6 +125,8 @@ export default function VerifyOtp() {
   const handleResend = () => {
     if (timeLeft > 0) return;
     setTimeLeft(RESEND_SECONDS);
+    setOtp(["", "", "", ""]);
+    inputsRef.current[0]?.focus();
     toast.info("📨 کد جدید برای شما ارسال شد");
   };
 
@@ -144,148 +147,299 @@ export default function VerifyOtp() {
   };
 
   const formattedMobile = toPersianDigits(mobile);
+  const progressPercent = (timeLeft / RESEND_SECONDS) * 100;
 
   return (
     <div
       style={{
+        position: "relative",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         minHeight: "100vh",
         width: "100%",
-        background: "rgba(3, 65, 32, 1)",
+        background:
+          "radial-gradient(circle at 30% 20%, rgba(201,168,76,0.08) 0%, transparent 45%), radial-gradient(circle at 80% 80%, rgba(164,135,77,0.06) 0%, transparent 50%), rgba(3, 65, 32, 1)",
         padding: "20px",
         marginTop: "-60px",
+        overflow: "hidden",
       }}
     >
+      {/* Decorative floating blobs */}
+      <motion.div
+        animate={{ y: [0, -20, 0], opacity: [0.4, 0.6, 0.4] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          position: "absolute",
+          top: "8%",
+          left: "10%",
+          width: "180px",
+          height: "180px",
+          borderRadius: "50%",
+          background: "rgba(201,168,76,0.12)",
+          filter: "blur(60px)",
+          pointerEvents: "none",
+        }}
+      />
+      <motion.div
+        animate={{ y: [0, 25, 0], opacity: [0.3, 0.5, 0.3] }}
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1,
+        }}
+        style={{
+          position: "absolute",
+          bottom: "10%",
+          right: "8%",
+          width: "220px",
+          height: "220px",
+          borderRadius: "50%",
+          background: "rgba(10,90,46,0.4)",
+          filter: "blur(70px)",
+          pointerEvents: "none",
+        }}
+      />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         style={{
-          maxWidth: "440px",
+          position: "relative",
+          maxWidth: "380px",
           width: "100%",
           textAlign: "center",
+          background: "rgba(255,255,255,0.04)",
+          backdropFilter: "blur(24px)",
+          border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: "20px",
+          padding: "28px 22px",
+          boxShadow:
+            "0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
+          zIndex: 1,
         }}
       >
+        {/* Icon */}
+        <motion.div
+          initial={{ scale: 0, rotate: -20 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }}
+          style={{
+            width: "48px",
+            height: "48px",
+            borderRadius: "50%",
+            background:
+              "linear-gradient(135deg, rgba(201,168,76,0.25), rgba(201,168,76,0.08))",
+            border: "1.5px solid rgba(201,168,76,0.35)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 12px",
+            boxShadow: "0 4px 16px rgba(201,168,76,0.15)",
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 15a3 3 0 100-6 3 3 0 000 6z"
+              stroke="#C9A84C"
+              strokeWidth="1.8"
+            />
+            <path
+              d="M5 10V8a7 7 0 1114 0v2M4 10h16a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1v-9a1 1 0 011-1z"
+              stroke="#C9A84C"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
+          </svg>
+        </motion.div>
+
+        <h2
+          style={{
+            fontSize: "20px",
+            fontWeight: 800,
+            color: "#ffffff",
+            fontFamily: "w_Lotus, sans-serif",
+            marginBottom: "6px",
+            letterSpacing: "0.4px",
+          }}
+        >
+          تأیید شماره موبایل
+        </h2>
+
         <p
           style={{
             fontSize: "15px",
-            color: "rgba(255,255,255,0.8)",
+            color: "rgba(255,255,255,0.85)",
             fontFamily: "w_Lotus, sans-serif",
             lineHeight: "2",
-            marginBottom: "32px",
+            marginBottom: "20px",
             direction: "rtl",
+            fontWeight: 600,
           }}
         >
-          کد یکبار مصرف ۴ رقمی که به شماره موبایل شما
+          کد ۴ رقمی ارسال‌شده به شماره
           <br />
           <span
             style={{
               color: "#C9A84C",
-              fontWeight: 600,
-              fontSize: "18px",
+              fontWeight: 800,
+              fontSize: "17px",
               direction: "ltr",
               display: "inline-block",
-              marginTop: "2px",
+              marginTop: "4px",
+              letterSpacing: "1.2px",
             }}
           >
-            ({formattedMobile})
-          </span>{" "}
-          ارسال شده را وارد کنید.
+            {formattedMobile}
+          </span>
+          <br />
+          را وارد کنید
         </p>
 
-        <div
+        <motion.div
+          animate={shake ? { x: [0, -10, 10, -8, 8, -4, 4, 0] } : {}}
+          transition={{ duration: 0.5 }}
           style={{
             display: "flex",
             justifyContent: "center",
-            gap: "16px",
-            marginBottom: "32px",
+            gap: "10px",
+            marginBottom: "16px",
             direction: "ltr",
           }}
         >
           {otp.map((digit, i) => (
-            <input
+            <motion.input
               key={i}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + i * 0.06 }}
               ref={(el) => (inputsRef.current[i] = el)}
               type="text"
+              inputMode="numeric"
               maxLength={1}
               value={digit}
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
+              onFocus={() => setActiveIndex(i)}
+              onBlur={() => setActiveIndex(null)}
               style={{
-                width: "60px",
-                height: "68px",
+                width: "50px",
+                height: "56px",
                 textAlign: "center",
-                fontSize: "30px",
-                fontWeight: 600,
+                fontSize: "28px",
+                fontWeight: 800,
                 fontFamily: "w_Lotus, sans-serif",
-                background: "rgba(255,255,255,0.06)",
+                background:
+                  activeIndex === i
+                    ? "rgba(201,168,76,0.12)"
+                    : digit
+                      ? "rgba(255,255,255,0.1)"
+                      : "rgba(255,255,255,0.05)",
                 color: "#ffffff",
-                border: "2px solid rgba(255,255,255,0.1)",
-                borderRadius: "14px",
+                border:
+                  activeIndex === i
+                    ? "2px solid #C9A84C"
+                    : digit
+                      ? "2px solid rgba(201,168,76,0.4)"
+                      : "2px solid rgba(255,255,255,0.12)",
+                borderRadius: "12px",
                 outline: "none",
-                transition: "all 0.2s ease",
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = "rgba(164,135,77,0.5)";
-                e.target.style.background = "rgba(255,255,255,0.1)";
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = "rgba(255,255,255,0.1)";
-                e.target.style.background = "rgba(255,255,255,0.06)";
+                boxShadow:
+                  activeIndex === i
+                    ? "0 0 0 4px rgba(201,168,76,0.18), 0 8px 20px rgba(201,168,76,0.25)"
+                    : "none",
+                transition: "all 0.25s ease",
               }}
             />
           ))}
+        </motion.div>
+
+        {/* Timer + progress bar */}
+        <div style={{ marginBottom: "14px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "7px",
+              marginBottom: "8px",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "14px",
+                color: "rgba(255,255,255,0.65)",
+                fontFamily: "w_Lotus, sans-serif",
+                fontWeight: 600,
+              }}
+            >
+              زمان باقی‌مانده:
+            </span>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={timeLeft}
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 4 }}
+                transition={{ duration: 0.15 }}
+                style={{
+                  fontSize: "18px",
+                  fontWeight: 800,
+                  color: timeLeft < 30 ? "#e05555" : "#C9A84C",
+                  fontFamily: "w_Lotus, sans-serif",
+                  minWidth: "36px",
+                  textAlign: "center",
+                  direction: "ltr",
+                }}
+              >
+                {timeLeft}
+              </motion.span>
+            </AnimatePresence>
+            <span
+              style={{
+                fontSize: "13px",
+                color: "rgba(255,255,255,0.5)",
+                fontFamily: "w_Lotus, sans-serif",
+                fontWeight: 600,
+              }}
+            >
+              ثانیه
+            </span>
+          </div>
+
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "200px",
+              height: "3px",
+              margin: "0 auto",
+              borderRadius: "999px",
+              background: "rgba(255,255,255,0.1)",
+              overflow: "hidden",
+            }}
+          >
+            <motion.div
+              animate={{ width: `${progressPercent}%` }}
+              transition={{ duration: 0.9, ease: "linear" }}
+              style={{
+                height: "100%",
+                borderRadius: "999px",
+                background:
+                  timeLeft < 30
+                    ? "linear-gradient(90deg, #e05555, #ff8080)"
+                    : "linear-gradient(90deg, #A4874D, #C9A84C)",
+              }}
+            />
+          </div>
         </div>
 
         <div
           style={{
             display: "flex",
             justifyContent: "center",
-            alignItems: "center",
-            gap: "6px",
-            marginBottom: "14px",
-          }}
-        >
-          <span
-            style={{
-              fontSize: "14px",
-              color: "rgba(255,255,255,0.5)",
-              fontFamily: "w_Lotus, sans-serif",
-            }}
-          >
-            زمان باقی مانده:
-          </span>
-          <span
-            style={{
-              fontSize: "18px",
-              fontWeight: 700,
-              color: timeLeft < 30 ? "#B00101" : "#C9A84C",
-              fontFamily: "w_Lotus, sans-serif",
-              minWidth: "36px",
-              textAlign: "center",
-              direction: "ltr",
-            }}
-          >
-            {timeLeft}
-          </span>
-          <span
-            style={{
-              fontSize: "14px",
-              color: "rgba(255,255,255,0.3)",
-              fontFamily: "w_Lotus, sans-serif",
-            }}
-          >
-            ثانیه
-          </span>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: "32px",
+            marginBottom: "18px",
           }}
         >
           <button
@@ -294,18 +448,19 @@ export default function VerifyOtp() {
             style={{
               background: "none",
               border: "none",
-              color: timeLeft > 0 ? "rgba(255,255,255,0.2)" : "#C9A84C",
+              color: timeLeft > 0 ? "rgba(255,255,255,0.25)" : "#C9A84C",
               fontSize: "14px",
-              fontWeight: 500,
+              fontWeight: 700,
               fontFamily: "w_Lotus, sans-serif",
               cursor: timeLeft > 0 ? "not-allowed" : "pointer",
               transition: "all 0.2s ease",
-              padding: "4px 8px",
-              borderRadius: "4px",
+              padding: "6px 10px",
+              borderRadius: "6px",
               textDecoration: "underline",
-              textUnderlineOffset: "2px",
+              textUnderlineOffset: "3px",
               textDecorationColor:
-                timeLeft > 0 ? "transparent" : "rgba(164,135,77,0.2)",
+                timeLeft > 0 ? "transparent" : "rgba(201,168,76,0.4)",
+              letterSpacing: "0.3px",
             }}
           >
             ارسال مجدد / تغییر شماره
@@ -315,33 +470,29 @@ export default function VerifyOtp() {
         <motion.button
           onClick={handleSubmit}
           whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileTap={{ scale: 0.97 }}
           style={{
+            position: "relative",
             width: "100%",
-            maxWidth: "380px",
-            minHeight: "48px",
-            background: "rgba(165, 135, 77, 1)",
+            maxWidth: "320px",
+            minHeight: "44px",
+            background:
+              "linear-gradient(135deg, rgba(165,135,77,1), rgba(201,168,76,1))",
             color: "#ffffff",
-            borderRadius: "24px",
+            borderRadius: "22px",
             border: "none",
             fontSize: "16px",
-            fontWeight: 600,
+            fontWeight: 800,
             fontFamily: "w_Lotus, sans-serif",
             cursor: "pointer",
-            boxShadow: "0 4px 20px rgba(165,135,77,0.3)",
+            boxShadow:
+              "0 8px 28px rgba(165,135,77,0.4), inset 0 1px 0 rgba(255,255,255,0.2)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             margin: "0 auto",
-            transition: "all 0.2s ease",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(178, 148, 90, 1)";
-            e.currentTarget.style.boxShadow = "0 6px 28px rgba(165,135,77,0.4)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(165, 135, 77, 1)";
-            e.currentTarget.style.boxShadow = "0 4px 20px rgba(165,135,77,0.3)";
+            overflow: "hidden",
+            letterSpacing: "0.4px",
           }}
         >
           تأیید و ارسال مجموع آثار
