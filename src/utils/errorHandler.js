@@ -1,5 +1,5 @@
 // src/utils/errorHandler.js
-import { toast } from "react-toastify";
+import { error as toastError } from "./toast";
 
 // ✅ پیام‌های خطای فارسی
 const ERROR_MESSAGES = {
@@ -32,7 +32,6 @@ const ERROR_MESSAGES = {
 export const getFriendlyErrorMessage = (error) => {
   // خطا از interceptor
   if (error?.message && typeof error.message === "string") {
-    // چک کردن در ERROR_MESSAGES
     for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
       if (error.message.includes(key) || error.message === key) {
         return value;
@@ -45,7 +44,6 @@ export const getFriendlyErrorMessage = (error) => {
   if (error?.response?.data) {
     const data = error.response.data;
 
-    // detail
     if (data.detail) {
       for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
         if (data.detail.includes(key) || data.detail === key) {
@@ -55,7 +53,6 @@ export const getFriendlyErrorMessage = (error) => {
       return data.detail;
     }
 
-    // error
     if (data.error) {
       for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
         if (data.error.includes(key) || data.error === key) {
@@ -65,7 +62,6 @@ export const getFriendlyErrorMessage = (error) => {
       return data.error;
     }
 
-    // errors (اعتبارسنجی فیلدها)
     if (data.errors) {
       const firstError = Object.values(data.errors)[0]?.[0];
       if (firstError) {
@@ -79,7 +75,6 @@ export const getFriendlyErrorMessage = (error) => {
     }
   }
 
-  // خطای شبکه
   if (error?.code) {
     for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
       if (error.code === key || error.code.includes(key)) {
@@ -88,39 +83,13 @@ export const getFriendlyErrorMessage = (error) => {
     }
   }
 
-  // خطای پیش‌فرض
   return "خطایی رخ داده است. لطفاً مجدداً تلاش کنید.";
 };
 
-// ✅ نمایش خطا با Toast
+// ✅ نمایش خطا با Toast (بدون ایموجی)
 export const showError = (error, fallbackMessage = "خطایی رخ داده است") => {
   const message = getFriendlyErrorMessage(error) || fallbackMessage;
-
-  toast.error(message, {
-    position: "top-center",
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    style: {
-      background: "#2a0a0a",
-      color: "#ffffff",
-      borderRadius: "16px",
-      padding: "16px 24px",
-      boxShadow: "0 12px 40px rgba(0,0,0,0.3)",
-      border: "1px solid rgba(176,1,1,0.3)",
-      fontFamily: "w_Lotus, sans-serif",
-      fontSize: "15px",
-      fontWeight: 500,
-      direction: "rtl",
-    },
-    progressStyle: {
-      background: "linear-gradient(90deg, #B00101, #ff4444)",
-      height: "3px",
-    },
-  });
-
+  toastError(message);
   return message;
 };
 

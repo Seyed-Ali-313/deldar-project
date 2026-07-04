@@ -1,11 +1,11 @@
 // src/pages/dashboard/SubmittedWorks.jsx
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-toastify";
 import { getWorks, deleteWork } from "../../services/dashboardService";
 import { showError } from "../../utils/errorHandler";
+import { success as toastSuccess } from "../../utils/toast";
 import ConfirmModal from "../../components/common/ConfirmModal";
-import SkeletonWorks from "../../components/common/SkeletonWorks"; // ✅ اضافه شد
+import SkeletonWorks from "../../components/common/SkeletonWorks";
 
 export default function SubmittedWorks() {
   const [works, setWorks] = useState([]);
@@ -13,7 +13,6 @@ export default function SubmittedWorks() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
 
-  // ✅ دریافت آثار از سرور
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) {
@@ -32,7 +31,6 @@ export default function SubmittedWorks() {
       });
   }, []);
 
-  // ✅ حذف اثر از سرور
   const handleDelete = (id) => {
     setDeleteTargetId(id);
     setShowDeleteModal(true);
@@ -42,7 +40,7 @@ export default function SubmittedWorks() {
     try {
       await deleteWork(deleteTargetId);
       setWorks((prev) => prev.filter((w) => w.id !== deleteTargetId));
-      toast.success("✅ اثر با موفقیت حذف شد");
+      toastSuccess("اثر با موفقیت حذف شد");
       setShowDeleteModal(false);
       setDeleteTargetId(null);
     } catch (err) {
@@ -51,7 +49,6 @@ export default function SubmittedWorks() {
     }
   };
 
-  // ✅ نمایش Skeleton در حال بارگذاری
   if (loading) {
     return <SkeletonWorks count={5} />;
   }
@@ -65,12 +62,14 @@ export default function SubmittedWorks() {
           alignItems: "center",
           justifyContent: "center",
           minHeight: "160px",
-          color: "rgba(255,255,255,0.12)",
+          color: "rgba(255,255,255,0.2)",
           fontFamily: "w_Lotus, sans-serif",
           gap: "4px",
         }}
       >
-        <span style={{ fontSize: "13px" }}>هیچ اثری ارسال نشده است</span>
+        <span style={{ fontSize: "13px", fontWeight: 500 }}>
+          هیچ اثری ارسال نشده است
+        </span>
       </div>
     );
   }
@@ -85,7 +84,6 @@ export default function SubmittedWorks() {
           marginTop: "-25px",
         }}
       >
-        {/* هدر */}
         <div
           style={{
             display: "flex",
@@ -146,7 +144,6 @@ export default function SubmittedWorks() {
           </div>
         </div>
 
-        {/* لیست */}
         <div
           style={{
             maxHeight: "280px",
@@ -184,7 +181,6 @@ export default function SubmittedWorks() {
                   boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
                 }}
               >
-                {/* تصویر */}
                 <div
                   style={{
                     width: "44px",
@@ -210,7 +206,6 @@ export default function SubmittedWorks() {
                   />
                 </div>
 
-                {/* توضیحات */}
                 <div
                   style={{
                     display: "flex",
@@ -243,7 +238,6 @@ export default function SubmittedWorks() {
                   </span>
                 </div>
 
-                {/* دکمه حذف */}
                 <button
                   onClick={() => handleDelete(work.id)}
                   style={{
@@ -327,7 +321,6 @@ export default function SubmittedWorks() {
         `}</style>
       </div>
 
-      {/* ✅ مودال تایید حذف */}
       <ConfirmModal
         isOpen={showDeleteModal}
         onClose={() => {

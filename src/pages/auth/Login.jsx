@@ -2,14 +2,19 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-toastify";
 import logoBg from "../../assets/images/logo-bg.png";
 import logoGold from "../../assets/images/logo-gold.png";
 import { requestLoginOtp, verifyLoginOtp } from "../../services/authService";
 import { showError } from "../../utils/errorHandler";
+import {
+  success as toastSuccess,
+  error as toastError,
+} from "../../utils/toast";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [identifier, setIdentifier] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [step, setStep] = useState("identifier");
@@ -21,13 +26,13 @@ export default function Login() {
     const cleaned = value.replace(/[^0-9۰-۹]/g, "");
 
     if (cleaned.length > 11) {
-      setError("❌ شماره موبایل یا کدملی معتبر نیست");
+      setError("شماره موبایل یا کدملی معتبر نیست");
       setTimeout(() => setError(""), 2500);
       return;
     }
 
     if (value !== cleaned) {
-      setError("❌ لطفاً فقط از اعداد استفاده کنید");
+      setError("لطفاً فقط از اعداد استفاده کنید");
       setTimeout(() => setError(""), 2500);
     } else {
       setError("");
@@ -43,24 +48,14 @@ export default function Login() {
       !cleanIdentifier ||
       (cleanIdentifier.length !== 11 && cleanIdentifier.length !== 10)
     ) {
-      toast.error("❌ شماره موبایل (۱۱ رقم) یا کدملی (۱۰ رقم) را وارد کنید");
+      toastError("شماره موبایل (۱۱ رقم) یا کدملی (۱۰ رقم) را وارد کنید");
       return;
     }
 
     setLoading(true);
     try {
       await requestLoginOtp(identifier);
-      toast.success("✅ کد تایید به شماره شما ارسال شد", {
-        position: "top-center",
-        autoClose: 3000,
-        style: {
-          background: "linear-gradient(135deg, #034120, #0a5a2e)",
-          color: "#ffffff",
-          borderRadius: "16px",
-          padding: "16px 24px",
-          fontFamily: "w_Lotus, sans-serif",
-        },
-      });
+      toastSuccess("کد تایید به شماره شما ارسال شد");
       setStep("otp");
     } catch (err) {
       showError(err);
@@ -74,22 +69,27 @@ export default function Login() {
 
     const cleanOtp = otpCode.replace(/[^0-9]/g, "");
     if (cleanOtp.length !== 4) {
-      toast.error("❌ کد ۴ رقمی را کامل وارد کنید");
+      toastError("کد ۴ رقمی را کامل وارد کنید");
       return;
     }
 
     setLoading(true);
     try {
       const res = await verifyLoginOtp(identifier, cleanOtp);
-      const { access, refresh } = res.data;
+      console.log("✅ ورود موفق:", res.data);
 
-      localStorage.setItem("access_token", access);
-      localStorage.setItem("refresh_token", refresh);
+      const success = await login(res.data.tokens, res.data.user);
 
-      toast.success("✅ ورود با موفقیت انجام شد");
-      navigate("/dashboard");
+      if (success) {
+        toastSuccess("ورود با موفقیت انجام شد");
+        navigate("/dashboard", { replace: true });
+      } else {
+        toastError("خطا در دریافت اطلاعات کاربری");
+      }
     } catch (err) {
-      showError(err);
+      console.error("❌ خطا:", err);
+      const msg = err.response?.data?.message || "خطا در تایید کد";
+      toastError(msg);
     } finally {
       setLoading(false);
     }
@@ -307,7 +307,6 @@ export default function Login() {
           direction: rtl;
         }
 
-        /* ===== ستون لوگو ===== */
         .lg-left-col {
           position: relative;
           display: flex;
@@ -364,7 +363,6 @@ export default function Login() {
         .lg-caption {
           position: relative;
           z-index: 1;
-          
           margin-top: -105px;
           margin-bottom: 90px;
           margin-right: -30px;
@@ -378,7 +376,6 @@ export default function Login() {
           text-align: center;
         }
 
-        /* ===== جداکننده با نشان مرکزی ===== */
         .lg-divider {
           position: relative;
           width: 1px;
@@ -416,7 +413,6 @@ export default function Login() {
           border-radius: 50%;
         }
 
-        /* ===== ستون فرم ===== */
         .lg-right-col {
           display: flex;
           align-items: center;
@@ -526,7 +522,7 @@ export default function Login() {
         }
 
         .lg-error {
-          color: #E8746A;
+          color: #c0392b;
           font-size: 12.5px;
           font-weight: 600;
           margin-top: 8px;
@@ -535,7 +531,6 @@ export default function Login() {
           font-family: "w_Lotus", sans-serif;
         }
 
-        /* ===== دکمه اصلی ===== */
         .lg-submit-btn {
           position: relative;
           width: 100%;
@@ -595,7 +590,6 @@ export default function Login() {
           cursor: not-allowed;
         }
 
-        /* ===== ثبت‌نام - پررنگ و خوانا ===== */
         .lg-register-hint {
           margin-top: 24px;
           font-size: 15px;
@@ -652,7 +646,6 @@ export default function Login() {
           transform: scale(0.97);
         }
 
-        /* ===== برگشت ===== */
         .lg-back-link {
           margin-top: 18px;
           background: none;

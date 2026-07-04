@@ -7,109 +7,90 @@ const api = axios.create({
   baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
+    Accept: "application/json",
   },
+  // ❌ withCredentials رو غیرفعال کن
+  withCredentials: false,
 });
 
-// Interceptor برای اضافه کردن توکن
-api.interceptors.request.use((config) => {
-  const draftToken = localStorage.getItem("draft_token");
-  const accessToken = localStorage.getItem("access_token");
+// ✅ اینترسپتور برای JWT
+api.interceptors.request.use(
+  (config) => {
+    // 1️⃣ اولویت با JWT
+    const accessToken = localStorage.getItem("access_token");
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+      console.log("🔑 ارسال با JWT:", config.url);
+    } else {
+      // 2️⃣ اگر JWT نبود، از Draft Token استفاده کن (برای ثبت‌نام)
+      const draftToken = localStorage.getItem("draft_token");
+      if (draftToken) {
+        config.headers["X-Draft-Token"] = draftToken;
+        console.log("📝 ارسال با Draft Token:", config.url);
+      } else {
+        console.log("❌ بدون توکن:", config.url);
+      }
+    }
 
-  if (draftToken) {
-    config.headers["X-Draft-Token"] = draftToken;
-  }
-  if (accessToken) {
-    config.headers["Authorization"] = `Bearer ${accessToken}`;
-  }
-  return config;
-});
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
-// ✅ Interceptor برای مدیریت خطاها
+// ✅ مدیریت 401 و رفرش توکن
 api.interceptors.response.use(
   (response) => {
+    // ذخیره Draft Token اگر از سرور برگشت
     const newDraftToken = response.headers["x-draft-token"];
     if (newDraftToken) {
       localStorage.setItem("draft_token", newDraftToken);
     }
     return response;
   },
-  (error) => {
-    // ✅ خطاهای 401 - احراز هویت
-    if (error.response?.status === 401) {
+  async (error) => {
+    const originalRequest = error.config;
+
+    console.log("❌ خطا:", error.response?.status, error.response?.config?.url);
+
+    // اگر 401 بود و JWT داشتیم، سعی کن رفرش کنی
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      const refreshToken = localStorage.getItem("refresh_token");
+
+      if (refreshToken) {
+        originalRequest._retry = true;
+        try {
+          const response = await axios.post(
+            `${BASE_URL}/auth/token/refresh/`,
+            { refresh: refreshToken },
+            { headers: { "Content-Type": "application/json" } },
+          );
+
+          const newAccessToken = response.data.access;
+          localStorage.setItem("access_token", newAccessToken);
+
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          return api(originalRequest);
+        } catch (refreshError) {
+          console.error("❌ رفرش توکن ناموفق");
+        }
+      }
+
+      // اگر رفرش نشد، توکن‌ها رو پاک کن
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
-      window.location.href = "/login";
-      return Promise.reject({
-        message: "نشست شما منقضی شده است. لطفاً مجدداً وارد شوید.",
-      });
-    }
+      localStorage.removeItem("draft_token");
 
-    // ✅ خطاهای 403 - دسترسی غیرمجاز
-    if (error.response?.status === 403) {
-      return Promise.reject({
-        message: "شما دسترسی لازم برای این عملیات را ندارید.",
-      });
-    }
-
-    // ✅ خطاهای 404 - پیدا نشد
-    if (error.response?.status === 404) {
-      return Promise.reject({ message: "اطلاعات مورد نظر یافت نشد." });
-    }
-
-    // ✅ خطاهای 502 - سرور در دسترس نیست
-    if (
-      error.response?.status === 502 ||
-      error.message?.includes("Network Error")
-    ) {
-      return Promise.reject({
-        message: "سرور در دسترس نیست. لطفاً چند دقیقه دیگر تلاش کنید.",
-      });
-    }
-
-    // ✅ خطاهای 500 - خطای داخلی سرور
-    if (error.response?.status === 500) {
-      return Promise.reject({
-        message: "خطای داخلی سرور. لطفاً مجدداً تلاش کنید.",
-      });
-    }
-
-    // ✅ خطاهای اعتبارسنجی (400)
-    if (error.response?.status === 400) {
-      const data = error.response?.data;
-
-      // خطاهای فیلدها
-      if (data?.errors) {
-        const firstError =
-          Object.values(data.errors)[0]?.[0] || "اطلاعات وارد شده صحیح نیست.";
-        return Promise.reject({ message: firstError });
-      }
-
-      // خطای detail
-      if (data?.detail) {
-        return Promise.reject({ message: data.detail });
-      }
-
-      // خطای error
-      if (data?.error) {
-        return Promise.reject({ message: data.error });
+      // فقط اگه در صفحات لاگین نباشی، هدایت کن
+      if (
+        !window.location.pathname.includes("/login") &&
+        !window.location.pathname.includes("/verify-otp") &&
+        !window.location.pathname.includes("/register")
+      ) {
+        window.location.href = "/login";
       }
     }
 
-    // ✅ خطاهای شبکه (اتصال)
-    if (error.code === "ERR_NETWORK" || error.code === "ECONNABORTED") {
-      return Promise.reject({
-        message:
-          "ارتباط با سرور برقرار نشد. لطفاً اتصال اینترنت خود را بررسی کنید.",
-      });
-    }
-
-    // ✅ خطای پیش‌فرض
-    return Promise.reject({
-      message:
-        error.response?.data?.detail ||
-        error.response?.data?.error ||
-        "خطایی رخ داده است. لطفاً مجدداً تلاش کنید.",
-    });
+    return Promise.reject(error);
   },
 );
 

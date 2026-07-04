@@ -1,21 +1,18 @@
 // src/components/register/WorksForm.jsx
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-toastify";
-import { showError } from "../../utils/errorHandler";
-import {
-  uploadWork,
-  deleteWork,
-  submitAllWorks,
-} from "../../services/onboardingService"; // ✅ اضافه شد
+import { success, error, showErrors } from "../../utils/toast";
+import { uploadWork, submitAllWorks } from "../../services/onboardingService";
+import { getErrorMessage } from "../../utils/validators";
 
 const MAX_WORKS = 50;
 const MAX_DESCRIPTION_LENGTH = 200;
+const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export default function WorksForm({
   onSuccess,
   uploadFn,
-  deleteFn,
   showFinalSubmit = true,
 }) {
   const [currentWork, setCurrentWork] = useState({
@@ -34,16 +31,31 @@ export default function WorksForm({
     }
   }, [uploadedWorks]);
 
-  const handleFileSelect = (file) => {
-    if (!file) return;
+  const validateFile = (file) => {
+    const errors = [];
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("حجم فایل باید کمتر از ۵ مگابایت باشد");
-      return;
+    if (!file) {
+      errors.push("هیچ فایلی انتخاب نشده است");
+      return errors;
+    }
+
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      errors.push(`حجم فایل باید کمتر از ${MAX_FILE_SIZE_MB} مگابایت باشد`);
     }
 
     if (!file.type.startsWith("image/")) {
-      toast.error("فایل باید از نوع تصویر باشد");
+      errors.push("فایل باید از نوع تصویر باشد");
+    }
+
+    return errors;
+  };
+
+  const handleFileSelect = (file) => {
+    if (!file) return;
+
+    const errors = validateFile(file);
+    if (errors.length > 0) {
+      showErrors(errors);
       return;
     }
 
@@ -59,18 +71,26 @@ export default function WorksForm({
   };
 
   const addWork = () => {
+    const errors = [];
+
     if (!currentWork.file) {
-      toast.error("لطفاً ابتدا یک عکس انتخاب کنید");
-      return;
+      errors.push("لطفاً ابتدا یک عکس انتخاب کنید");
     }
 
     if (!currentWork.description.trim()) {
-      toast.error("لطفاً شرح عکس را وارد کنید");
-      return;
+      errors.push("لطفاً شرح عکس را وارد کنید");
+    } else if (currentWork.description.length > MAX_DESCRIPTION_LENGTH) {
+      errors.push(
+        `شرح عکس باید کمتر از ${MAX_DESCRIPTION_LENGTH} کاراکتر باشد`,
+      );
     }
 
     if (uploadedWorks.length >= MAX_WORKS) {
-      toast.warn(`حداکثر ${MAX_WORKS} اثر مجاز است`);
+      errors.push(`حداکثر ${MAX_WORKS} اثر مجاز است`);
+    }
+
+    if (errors.length > 0) {
+      showErrors(errors);
       return;
     }
 
@@ -79,7 +99,7 @@ export default function WorksForm({
       {
         id: Date.now(),
         file: currentWork.file,
-        description: currentWork.description,
+        description: currentWork.description.trim(),
         preview: currentWork.preview,
       },
     ]);
@@ -98,7 +118,7 @@ export default function WorksForm({
     }, 150);
 
     setCurrentWork({ file: null, description: "", preview: null });
-    toast.success("✅ عکس با موفقیت اضافه شد");
+    success("عکس با موفقیت اضافه شد");
   };
 
   const removeWork = (index) => {
@@ -111,71 +131,58 @@ export default function WorksForm({
 
   const handleSubmitAll = async () => {
     if (uploadedWorks.length === 0) {
-      toast.error("لطفاً حداقل یک عکس آپلود کنید");
+      error("لطفاً حداقل یک عکس آپلود کنید");
       return;
     }
 
     setUploading(true);
     try {
-      // ✅ آپلود واقعی عکس‌ها به سرور
       const uploader = uploadFn || uploadWork;
-      const remover = deleteFn || deleteWork;
 
       for (const work of uploadedWorks) {
-        if (work.file && !work.id) {
+        if (work.file) {
           const formData = new FormData();
           formData.append("image", work.file);
           formData.append("description", work.description);
+
+          console.log("📤 آپلود عکس:", work.description);
           await uploader(formData);
+          console.log("✅ عکس آپلود شد:", work.description);
         }
       }
 
-      // ✅ ارسال نهایی (اگر در مرحله ثبت‌نام باشیم)
       if (showFinalSubmit) {
-        await submitAllWorks();
+        console.log("📤 ارسال نهایی ثبت‌نام...");
+        const response = await submitAllWorks();
+        console.log("✅ پاسخ ارسال نهایی:", response.data);
       }
 
-      toast.success(
-        <div style={{ textAlign: "right", fontFamily: "w_Lotus, sans-serif" }}>
-          <div
-            style={{
-              fontSize: "20px",
-              fontWeight: 700,
-              marginBottom: "6px",
-              color: "#C9A84C",
-            }}
-          >
-            {uploadedWorks.length} اثر با موفقیت ارسال شد
-          </div>
-          <div style={{ fontSize: "14px", opacity: 0.9 }}>
-            در حال انتقال به صفحه تایید...
-          </div>
-        </div>,
-        {
-          position: "top-center",
-          autoClose: 2000,
-          style: {
-            background: "linear-gradient(135deg, #034120, #0a5a2e)",
-            color: "#ffffff",
-            borderRadius: "16px",
-            padding: "20px 28px",
-            boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
-            border: "1px solid rgba(164,135,77,0.3)",
-            fontFamily: "w_Lotus, sans-serif",
-          },
-          progressStyle: {
-            background: "linear-gradient(90deg, #A4874D, #C9A84C)",
-            height: "4px",
-          },
-        },
-      );
+      success(`${uploadedWorks.length} اثر با موفقیت ارسال شد`);
 
       setTimeout(() => {
         onSuccess();
       }, 1500);
     } catch (err) {
-      const msg = err.response?.data?.detail || "خطا در ارسال آثار";
-      showError(err);
+      console.log("❌ خطای کامل:", err);
+      console.log("❌ پاسخ خطا:", err.response?.data);
+
+      const errorData = err.response?.data;
+      const errorList = [];
+
+      if (errorData?.errors) {
+        for (const [field, msgs] of Object.entries(errorData.errors)) {
+          if (msgs && msgs.length > 0) {
+            errorList.push(msgs[0]);
+          }
+        }
+      }
+
+      if (errorList.length > 0) {
+        showErrors(errorList);
+      } else {
+        const msg = getErrorMessage(err, "خطا در ارسال آثار");
+        error(msg);
+      }
     } finally {
       setUploading(false);
     }
@@ -194,7 +201,6 @@ export default function WorksForm({
         paddingTop: "4px",
       }}
     >
-      {/* توجه */}
       <div
         style={{
           textAlign: "right",
@@ -241,12 +247,11 @@ export default function WorksForm({
           </span>
           <br />
           <span style={{ color: "rgba(255,255,255,0.7)" }}>
-            • حجم هر فایل ارسالی کمتر از ۵ مگابایت باشد.
+            • حجم هر فایل ارسالی کمتر از {MAX_FILE_SIZE_MB} مگابایت باشد.
           </span>
         </p>
       </div>
 
-      {/* تعداد آپلود شده */}
       <div
         style={{
           display: "flex",
@@ -299,7 +304,6 @@ export default function WorksForm({
         </span>
       </div>
 
-      {/* ردیف آپلود فعلی */}
       <div
         style={{
           display: "grid",
@@ -315,7 +319,6 @@ export default function WorksForm({
           flexShrink: 0,
         }}
       >
-        {/* فیلد شرح */}
         <div className="pill" style={{ height: "38px", maxWidth: "100%" }}>
           <input
             type="text"
@@ -334,7 +337,6 @@ export default function WorksForm({
           />
         </div>
 
-        {/* آپلود عکس */}
         <div
           className="pill"
           style={{
@@ -413,7 +415,6 @@ export default function WorksForm({
           </label>
         </div>
 
-        {/* دکمه افزودن */}
         <motion.button
           type="button"
           onClick={addWork}
@@ -452,7 +453,6 @@ export default function WorksForm({
         </motion.button>
       </div>
 
-      {/* لیست عکس‌ها */}
       <div
         ref={containerRef}
         style={{
@@ -490,7 +490,6 @@ export default function WorksForm({
                 background: "rgba(164, 135, 77, 0.05)",
               }}
             >
-              {/* شماره */}
               <div
                 style={{
                   display: "flex",
@@ -511,7 +510,6 @@ export default function WorksForm({
                 <span style={{ color: "#4CAF50", fontSize: "9px" }}>✓</span>
               </div>
 
-              {/* شرح */}
               <span
                 style={{
                   fontSize: "12px",
@@ -526,7 +524,6 @@ export default function WorksForm({
                 {work.description}
               </span>
 
-              {/* تصویر */}
               <div
                 style={{
                   display: "flex",
@@ -556,7 +553,6 @@ export default function WorksForm({
                 </span>
               </div>
 
-              {/* دکمه حذف */}
               <motion.button
                 type="button"
                 onClick={() => removeWork(index)}
@@ -610,7 +606,6 @@ export default function WorksForm({
         )}
       </div>
 
-      {/* دکمه ارسال */}
       <motion.button
         type="button"
         onClick={handleSubmitAll}
@@ -670,7 +665,6 @@ export default function WorksForm({
         )}
       </motion.button>
 
-      {/* استایل اسکرول */}
       <style>{`
         .works-scroll-container::-webkit-scrollbar {
           width: 3px;

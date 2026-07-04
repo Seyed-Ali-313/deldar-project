@@ -10,7 +10,8 @@ import {
   requestMobileChange,
   verifyMobileChange,
 } from "../../services/dashboardService";
-import { toast } from "react-toastify";
+import { success, error, info } from "../../utils/toast";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function PersonalInfo() {
   const { register, handleSubmit, reset, watch } = useForm();
@@ -20,8 +21,8 @@ export default function PersonalInfo() {
   const [otpCode, setOtpCode] = useState("");
   const [loading, setLoading] = useState(true);
   const currentMobile = watch("mobile");
+  const { user, refetchUser } = useAuth();
 
-  // ✅ دریافت پروفایل از سرور
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) {
@@ -36,7 +37,7 @@ export default function PersonalInfo() {
         setLoading(false);
       })
       .catch(() => {
-        toast.error("خطا در دریافت اطلاعات");
+        error("خطا در دریافت اطلاعات");
         setLoading(false);
       });
   }, [reset]);
@@ -51,22 +52,22 @@ export default function PersonalInfo() {
 
   const handleRequestMobileVerify = async () => {
     if (!currentMobile || currentMobile.length !== 11) {
-      toast.error("شماره موبایل معتبر نیست");
+      error("شماره موبایل معتبر نیست");
       return;
     }
     try {
       await requestMobileChange(currentMobile);
-      toast.success("✅ کد تایید به شماره جدید ارسال شد");
+      info("کد تایید به شماره جدید ارسال شد");
       setShowOtpBox(true);
     } catch (err) {
       const msg = err.response?.data?.detail || "خطا در ارسال کد";
-      toast.error(msg);
+      error(msg);
     }
   };
 
   const handleVerifyMobile = async () => {
     if (!otpCode || otpCode.length !== 4) {
-      toast.error("کد ۴ رقمی را وارد کنید");
+      error("کد ۴ رقمی را وارد کنید");
       return;
     }
     try {
@@ -74,27 +75,26 @@ export default function PersonalInfo() {
       setMobileVerified(true);
       setShowOtpBox(false);
       setOtpCode("");
-      toast.success("✅ شماره موبایل تایید شد");
+      success("شماره موبایل تایید شد");
     } catch (err) {
       const msg = err.response?.data?.detail || "کد وارد شده صحیح نیست";
-      toast.error(msg);
+      error(msg);
     }
   };
 
   const onSubmit = async (data) => {
     if (!mobileVerified) {
-      toast.error(
-        "ابتدا شماره تلفن همراه خود را تایید کنید سپس دکمه ثبت تغییرات را بزنید.",
-      );
+      error("ابتدا شماره تلفن همراه خود را تایید کنید");
       return;
     }
     try {
       await updateProfile(data);
+      await refetchUser();
       setOriginalMobile(data.mobile);
-      toast.success("✅ اطلاعات با موفقیت بروزرسانی شد");
+      success("اطلاعات با موفقیت بروزرسانی شد");
     } catch (err) {
       const msg = err.response?.data?.detail || "خطا در بروزرسانی اطلاعات";
-      toast.error(msg);
+      error(msg);
     }
   };
 
@@ -118,7 +118,7 @@ export default function PersonalInfo() {
         name="first_name"
       />
 
-      <div className="pill">
+      <div className="pill" style={{ position: "relative" }}>
         <input
           className="register-input"
           placeholder="تلفن همراه*"
@@ -173,12 +173,12 @@ export default function PersonalInfo() {
         name="province"
       />
       <FormInput
-        placeholder="شناسه در پیام‌رسان تلگرام"
+        placeholder="شناسه در پیام‌رسان تلگرام (اختیاری)"
         register={register}
         name="telegram_id"
       />
       <FormInput
-        placeholder="شناسه در پیام‌رسان بله"
+        placeholder="شناسه در پیام‌رسان بله (اختیاری)"
         register={register}
         name="bale_id"
       />

@@ -9,10 +9,8 @@ import { AuthProvider } from "./context/AuthContext";
 import "./assets/styles/style.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+  <AuthProvider>
+    <RouterProvider router={router} />
     <ToastContainer position="top-center" rtl />
-  </React.StrictMode>
+  </AuthProvider>,
 );

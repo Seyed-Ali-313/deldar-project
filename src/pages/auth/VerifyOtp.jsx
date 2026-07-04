@@ -2,15 +2,20 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { verifyOtp } from "../../services/onboardingService"; // ✅ فعال شد
-import { toast } from "react-toastify";
-import { showError } from "../../utils/errorHandler";
+import { verifyOtp } from "../../services/onboardingService";
+import { useAuth } from "../../hooks/useAuth";
+import {
+  success as toastSuccess,
+  error as toastError,
+  info as toastInfo,
+} from "../../utils/toast";
 
 const RESEND_SECONDS = 124;
 
 export default function VerifyOtp() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { login, isLoggedIn } = useAuth();
 
   const mobile = location.state?.mobile || "۰۹۱۲۳۴۵۶۷۸۹";
 
@@ -20,6 +25,13 @@ export default function VerifyOtp() {
   const [shake, setShake] = useState(false);
   const [loading, setLoading] = useState(false);
   const inputsRef = useRef([]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      console.log("✅ کاربر لاگین شد، رفتن به داشبورد");
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isLoggedIn, navigate]);
 
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -52,61 +64,30 @@ export default function VerifyOtp() {
   const handleSubmit = async () => {
     const code = otp.join("");
     if (code.length !== 4) {
-      toast.error("❌ کد ۴ رقمی را کامل وارد کنید");
+      toastError("کد ۴ رقمی را کامل وارد کنید");
       triggerShake();
       return;
     }
 
     setLoading(true);
     try {
-      // ✅ ارسال به API واقعی
+      console.log("📤 ارسال کد تایید به سرور:", code);
+
       const res = await verifyOtp(code);
-      const { access, refresh } = res.data;
+      console.log("✅ ثبت‌نام نهایی شد:", res.data);
 
-      localStorage.setItem("access_token", access);
-      localStorage.setItem("refresh_token", refresh);
+      const success = await login(res.data.tokens, res.data.user);
 
-      toast.success(
-        <div style={{ textAlign: "right", fontFamily: "w_Lotus, sans-serif" }}>
-          <div
-            style={{
-              fontSize: "18px",
-              fontWeight: 700,
-              marginBottom: "4px",
-              color: "#C9A84C",
-            }}
-          >
-            ✅ ثبت‌نام با موفقیت انجام شد
-          </div>
-          <div style={{ fontSize: "13px", opacity: 0.9 }}>
-            در حال انتقال به صفحه موفقیت...
-          </div>
-        </div>,
-        {
-          position: "top-center",
-          autoClose: 2000,
-          style: {
-            background: "linear-gradient(135deg, #034120, #0a5a2e)",
-            color: "#ffffff",
-            borderRadius: "16px",
-            padding: "20px 28px",
-            boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
-            border: "1px solid rgba(164,135,77,0.3)",
-            fontFamily: "w_Lotus, sans-serif",
-          },
-          progressStyle: {
-            background: "linear-gradient(90deg, #A4874D, #C9A84C)",
-            height: "4px",
-          },
-        },
-      );
-
-      setTimeout(() => {
-        navigate("/upload-success");
-      }, 1500);
+      if (success) {
+        toastSuccess("ثبت‌نام با موفقیت انجام شد");
+        navigate("/dashboard", { replace: true });
+      } else {
+        toastError("خطا در دریافت اطلاعات کاربری");
+      }
     } catch (err) {
+      console.log("❌ خطا:", err.response?.data);
       const msg = err.response?.data?.detail || "کد وارد شده صحیح نیست";
-      showError(err);
+      toastError(msg);
       triggerShake();
     } finally {
       setLoading(false);
@@ -118,7 +99,7 @@ export default function VerifyOtp() {
     setTimeLeft(RESEND_SECONDS);
     setOtp(["", "", "", ""]);
     inputsRef.current[0]?.focus();
-    toast.info("📨 کد جدید برای شما ارسال شد");
+    toastInfo("کد جدید برای شما ارسال شد");
   };
 
   const toPersianDigits = (num) => {
@@ -156,7 +137,6 @@ export default function VerifyOtp() {
         overflow: "hidden",
       }}
     >
-      {/* Decorative floating blobs */}
       <motion.div
         animate={{ y: [0, -20, 0], opacity: [0.4, 0.6, 0.4] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
@@ -212,7 +192,6 @@ export default function VerifyOtp() {
           zIndex: 1,
         }}
       >
-        {/* Icon */}
         <motion.div
           initial={{ scale: 0, rotate: -20 }}
           animate={{ scale: 1, rotate: 0 }}
@@ -347,7 +326,6 @@ export default function VerifyOtp() {
           ))}
         </motion.div>
 
-        {/* Timer + progress bar */}
         <div style={{ marginBottom: "14px" }}>
           <div
             style={{
@@ -462,20 +440,22 @@ export default function VerifyOtp() {
           onClick={handleSubmit}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
+          disabled={loading}
           style={{
             position: "relative",
             width: "100%",
             maxWidth: "320px",
             minHeight: "44px",
-            background:
-              "linear-gradient(135deg, rgba(165,135,77,1), rgba(201,168,76,1))",
+            background: loading
+              ? "rgba(100,100,100,0.5)"
+              : "linear-gradient(135deg, rgba(165,135,77,1), rgba(201,168,76,1))",
             color: "#ffffff",
             borderRadius: "22px",
             border: "none",
             fontSize: "16px",
             fontWeight: 800,
             fontFamily: "w_Lotus, sans-serif",
-            cursor: "pointer",
+            cursor: loading ? "not-allowed" : "pointer",
             boxShadow:
               "0 8px 28px rgba(165,135,77,0.4), inset 0 1px 0 rgba(255,255,255,0.2)",
             display: "flex",
@@ -484,9 +464,10 @@ export default function VerifyOtp() {
             margin: "0 auto",
             overflow: "hidden",
             letterSpacing: "0.4px",
+            opacity: loading ? 0.6 : 1,
           }}
         >
-          تأیید و ارسال مجموع آثار
+          {loading ? "در حال تأیید..." : "تأیید و ارسال مجموع آثار"}
         </motion.button>
       </motion.div>
     </div>

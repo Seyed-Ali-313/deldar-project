@@ -12,7 +12,7 @@ import VerifyOtp from "../pages/auth/VerifyOtp";
 import PrivateRoute from "./PrivateRoute";
 import Dashboard from "../pages/dashboard/Dashboard";
 import UploadSuccess from "../pages/dashboard/UploadSuccess";
-import NotFound from "../pages/NotFound"; // ✅ اضافه شد
+import NotFound from "../pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -33,7 +33,6 @@ const router = createBrowserRouter([
         element: <PrivateRoute />,
         children: [{ index: true, element: <Dashboard /> }],
       },
-      // ✅ مسیر ۴۰۴ - آخرین آیتم
       { path: "*", element: <NotFound /> },
     ],
   },

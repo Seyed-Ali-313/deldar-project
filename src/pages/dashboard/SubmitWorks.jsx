@@ -1,9 +1,13 @@
 // src/pages/dashboard/SubmitWorks.jsx
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-toastify";
 import { addWork } from "../../services/dashboardService";
 import { showError } from "../../utils/errorHandler";
+import {
+  success as toastSuccess,
+  error as toastError,
+  warn as toastWarn,
+} from "../../utils/toast";
 
 const MAX_WORKS = 50;
 const MAX_DESCRIPTION_LENGTH = 200;
@@ -29,12 +33,12 @@ export default function SubmitWorks() {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("حجم فایل باید کمتر از ۵ مگابایت باشد");
+      toastError("حجم فایل باید کمتر از ۵ مگابایت باشد");
       return;
     }
 
     if (!file.type.startsWith("image/")) {
-      toast.error("فایل باید از نوع تصویر باشد");
+      toastError("فایل باید از نوع تصویر باشد");
       return;
     }
 
@@ -51,17 +55,17 @@ export default function SubmitWorks() {
 
   const addWorkHandler = () => {
     if (!currentWork.file) {
-      toast.error("لطفاً ابتدا یک عکس انتخاب کنید");
+      toastError("لطفاً ابتدا یک عکس انتخاب کنید");
       return;
     }
 
     if (!currentWork.description.trim()) {
-      toast.error("لطفاً شرح عکس را وارد کنید");
+      toastError("لطفاً شرح عکس را وارد کنید");
       return;
     }
 
     if (uploadedWorks.length >= MAX_WORKS) {
-      toast.warn(`حداکثر ${MAX_WORKS} اثر مجاز است`);
+      toastWarn(`حداکثر ${MAX_WORKS} اثر مجاز است`);
       return;
     }
 
@@ -89,7 +93,7 @@ export default function SubmitWorks() {
     }, 150);
 
     setCurrentWork({ file: null, description: "", preview: null });
-    toast.success("عکس با موفقیت اضافه شد");
+    toastSuccess("عکس با موفقیت اضافه شد");
   };
 
   const removeWork = (index) => {
@@ -102,13 +106,12 @@ export default function SubmitWorks() {
 
   const handleSubmitAll = async () => {
     if (uploadedWorks.length === 0) {
-      toast.error("لطفاً حداقل یک عکس آپلود کنید");
+      toastError("لطفاً حداقل یک عکس آپلود کنید");
       return;
     }
 
     setUploading(true);
     try {
-      // ✅ آپلود واقعی به سرور
       for (const work of uploadedWorks) {
         const formData = new FormData();
         formData.append("image", work.file);
@@ -116,49 +119,15 @@ export default function SubmitWorks() {
         await addWork(formData);
       }
 
-      toast.success(
-        <div style={{ textAlign: "right", fontFamily: "w_Lotus, sans-serif" }}>
-          <div
-            style={{
-              fontSize: "20px",
-              fontWeight: 700,
-              marginBottom: "6px",
-              color: "#C9A84C",
-            }}
-          >
-            {uploadedWorks.length} اثر با موفقیت اضافه شد
-          </div>
-          <div style={{ fontSize: "14px", opacity: 0.9 }}>
-            آثار جدید به لیست شما اضافه شد
-          </div>
-        </div>,
-        {
-          position: "top-center",
-          autoClose: 2000,
-          style: {
-            background: "linear-gradient(135deg, #034120, #0a5a2e)",
-            color: "#ffffff",
-            borderRadius: "16px",
-            padding: "20px 28px",
-            boxShadow: "0 16px 48px rgba(0,0,0,0.4)",
-            border: "1px solid rgba(164,135,77,0.3)",
-            fontFamily: "w_Lotus, sans-serif",
-          },
-          progressStyle: {
-            background: "linear-gradient(90deg, #A4874D, #C9A84C)",
-            height: "4px",
-          },
-        },
-      );
-
+      toastSuccess(`${uploadedWorks.length} اثر با موفقیت اضافه شد`);
       setUploadedWorks([]);
     } catch (err) {
-      const msg = err.response?.data?.detail || "خطا در ارسال آثار";
       showError(err);
     } finally {
       setUploading(false);
     }
   };
+
   return (
     <div
       style={{
@@ -172,7 +141,6 @@ export default function SubmitWorks() {
         paddingTop: "4px",
       }}
     >
-      {/* توجه */}
       <div
         style={{
           textAlign: "right",
@@ -224,7 +192,6 @@ export default function SubmitWorks() {
         </p>
       </div>
 
-      {/* تعداد آپلود شده */}
       <div
         style={{
           display: "flex",
@@ -277,7 +244,6 @@ export default function SubmitWorks() {
         </span>
       </div>
 
-      {/* ردیف آپلود فعلی */}
       <div
         style={{
           display: "grid",
@@ -293,7 +259,6 @@ export default function SubmitWorks() {
           flexShrink: 0,
         }}
       >
-        {/* فیلد شرح */}
         <div className="pill" style={{ height: "38px", maxWidth: "100%" }}>
           <input
             type="text"
@@ -312,7 +277,6 @@ export default function SubmitWorks() {
           />
         </div>
 
-        {/* آپلود عکس */}
         <div
           className="pill"
           style={{
@@ -391,7 +355,6 @@ export default function SubmitWorks() {
           </label>
         </div>
 
-        {/* دکمه افزودن */}
         <motion.button
           type="button"
           onClick={addWorkHandler}
@@ -430,7 +393,6 @@ export default function SubmitWorks() {
         </motion.button>
       </div>
 
-      {/* لیست عکس‌ها */}
       <div
         ref={containerRef}
         style={{
@@ -468,7 +430,6 @@ export default function SubmitWorks() {
                 background: "rgba(164, 135, 77, 0.05)",
               }}
             >
-              {/* شماره */}
               <div
                 style={{
                   display: "flex",
@@ -489,7 +450,6 @@ export default function SubmitWorks() {
                 <span style={{ color: "#4CAF50", fontSize: "9px" }}>✓</span>
               </div>
 
-              {/* شرح */}
               <span
                 style={{
                   fontSize: "12px",
@@ -504,7 +464,6 @@ export default function SubmitWorks() {
                 {work.description}
               </span>
 
-              {/* تصویر */}
               <div
                 style={{
                   display: "flex",
@@ -534,7 +493,6 @@ export default function SubmitWorks() {
                 </span>
               </div>
 
-              {/* دکمه حذف */}
               <motion.button
                 type="button"
                 onClick={() => removeWork(index)}
@@ -576,19 +534,25 @@ export default function SubmitWorks() {
               alignItems: "center",
               justifyContent: "center",
               height: "100%",
-              color: "rgba(255,255,255,0.1)",
+              color: "rgba(255,255,255,0.15)",
               fontSize: "12px",
               fontFamily: "w_Lotus, sans-serif",
               gap: "2px",
             }}
           >
-            <span style={{ fontSize: "28px" }}>🖼</span>
-            <span>هیچ عکسی انتخاب نشده است</span>
+            <span
+              style={{
+                fontSize: "13px",
+                fontWeight: 500,
+                color: "rgba(255,255,255,0.2)",
+              }}
+            >
+              هیچ عکسی انتخاب نشده است
+            </span>
           </div>
         )}
       </div>
 
-      {/* دکمه ارسال */}
       <motion.button
         type="button"
         onClick={handleSubmitAll}
