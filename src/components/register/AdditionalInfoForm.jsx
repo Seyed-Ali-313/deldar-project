@@ -136,7 +136,7 @@ export default function AdditionalInfoForm({ onSuccess }) {
       />
 
       <FormInput
-        placeholder="شهر محل سکونت*"
+        placeholder="شهر محل سکونت"
         required
         register={register}
         name="city"
@@ -145,7 +145,7 @@ export default function AdditionalInfoForm({ onSuccess }) {
       />
 
       <FormInput
-        placeholder="آدرس محل سکونت*"
+        placeholder="آدرس محل سکونت"
         required
         register={register}
         name="address"
@@ -154,7 +154,7 @@ export default function AdditionalInfoForm({ onSuccess }) {
       />
 
       <FormInput
-        placeholder="کدپستی* (۱۰ رقم)"
+        placeholder="کدپستی   (۱۰ رقم)"
         required
         register={register}
         name="postal_code"

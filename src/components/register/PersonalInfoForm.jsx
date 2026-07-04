@@ -144,7 +144,7 @@ export default function PersonalInfoForm({ onSuccess }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pill-grid">
       <FormInput
-        placeholder="نام*"
+        placeholder="نام"
         required
         register={register}
         name="first_name"
@@ -153,7 +153,7 @@ export default function PersonalInfoForm({ onSuccess }) {
       />
 
       <FormInput
-        placeholder="نام خانوادگی*"
+        placeholder="نام خانوادگی"
         required
         register={register}
         name="last_name"
@@ -162,7 +162,7 @@ export default function PersonalInfoForm({ onSuccess }) {
       />
 
       <FormInput
-        placeholder="شغل*"
+        placeholder="شغل"
         required
         register={register}
         name="job"
@@ -181,7 +181,7 @@ export default function PersonalInfoForm({ onSuccess }) {
           <PersianDatePicker
             value={field.value}
             onChange={field.onChange}
-            placeholder="تاریخ تولد* (مثال: 1370-01-15)"
+            placeholder="تاریخ تولد"
             required
             error={getFieldError("birth_date") || fieldState.error?.message}
           />
@@ -189,7 +189,7 @@ export default function PersonalInfoForm({ onSuccess }) {
       />
 
       <NumericInput
-        placeholder="کد ملی* (۱۰ رقم)"
+        placeholder="کد ملی   (۱۰ رقم)"
         required
         register={register}
         name="national_code"
@@ -200,7 +200,7 @@ export default function PersonalInfoForm({ onSuccess }) {
       />
 
       <NumericInput
-        placeholder="شماره موبایل* (مثال: 09123456789)"
+        placeholder="شماره موبایل :   09123456789"
         required
         register={register}
         name="mobile"
