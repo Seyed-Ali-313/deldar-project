@@ -1,96 +1,137 @@
 // src/utils/toast.js
 import { toast as toastify } from "react-toastify";
 
-// تنظیمات پیش‌فرض
-const defaultOptions = {
-  position: "top-center",
-  autoClose: 3500,
-  hideProgressBar: false,
-  closeOnClick: true,
-  pauseOnHover: true,
-  draggable: true,
-  progress: undefined,
-  theme: "light",
-  style: {
-    fontFamily: "w_Nian, sans-serif",
-    borderRadius: "14px",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
-    padding: "14px 20px",
-    fontSize: "14px",
-    fontWeight: "600",
-    lineHeight: "1.6",
-  },
-};
-
-// ✅ Toast موفقیت
+// ✅ Toast موفقیت - با رنگ‌های سایت (سبز تیره + طلایی)
 export const success = (message, options = {}) => {
   toastify.success(message, {
-    ...defaultOptions,
-    ...options,
+    position: "top-center",
+    autoClose: 3500,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
     style: {
-      ...defaultOptions.style,
-      background: "#f0faf5",
-      color: "#034120",
-      border: "1px solid rgba(3, 65, 32, 0.12)",
+      background: "#034120", // پس‌زمینه سبز تیره سایت
+      color: "#C9A84C", // متن طلایی روشن سایت
+      border: "1px solid rgba(201, 168, 76, 0.3)",
+      borderRadius: "14px",
+      padding: "16px 24px",
+      fontFamily: "w_Nian, sans-serif",
+      fontSize: "15px",
+      fontWeight: "700",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+      letterSpacing: "0.3px",
+    },
+    progressStyle: {
+      background: "linear-gradient(90deg, #A4874D, #C9A84C)", // نوار پیشرفت طلایی
+      height: "4px",
+      borderRadius: "0 0 14px 14px",
     },
     icon: false,
+    ...options,
   });
 };
 
-// ✅ Toast خطا
+// ✅ Toast خطا - با رنگ‌های سایت (قرمز + سفید)
 export const error = (message, options = {}) => {
   toastify.error(message, {
-    ...defaultOptions,
-    ...options,
+    position: "top-center",
+    autoClose: 3500,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
     style: {
-      ...defaultOptions.style,
-      background: "#fdf0ed",
-      color: "#c0392b",
-      border: "1px solid rgba(192, 57, 43, 0.12)",
+      background: "#2a0a0a", // پس‌زمینه قرمز تیره
+      color: "#ffffff", // متن سفید
+      border: "1px solid rgba(176, 1, 1, 0.3)",
+      borderRadius: "14px",
+      padding: "16px 24px",
+      fontFamily: "w_Nian, sans-serif",
+      fontSize: "15px",
+      fontWeight: "700",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+      letterSpacing: "0.3px",
+    },
+    progressStyle: {
+      background: "linear-gradient(90deg, #B00101, #ff4444)",
+      height: "4px",
+      borderRadius: "0 0 14px 14px",
     },
     icon: false,
+    ...options,
   });
 };
 
-// ✅ Toast هشدار / اطلاع
+// ✅ Toast اطلاع‌رسانی - با رنگ‌های سایت
 export const info = (message, options = {}) => {
   toastify.info(message, {
-    ...defaultOptions,
-    ...options,
+    position: "top-center",
+    autoClose: 3500,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
     style: {
-      ...defaultOptions.style,
-      background: "#faf8f0",
-      color: "#A4874D",
-      border: "1px solid rgba(164, 135, 77, 0.15)",
+      background: "#0a1a12", // پس‌زمینه سبز خیلی تیره
+      color: "#E8D5A3", // متن طلایی روشن‌تر
+      border: "1px solid rgba(201, 168, 76, 0.2)",
+      borderRadius: "14px",
+      padding: "16px 24px",
+      fontFamily: "w_Nian, sans-serif",
+      fontSize: "15px",
+      fontWeight: "700",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+      letterSpacing: "0.3px",
+    },
+    progressStyle: {
+      background: "linear-gradient(90deg, #A4874D, #C9A84C)",
+      height: "4px",
+      borderRadius: "0 0 14px 14px",
     },
     icon: false,
+    ...options,
   });
 };
 
-// ✅ Toast هشدار (Warning)
+// ✅ Toast هشدار
 export const warn = (message, options = {}) => {
   toastify.warning(message, {
-    ...defaultOptions,
-    ...options,
+    position: "top-center",
+    autoClose: 3500,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
     style: {
-      ...defaultOptions.style,
-      background: "#fdf6e8",
-      color: "#b8860b",
-      border: "1px solid rgba(184, 134, 11, 0.15)",
+      background: "#1a0e00", // پس‌زمینه نارنجی تیره
+      color: "#FFD54F", // متن زرد روشن
+      border: "1px solid rgba(255, 152, 0, 0.3)",
+      borderRadius: "14px",
+      padding: "16px 24px",
+      fontFamily: "w_Nian, sans-serif",
+      fontSize: "15px",
+      fontWeight: "700",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+      letterSpacing: "0.3px",
+    },
+    progressStyle: {
+      background: "linear-gradient(90deg, #ff9800, #ff5722)",
+      height: "4px",
+      borderRadius: "0 0 14px 14px",
     },
     icon: false,
+    ...options,
   });
 };
 
-// ✅ نمایش خطاهای چندگانه در یک toast
+// ✅ نمایش خطاهای چندگانه
 export const showErrors = (errors) => {
   if (!errors || errors.length === 0) return;
-
   const message =
     errors.length === 1
       ? errors[0]
       : errors.map((e, i) => `${i + 1}. ${e}`).join(" • ");
-
   error(message);
 };
 

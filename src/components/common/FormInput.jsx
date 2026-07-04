@@ -32,7 +32,10 @@ export default function FormInput({
     if (onBlur) onBlur(e);
   };
 
+  // ✅ نمایش خطا - اولویت با validate هست
   const displayError = clientError || error || null;
+
+  // ✅ placeholder رو با خطا نشون بده (برای جلب توجه)
   const displayPlaceholder = displayError || placeholder;
 
   return (

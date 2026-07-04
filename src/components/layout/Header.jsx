@@ -438,11 +438,11 @@ export default function Header() {
           color: #ffffff;
           border: 1.5px solid rgba(201, 168, 76, 0.35);
           border-radius: 30px;
-          padding: 8px 22px 8px 10px;
+          padding: 7px 3px 8px 8px;
           min-height: 44px;
           min-width: 130px;
           font-weight: 700;
-          font-size: clamp(13px, 1vw, 15px);
+          font-size: clamp(15px, 1vw, 15px);
           cursor: pointer;
           transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
           overflow: hidden;
