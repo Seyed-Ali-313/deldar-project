@@ -1,5 +1,3 @@
-// src/pages/auth/Register.jsx
-import { useState } from "react";
 import poem from "../../assets/images/poem.svg";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,6 +6,7 @@ import PersonalInfoForm from "../../components/register/PersonalInfoForm";
 import AdditionalInfoForm from "../../components/register/AdditionalInfoForm";
 import WorksForm from "../../components/register/WorksForm";
 import { uploadWork } from "../../services/onboardingService";
+import useRegisterData from "../../hooks/useRegisterData";
 
 const TABS = [
   { key: "personal", label: "اطلاعات شخصی" },
@@ -17,26 +16,14 @@ const TABS = [
 
 const pageVariants = {
   initial: { opacity: 0, x: 30 },
-  animate: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.4, ease: "easeOut" },
-  },
-  exit: {
-    opacity: 0,
-    x: -30,
-    transition: { duration: 0.3, ease: "easeIn" },
-  },
+  animate: { opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  exit: { opacity: 0, x: -30, transition: { duration: 0.3, ease: "easeIn" } },
 };
 
 export default function Register() {
-  const [activeTab, setActiveTab] = useState("personal");
-  const [completed, setCompleted] = useState({
-    personal: false,
-    additional: false,
-  });
-  const [userMobile, setUserMobile] = useState(""); // ← ذخیره شماره موبایل
   const navigate = useNavigate();
+  const { data, setActiveTab, setCompleted } = useRegisterData();
+  const { activeTab, completed } = data;
 
   const disabledTabs = TABS.filter((tab) => {
     if (tab.key === "personal") return false;
@@ -60,7 +47,6 @@ export default function Register() {
           overflow: "hidden",
         }}
       >
-        {/* لوگو فقط در مرحله سوم حذف میشه */}
         {activeTab !== "works" && (
           <div className="logo-stack-small">
             <img src={poem} alt="" className="logo-pm" />
@@ -85,10 +71,10 @@ export default function Register() {
                 exit="exit"
               >
                 <PersonalInfoForm
-                  onSuccess={(data) => {
-                    setUserMobile(data.mobile); // ← ذخیره شماره
-                    setCompleted((c) => ({ ...c, personal: true }));
-                    setActiveTab("additional");
+                  onSuccess={() => {
+                    setCompleted({ personal: true });
+                    // اگه مرحله بعدی قبلاً کامل شده بود (مثلاً برگشته برای اصلاح شماره)، مستقیم برو works
+                    setActiveTab(completed.additional ? "works" : "additional");
                   }}
                 />
               </motion.div>
@@ -104,7 +90,7 @@ export default function Register() {
               >
                 <AdditionalInfoForm
                   onSuccess={() => {
-                    setCompleted((c) => ({ ...c, additional: true }));
+                    setCompleted({ additional: true });
                     setActiveTab("works");
                   }}
                 />
@@ -121,9 +107,7 @@ export default function Register() {
               >
                 <WorksForm
                   uploadFn={uploadWork}
-                  onSuccess={() =>
-                    navigate("/verify-otp", { state: { mobile: userMobile } })
-                  } // ← ارسال شماره به صفحه بعد
+                  onSuccess={() => navigate("/verify-otp")}
                 />
               </motion.div>
             )}

@@ -1,29 +1,48 @@
-// src/components/register/WorksForm.jsx
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { success, error, showErrors } from "../../utils/toast";
 import { uploadWork, submitAllWorks } from "../../services/onboardingService";
 import { getErrorMessage } from "../../utils/validators";
+import useRegisterData from "../../hooks/useRegisterData";
 
 const MAX_WORKS = 50;
 const MAX_DESCRIPTION_LENGTH = 200;
 const MAX_FILE_SIZE_MB = 5;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
+// تبدیل base64 ذخیره‌شده در sessionStorage به File واقعی برای آپلود
+async function dataURLtoFile(dataUrl, fileName, fileType) {
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  return new File([blob], fileName || "photo.jpg", {
+    type: fileType || blob.type,
+  });
+}
+
 export default function WorksForm({
   onSuccess,
   uploadFn,
   showFinalSubmit = true,
 }) {
+  const { data, setWorks: persistWorks } = useRegisterData();
+
   const [currentWork, setCurrentWork] = useState({
     file: null,
     description: "",
     preview: null,
   });
-  const [uploadedWorks, setUploadedWorks] = useState([]);
+  const [uploadedWorks, setUploadedWorksState] = useState(data.works || []);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
   const containerRef = useRef(null);
+
+  const setUploadedWorks = (updater) => {
+    setUploadedWorksState((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      persistWorks(next);
+      return next;
+    });
+  };
 
   useEffect(() => {
     if (containerRef.current && uploadedWorks.length > 0) {
@@ -32,37 +51,29 @@ export default function WorksForm({
   }, [uploadedWorks]);
 
   const validateFile = (file) => {
-    const errors = [];
-
+    const errs = [];
     if (!file) {
-      errors.push("هیچ فایلی انتخاب نشده است");
-      return errors;
+      errs.push("هیچ فایلی انتخاب نشده است");
+      return errs;
     }
-
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      errors.push(`حجم فایل باید کمتر از ${MAX_FILE_SIZE_MB} مگابایت باشد`);
-    }
-
-    if (!file.type.startsWith("image/")) {
-      errors.push("فایل باید از نوع تصویر باشد");
-    }
-
-    return errors;
+    if (file.size > MAX_FILE_SIZE_BYTES)
+      errs.push(`حجم فایل باید کمتر از ${MAX_FILE_SIZE_MB} مگابایت باشد`);
+    if (!file.type.startsWith("image/"))
+      errs.push("فایل باید از نوع تصویر باشد");
+    return errs;
   };
 
   const handleFileSelect = (file) => {
     if (!file) return;
-
-    const errors = validateFile(file);
-    if (errors.length > 0) {
-      showErrors(errors);
+    const errs = validateFile(file);
+    if (errs.length > 0) {
+      showErrors(errs);
       return;
     }
-
     const reader = new FileReader();
     reader.onload = (e) => {
       setCurrentWork({
-        file: file,
+        file,
         description: currentWork.description,
         preview: e.target.result,
       });
@@ -71,38 +82,30 @@ export default function WorksForm({
   };
 
   const addWork = () => {
-    const errors = [];
-
-    if (!currentWork.file) {
-      errors.push("لطفاً ابتدا یک عکس انتخاب کنید");
-    }
-
+    const errs = [];
+    if (!currentWork.file) errs.push("لطفاً ابتدا یک عکس انتخاب کنید");
     if (!currentWork.description.trim()) {
-      errors.push("لطفاً شرح عکس را وارد کنید");
+      errs.push("لطفاً شرح عکس را وارد کنید");
     } else if (currentWork.description.length > MAX_DESCRIPTION_LENGTH) {
-      errors.push(
-        `شرح عکس باید کمتر از ${MAX_DESCRIPTION_LENGTH} کاراکتر باشد`,
-      );
+      errs.push(`شرح عکس باید کمتر از ${MAX_DESCRIPTION_LENGTH} کاراکتر باشد`);
     }
+    if (uploadedWorks.length >= MAX_WORKS)
+      errs.push(`حداکثر ${MAX_WORKS} اثر مجاز است`);
 
-    if (uploadedWorks.length >= MAX_WORKS) {
-      errors.push(`حداکثر ${MAX_WORKS} اثر مجاز است`);
-    }
-
-    if (errors.length > 0) {
-      showErrors(errors);
+    if (errs.length > 0) {
+      showErrors(errs);
       return;
     }
 
-    setUploadedWorks([
-      ...uploadedWorks,
-      {
-        id: Date.now(),
-        file: currentWork.file,
-        description: currentWork.description.trim(),
-        preview: currentWork.preview,
-      },
-    ]);
+    const newWork = {
+      id: Date.now(),
+      description: currentWork.description.trim(),
+      preview: currentWork.preview,
+      fileName: currentWork.file.name,
+      fileType: currentWork.file.type,
+    };
+
+    setUploadedWorks((prev) => [...prev, newWork]);
 
     const newIndex = uploadedWorks.length;
     setUploadProgress({ [newIndex]: 0 });
@@ -122,8 +125,7 @@ export default function WorksForm({
   };
 
   const removeWork = (index) => {
-    const updated = uploadedWorks.filter((_, i) => i !== index);
-    setUploadedWorks(updated);
+    setUploadedWorks((prev) => prev.filter((_, i) => i !== index));
     const newProgress = { ...uploadProgress };
     delete newProgress[index];
     setUploadProgress(newProgress);
@@ -140,21 +142,19 @@ export default function WorksForm({
       const uploader = uploadFn || uploadWork;
 
       for (const work of uploadedWorks) {
-        if (work.file) {
-          const formData = new FormData();
-          formData.append("image", work.file);
-          formData.append("description", work.description);
-
-          console.log("📤 آپلود عکس:", work.description);
-          await uploader(formData);
-          console.log("✅ عکس آپلود شد:", work.description);
-        }
+        const file = await dataURLtoFile(
+          work.preview,
+          work.fileName,
+          work.fileType,
+        );
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("description", work.description);
+        await uploader(formData);
       }
 
       if (showFinalSubmit) {
-        console.log("📤 ارسال نهایی ثبت‌نام...");
-        const response = await submitAllWorks();
-        console.log("✅ پاسخ ارسال نهایی:", response.data);
+        await submitAllWorks();
       }
 
       success(`${uploadedWorks.length} اثر با موفقیت ارسال شد`);
@@ -163,25 +163,17 @@ export default function WorksForm({
         onSuccess();
       }, 1500);
     } catch (err) {
-      console.log("❌ خطای کامل:", err);
-      console.log("❌ پاسخ خطا:", err.response?.data);
-
       const errorData = err.response?.data;
       const errorList = [];
-
       if (errorData?.errors) {
         for (const [field, msgs] of Object.entries(errorData.errors)) {
-          if (msgs && msgs.length > 0) {
-            errorList.push(msgs[0]);
-          }
+          if (msgs && msgs.length > 0) errorList.push(msgs[0]);
         }
       }
-
       if (errorList.length > 0) {
         showErrors(errorList);
       } else {
-        const msg = getErrorMessage(err, "خطا در ارسال آثار");
-        error(msg);
+        error(getErrorMessage(err, "خطا در ارسال آثار"));
       }
     } finally {
       setUploading(false);
@@ -193,7 +185,7 @@ export default function WorksForm({
       style={{
         width: "100%",
         maxWidth: "780px",
-        margin: " -5px auto",
+        margin: "-5px auto",
         display: "flex",
         flexDirection: "column",
         height: "100%",
@@ -224,13 +216,7 @@ export default function WorksForm({
             margin: 0,
           }}
         >
-          <span
-            style={{
-              color: "#C9A84C",
-              fontWeight: 700,
-              fontSize: "13px",
-            }}
-          >
+          <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: "13px" }}>
             توجه:
           </span>
           <br />
@@ -353,9 +339,7 @@ export default function WorksForm({
             id="current-file"
             style={{ display: "none" }}
             onChange={(e) => {
-              if (e.target.files[0]) {
-                handleFileSelect(e.target.files[0]);
-              }
+              if (e.target.files[0]) handleFileSelect(e.target.files[0]);
             }}
           />
           <label
@@ -525,11 +509,7 @@ export default function WorksForm({
               </span>
 
               <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
+                style={{ display: "flex", alignItems: "center", gap: "6px" }}
               >
                 <img
                   src={work.preview}
@@ -549,7 +529,7 @@ export default function WorksForm({
                     fontFamily: "w_Lotus, sans-serif",
                   }}
                 >
-                  {work.file?.name?.slice(0, 8)}...
+                  {work.fileName?.slice(0, 8)}...
                 </span>
               </div>
 
@@ -572,12 +552,6 @@ export default function WorksForm({
                   justifyContent: "center",
                   transition: "all 0.2s ease",
                   flexShrink: 0,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.15)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.06)";
                 }}
               >
                 ✕
@@ -666,24 +640,11 @@ export default function WorksForm({
       </motion.button>
 
       <style>{`
-        .works-scroll-container::-webkit-scrollbar {
-          width: 3px;
-        }
-        .works-scroll-container::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.02);
-          border-radius: 4px;
-        }
-        .works-scroll-container::-webkit-scrollbar-thumb {
-          background: linear-gradient(180deg, #A4874D, #C9A84C);
-          border-radius: 4px;
-        }
-        .works-scroll-container::-webkit-scrollbar-thumb:hover {
-          background: #C9A84C;
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
+        .works-scroll-container::-webkit-scrollbar { width: 3px; }
+        .works-scroll-container::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 4px; }
+        .works-scroll-container::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #A4874D, #C9A84C); border-radius: 4px; }
+        .works-scroll-container::-webkit-scrollbar-thumb:hover { background: #C9A84C; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );

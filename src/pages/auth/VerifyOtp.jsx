@@ -1,6 +1,5 @@
-// src/pages/auth/VerifyOtp.jsx
 import { useState, useRef, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { verifyOtp } from "../../services/onboardingService";
 import { useAuth } from "../../hooks/useAuth";
@@ -9,15 +8,17 @@ import {
   error as toastError,
   info as toastInfo,
 } from "../../utils/toast";
+import useRegisterData from "../../hooks/useRegisterData";
 
 const RESEND_SECONDS = 124;
 
 export default function VerifyOtp() {
-  const location = useLocation();
   const navigate = useNavigate();
   const { login, isLoggedIn } = useAuth();
+  const { data, setActiveTab } = useRegisterData();
 
-  const mobile = location.state?.mobile || "۰۹۱۲۳۴۵۶۷۸۹";
+  // ✅ شماره از context (نه location.state)
+  const mobile = data.personal.mobile || "۰۹۱۲۳۴۵۶۷۸۹";
 
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [timeLeft, setTimeLeft] = useState(RESEND_SECONDS);
@@ -28,7 +29,6 @@ export default function VerifyOtp() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      console.log("✅ کاربر لاگین شد، رفتن به داشبورد");
       navigate("/dashboard", { replace: true });
     }
   }, [isLoggedIn, navigate]);
@@ -44,10 +44,7 @@ export default function VerifyOtp() {
     const updated = [...otp];
     updated[index] = value;
     setOtp(updated);
-
-    if (value && index < 3) {
-      inputsRef.current[index + 1]?.focus();
-    }
+    if (value && index < 3) inputsRef.current[index + 1]?.focus();
   };
 
   const handleKeyDown = (index, e) => {
@@ -71,11 +68,7 @@ export default function VerifyOtp() {
 
     setLoading(true);
     try {
-      console.log("📤 ارسال کد تایید به سرور:", code);
-
       const res = await verifyOtp(code);
-      console.log("✅ ثبت‌نام نهایی شد:", res.data);
-
       const success = await login(res.data.tokens, res.data.user);
 
       if (success) {
@@ -85,7 +78,6 @@ export default function VerifyOtp() {
         toastError("خطا در دریافت اطلاعات کاربری");
       }
     } catch (err) {
-      console.log("❌ خطا:", err.response?.data);
       const msg = err.response?.data?.detail || "کد وارد شده صحیح نیست";
       toastError(msg);
       triggerShake();
@@ -100,6 +92,12 @@ export default function VerifyOtp() {
     setOtp(["", "", "", ""]);
     inputsRef.current[0]?.focus();
     toastInfo("کد جدید برای شما ارسال شد");
+  };
+
+  // ✅ تغییر شماره: برگشت به مرحله اول Register (داده‌ها دست‌نخورده چون هر دو مسیر داخل فلو هستن)
+  const handleChangeNumber = () => {
+    setActiveTab("personal");
+    navigate("/register");
   };
 
   const toPersianDigits = (num) => {
@@ -404,10 +402,12 @@ export default function VerifyOtp() {
           </div>
         </div>
 
+        {/* ✅ دو دکمه جدا: ارسال مجدد (فقط وقتی تایمر تموم شد) + تغییر شماره (همیشه فعال) */}
         <div
           style={{
             display: "flex",
             justifyContent: "center",
+            gap: "18px",
             marginBottom: "18px",
           }}
         >
@@ -418,21 +418,36 @@ export default function VerifyOtp() {
               background: "none",
               border: "none",
               color: timeLeft > 0 ? "rgba(255,255,255,0.25)" : "#C9A84C",
-              fontSize: "14px",
+              fontSize: "13px",
               fontWeight: 700,
               fontFamily: "w_Lotus, sans-serif",
               cursor: timeLeft > 0 ? "not-allowed" : "pointer",
-              transition: "all 0.2s ease",
-              padding: "6px 10px",
-              borderRadius: "6px",
+              padding: "6px 8px",
               textDecoration: "underline",
               textUnderlineOffset: "3px",
               textDecorationColor:
                 timeLeft > 0 ? "transparent" : "rgba(201,168,76,0.4)",
-              letterSpacing: "0.3px",
             }}
           >
-            ارسال مجدد / تغییر شماره
+            ارسال مجدد کد
+          </button>
+
+          <button
+            onClick={handleChangeNumber}
+            style={{
+              background: "none",
+              border: "none",
+              color: "rgba(255,255,255,0.55)",
+              fontSize: "13px",
+              fontWeight: 700,
+              fontFamily: "w_Lotus, sans-serif",
+              cursor: "pointer",
+              padding: "6px 8px",
+              textDecoration: "underline",
+              textUnderlineOffset: "3px",
+            }}
+          >
+            تغییر شماره موبایل
           </button>
         </div>
 
@@ -467,7 +482,7 @@ export default function VerifyOtp() {
             opacity: loading ? 0.6 : 1,
           }}
         >
-          {loading ? "در حال تأیید..." : "تأیید و ارسال مجموع آثار"}
+          {loading ? "در حال تأیید..." : "تأیید و ورود"}
         </motion.button>
       </motion.div>
     </div>

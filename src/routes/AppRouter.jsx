@@ -1,20 +1,19 @@
 // src/routes/AppRouter.jsx
+import { AnimatePresence, motion } from "framer-motion";
 import { createBrowserRouter } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import Layout from "../components/layout/Layout";
-import Home from "../pages/Home";
-import Rules from "../pages/Rules";
 import About from "../pages/About";
-import Contact from "../pages/Contact";
 import Announcement from "../pages/Announcement";
-import Register from "../pages/auth/Register";
 import Login from "../pages/auth/Login";
+import Register from "../pages/auth/Register";
 import VerifyOtp from "../pages/auth/VerifyOtp";
-import ChangeNumber from "../pages/auth/ChangeNumber";
-import PrivateRoute from "./PrivateRoute";
+import Contact from "../pages/Contact";
 import Dashboard from "../pages/dashboard/Dashboard";
 import UploadSuccess from "../pages/dashboard/UploadSuccess";
+import Home from "../pages/Home";
 import NotFound from "../pages/NotFound";
+import Rules from "../pages/Rules";
+import PrivateRoute from "./PrivateRoute";
 
 const PageTransition = ({ children }) => (
   <motion.div
@@ -102,14 +101,6 @@ const router = createBrowserRouter([
         element: (
           <PageTransition>
             <VerifyOtp />
-          </PageTransition>
-        ),
-      },
-      {
-        path: "change-number",
-        element: (
-          <PageTransition>
-            <ChangeNumber />
           </PageTransition>
         ),
       },
