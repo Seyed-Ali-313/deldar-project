@@ -36,9 +36,21 @@ export default function Rules() {
   const [agreed, setAgreed] = useState(false);
   const navigate = useNavigate();
 
+  // ✅ فقط وقتی تیک زده شده باشه، به ثبت‌نام بره
   const handleContinue = () => {
     if (!agreed) return;
     navigate("/register");
+  };
+
+  // ✅ کلیک روی کل دکمه پذیرش → تیک میخوره یا برمیداره
+  const handleToggleAgree = () => {
+    setAgreed(!agreed);
+  };
+
+  // ✅ کلیک روی "فراخوان" → فقط به صفحه فراخوان بره (تیک نمیخوره)
+  const handleAnnouncementClick = (e) => {
+    e.stopPropagation(); // جلوگیری از propagate به والد
+    navigate("/announcement");
   };
 
   return (
@@ -78,21 +90,25 @@ export default function Rules() {
         </div>
       </div>
 
+      {/* ✅ بخش پایین - اصلاح شده */}
       <div className="cta-section">
-        <label className="agreement-check">
-          <span
-            className={`checkbox ${agreed ? "checked" : ""}`}
-            onClick={() => setAgreed(!agreed)}
-          />
+        {/* ✅ چک‌باکس + متن - کل دکمه قابل کلیک */}
+        <div
+          className="agreement-check"
+          onClick={handleToggleAgree}
+          style={{ cursor: "pointer" }}
+        >
+          <span className={`checkbox ${agreed ? "checked" : ""}`} />
           <span>
             قوانین و &emsp;
-            <Link
-              to="/announcement"
+            <span
+              onClick={handleAnnouncementClick}
               style={{
                 color: "#2563eb",
                 fontWeight: "700",
                 textDecoration: "none",
                 fontSize: "1.1rem",
+                cursor: "pointer",
               }}
               onMouseEnter={(e) => {
                 e.target.style.color = "#1d4ed8";
@@ -104,16 +120,18 @@ export default function Rules() {
               }}
             >
               فراخوان
-            </Link>{" "}
+            </span>{" "}
             &emsp;را مطالعه کرده و می‌پذیرم
           </span>
-        </label>
+        </div>
+
+        {/* ✅ دکمه ادامه - فقط وقتی تیک خورده باشه فعال میشه */}
         <button
           className="btn-accept"
           onClick={handleContinue}
           disabled={!agreed}
           style={{
-            opacity: agreed ? 1 : 0.5,
+            opacity: agreed ? 1 : 0.4,
             cursor: agreed ? "pointer" : "not-allowed",
           }}
         >
@@ -177,7 +195,6 @@ export default function Rules() {
           transition: none;
         }
 
-        /* ✅ فقط تغییر رنگ متن در هاور */
         .rules-list li:hover {
           color: #C9A84C;
         }
@@ -233,7 +250,6 @@ export default function Rules() {
           transition: none;
         }
 
-        /* ✅ فقط تغییر رنگ متن در هاور */
         .info-section ul li:hover {
           color: #C9A84C;
         }
@@ -257,7 +273,6 @@ export default function Rules() {
           border-top: 1px solid rgba(255, 255, 255, 0.04);
           flex-wrap: nowrap;
           margin-right: -88px;
-
         }
 
         /* ===== چک‌باکس ===== */
@@ -265,7 +280,6 @@ export default function Rules() {
           display: flex;
           align-items: center;
           gap: 10px;
-          cursor: pointer;
           user-select: none;
           flex-shrink: 0;
         }
@@ -359,6 +373,7 @@ export default function Rules() {
             gap: 10px;
             padding: 10px 16px 16px;
             flex-wrap: wrap;
+            margin-right: 0;
           }
 
           .agreement-check {

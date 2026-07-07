@@ -195,6 +195,10 @@ export default function SubmittedWorks() {
                   <img
                     src={work.image || "/src/assets/images/logo-bg.png"}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="44"
+                    height="44"
                     style={{
                       width: "100%",
                       height: "100%",

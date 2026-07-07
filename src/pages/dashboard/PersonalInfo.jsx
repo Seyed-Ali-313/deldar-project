@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import FormInput from "../../components/common/FormInput";
+import NumericInput from "../../components/common/NumericInput";
 import SkeletonForm from "../../components/common/SkeletonForm";
 import {
   getProfile,
@@ -142,12 +143,15 @@ export default function PersonalInfo() {
         )}
       </div>
 
-      <FormInput
-        placeholder="کدملی*"
+      <NumericInput
+        placeholder="کد ملی (۱۰ رقم)"
         required
         register={register}
         name="national_code"
+        exactLength={10}
+        maxLength={10}
       />
+
       <FormInput
         placeholder="تاریخ تولد*"
         required
@@ -182,11 +186,14 @@ export default function PersonalInfo() {
         register={register}
         name="bale_id"
       />
-      <FormInput
-        placeholder="کدپستی*"
+
+      <NumericInput
+        placeholder="کدپستی (۱۰ رقم)"
         required
         register={register}
         name="postal_code"
+        exactLength={10}
+        maxLength={10}
       />
 
       {showOtpBox && (

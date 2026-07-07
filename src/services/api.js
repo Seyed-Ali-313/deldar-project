@@ -1,5 +1,6 @@
 // src/services/api.js
 import axios from "axios";
+import { showError } from "../utils/errorHandler";
 
 const BASE_URL = "/api";
 
@@ -9,20 +10,18 @@ const api = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
-  // ❌ withCredentials رو غیرفعال کن
   withCredentials: false,
+  timeout: 30000, // ✅ 30 ثانیه تایم‌اوت
 });
 
 // ✅ اینترسپتور برای JWT
 api.interceptors.request.use(
   (config) => {
-    // 1️⃣ اولویت با JWT
     const accessToken = localStorage.getItem("access_token");
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
       console.log("🔑 ارسال با JWT:", config.url);
     } else {
-      // 2️⃣ اگر JWT نبود، از Draft Token استفاده کن (برای ثبت‌نام)
       const draftToken = localStorage.getItem("draft_token");
       if (draftToken) {
         config.headers["X-Draft-Token"] = draftToken;
@@ -31,16 +30,14 @@ api.interceptors.request.use(
         console.log("❌ بدون توکن:", config.url);
       }
     }
-
     return config;
   },
   (error) => Promise.reject(error),
 );
 
-// ✅ مدیریت 401 و رفرش توکن
+// ✅ مدیریت 401 و رفرش توکن + خطاهای شبکه
 api.interceptors.response.use(
   (response) => {
-    // ذخیره Draft Token اگر از سرور برگشت
     const newDraftToken = response.headers["x-draft-token"];
     if (newDraftToken) {
       localStorage.setItem("draft_token", newDraftToken);
@@ -50,9 +47,19 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // ✅ خطای شبکه (قطع اینترنت)
+    if (!error.response) {
+      console.log("❌ خطای شبکه:", error.message);
+      showError(
+        error,
+        "ارتباط با سرور برقرار نشد. لطفاً اتصال اینترنت خود را بررسی کنید.",
+      );
+      return Promise.reject(error);
+    }
+
     console.log("❌ خطا:", error.response?.status, error.response?.config?.url);
 
-    // اگر 401 بود و JWT داشتیم، سعی کن رفرش کنی
+    // ✅ مدیریت 401 و رفرش توکن
     if (error.response?.status === 401 && !originalRequest._retry) {
       const refreshToken = localStorage.getItem("refresh_token");
 
@@ -88,6 +95,31 @@ api.interceptors.response.use(
       ) {
         window.location.href = "/login";
       }
+    }
+
+    // ✅ نمایش خطا برای وضعیت‌های خاص
+    if (error.response?.status === 403) {
+      showError(error, "شما دسترسی لازم برای این عملیات را ندارید.");
+    }
+
+    if (error.response?.status === 404) {
+      showError(error, "اطلاعات مورد نظر یافت نشد.");
+    }
+
+    if (error.response?.status === 405) {
+      showError(error, "این عملیات در سرور پشتیبانی نمی‌شود.");
+    }
+
+    if (error.response?.status === 500) {
+      showError(error, "خطای داخلی سرور. لطفاً مجدداً تلاش کنید.");
+    }
+
+    if (
+      error.response?.status === 502 ||
+      error.response?.status === 503 ||
+      error.response?.status === 504
+    ) {
+      showError(error, "سرور در دسترس نیست. لطفاً چند دقیقه دیگر تلاش کنید.");
     }
 
     return Promise.reject(error);

@@ -393,7 +393,7 @@ button {
   position: relative;
   width: clamp(304px, 15vw, 146px);
   aspect-ratio: 785 / 928;
-  margin: 140px auto -160px;
+  margin: 5px auto -165px;
 }
 .logo-pm {
   position: absolute;

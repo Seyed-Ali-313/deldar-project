@@ -8,9 +8,7 @@ export default defineConfig({
       "/api": {
         target: "https://ipcphotos.com",
         changeOrigin: true,
-        secure: false,
-        cookieDomainRewrite: "localhost",
-        rewrite: (path) => path.replace(/^\/api/, "/api/v1"),
+        secure: true,
       },
     },
   },

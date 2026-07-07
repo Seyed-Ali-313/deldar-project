@@ -107,7 +107,7 @@ export default function Home() {
       </section>
 
       <style>{`
-        /* ===== صفحه اصلی - مثل حالت اولیه ===== */
+        /* ===== صفحه اصلی - نسخه نهایی ===== */
         .hm-page {
           position: relative;
           overflow: hidden;
@@ -129,7 +129,7 @@ export default function Home() {
             radial-gradient(circle 600px at 50% 50%, rgba(164, 135, 77, 0.04), transparent);
         }
 
-        /* ===== Hero - دقیقاً مثل حالت اولیه ===== */
+        /* ===== Hero ===== */
         .hm-hero {
           position: relative;
           z-index: 1;
@@ -165,7 +165,7 @@ export default function Home() {
           text-align: center;
         }
 
-        /* ===== تصویر شاخه - مثل حالت اولیه ===== */
+        /* ===== تصویر شاخه ===== */
         .hm-illustration {
           position: relative;
           width: clamp(180px, 15vw, 250px);
@@ -198,7 +198,7 @@ export default function Home() {
           filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.3));
         }
 
-        /* ===== تایمر - مثل حالت اولیه ===== */
+        /* ===== تایمر ===== */
         .hm-countdown-wrap {
           width: 100%;
           position: relative;
@@ -248,10 +248,6 @@ export default function Home() {
           transition: color 0.3s ease;
         }
 
-        .hm-countdown-wrap:hover .countdown-numbers span {
-          color: #ffffff;
-        }
-
         .hm-countdown-wrap .countdown-numbers span::after {
           content: "";
           position: absolute;
@@ -289,7 +285,7 @@ export default function Home() {
           color: #c9a84c;
         }
 
-        /* ===== دکمه‌ها - مثل حالت اولیه ===== */
+        /* ===== دکمه‌ها ===== */
         .hm-cta-row {
           display: flex;
           align-items: center;
@@ -373,7 +369,7 @@ export default function Home() {
           transform: scale(0.97) !important;
         }
 
-        /* ===== لوگو - مثل حالت اولیه ===== */
+        /* ===== لوگو ===== */
         .hm-logo-stack {
           position: relative;
           width: clamp(400px, 32vw, 620px);
@@ -462,7 +458,7 @@ export default function Home() {
         }
 
         /* ============================================================ */
-        /* ===== ریسپانسیو - فقط برای کوچک شدن ===== */
+        /* ===== ریسپانسیو ===== */
         /* ============================================================ */
 
         @media (max-width: 1200px) {
@@ -578,7 +574,7 @@ export default function Home() {
           }
           .hm-caption {
             font-size: 13px;
-            margin-top: -16px;
+            margin-top: -20px;
             margin-bottom: 12px;
             margin-left: 0;
           }
@@ -631,7 +627,7 @@ export default function Home() {
           }
           .hm-caption {
             font-size: 11px;
-            margin-top: -10px;
+            margin-top: -15px;
             margin-bottom: 8px;
             margin-left: 0;
           }
@@ -677,7 +673,7 @@ export default function Home() {
           }
           .hm-caption {
             font-size: 10px;
-            margin-top: -8px;
+            margin-top: -10px;
             margin-bottom: 6px;
           }
           .hm-btn {

@@ -79,10 +79,17 @@ export default function Header() {
   return (
     <header className="header-premium">
       <div className="header-inner">
-        {/* لوگو */}
+        {/* لوگو - با بهینه‌سازی تصویر */}
         <div className="brand">
           <Link to="/" className="brand-logo">
-            <img src={logo} alt="خانه عکاسان ایران" />
+            <img
+              src={logo}
+              alt="خانه عکاسان ایران"
+              loading="lazy"
+              decoding="async"
+              width="48"
+              height="48"
+            />
           </Link>
         </div>
 

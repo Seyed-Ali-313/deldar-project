@@ -26,3 +26,7 @@ export const getDraft = () => api.get("/onboarding/draft/");
 // تایید OTP و ساخت اکانت
 export const verifyOtp = (otp_code) =>
   api.post("/onboarding/verify/", { otp_code });
+
+// ✅ ارسال مجدد OTP
+export const resendOtp = (mobile) =>
+  api.post("/onboarding/resend-otp/", { mobile });

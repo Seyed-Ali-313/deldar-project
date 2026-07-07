@@ -161,6 +161,7 @@ export default function NumericInput({
         <input
           type="text"
           inputMode="numeric"
+          pattern="[0-9]*"
           className="register-input"
           placeholder={displayPlaceholder}
           maxLength={maxLength || exactLength || 20}

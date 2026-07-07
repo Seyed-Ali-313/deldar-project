@@ -15,22 +15,33 @@ export default function SkeletonWorks({ count = 5 }) {
           borderRadius: "14px",
         }}
       >
-        <div
+        <motion.div
+          initial={{ opacity: 0.3 }}
+          animate={{ opacity: [0.3, 0.7, 0.3] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           style={{
             width: "120px",
             height: "20px",
-            background: "rgba(255,255,255,0.06)",
+            background: "rgba(201, 168, 76, 0.06)",
             borderRadius: "8px",
-            animation: "pulse 1.5s ease-in-out infinite",
+            border: "1px solid rgba(201, 168, 76, 0.03)",
           }}
         />
-        <div
+        <motion.div
+          initial={{ opacity: 0.3 }}
+          animate={{ opacity: [0.3, 0.7, 0.3] }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            delay: 0.2,
+            ease: "easeInOut",
+          }}
           style={{
             width: "60px",
             height: "28px",
-            background: "rgba(255,255,255,0.06)",
+            background: "rgba(201, 168, 76, 0.06)",
             borderRadius: "10px",
-            animation: "pulse 1.5s ease-in-out infinite",
+            border: "1px solid rgba(201, 168, 76, 0.03)",
           }}
         />
       </div>
@@ -54,62 +65,83 @@ export default function SkeletonWorks({ count = 5 }) {
               border: "1px solid rgba(255,255,255,0.04)",
             }}
           >
-            {/* تصویر اسکلت */}
-            <div
+            <motion.div
+              initial={{ opacity: 0.3 }}
+              animate={{ opacity: [0.3, 0.7, 0.3] }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: i * 0.06,
+                ease: "easeInOut",
+              }}
               style={{
                 width: "44px",
                 height: "44px",
                 borderRadius: "10px",
-                background: "rgba(255,255,255,0.05)",
-                animation: "pulse 1.5s ease-in-out infinite",
+                background: "rgba(201, 168, 76, 0.05)",
+                border: "1px solid rgba(201, 168, 76, 0.03)",
               }}
             />
 
-            {/* توضیحات اسکلت */}
             <div
               style={{ display: "flex", flexDirection: "column", gap: "6px" }}
             >
-              <div
+              <motion.div
+                initial={{ opacity: 0.3 }}
+                animate={{ opacity: [0.3, 0.7, 0.3] }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  delay: i * 0.08,
+                  ease: "easeInOut",
+                }}
                 style={{
                   width: "80%",
                   height: "14px",
-                  background: "rgba(255,255,255,0.05)",
+                  background: "rgba(201, 168, 76, 0.05)",
                   borderRadius: "6px",
-                  animation: "pulse 1.5s ease-in-out infinite",
+                  border: "1px solid rgba(201, 168, 76, 0.02)",
                 }}
               />
-              <div
+              <motion.div
+                initial={{ opacity: 0.3 }}
+                animate={{ opacity: [0.3, 0.7, 0.3] }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  delay: i * 0.1,
+                  ease: "easeInOut",
+                }}
                 style={{
                   width: "40%",
                   height: "10px",
-                  background: "rgba(255,255,255,0.03)",
+                  background: "rgba(201, 168, 76, 0.03)",
                   borderRadius: "4px",
-                  animation: "pulse 1.5s ease-in-out infinite",
+                  border: "1px solid rgba(201, 168, 76, 0.02)",
                 }}
               />
             </div>
 
-            {/* دکمه حذف اسکلت */}
-            <div
+            <motion.div
+              initial={{ opacity: 0.3 }}
+              animate={{ opacity: [0.3, 0.7, 0.3] }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: i * 0.12,
+                ease: "easeInOut",
+              }}
               style={{
                 width: "30px",
                 height: "30px",
                 borderRadius: "8px",
-                background: "rgba(255,255,255,0.03)",
-                animation: "pulse 1.5s ease-in-out infinite",
+                background: "rgba(201, 168, 76, 0.03)",
+                border: "1px solid rgba(201, 168, 76, 0.02)",
               }}
             />
           </motion.div>
         ))}
       </div>
-
-      <style>{`
-        @keyframes pulse {
-          0% { opacity: 0.3; }
-          50% { opacity: 0.7; }
-          100% { opacity: 0.3; }
-        }
-      `}</style>
     </div>
   );
 }

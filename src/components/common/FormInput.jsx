@@ -10,10 +10,13 @@ export default function FormInput({
   error,
   onBlur,
   validate,
+  inputMode,
+  pattern,
   ...props
 }) {
   const [touched, setTouched] = useState(false);
   const [clientError, setClientError] = useState(null);
+  const [value, setValue] = useState("");
 
   useEffect(() => {
     if (error) {
@@ -32,10 +35,27 @@ export default function FormInput({
     if (onBlur) onBlur(e);
   };
 
-  // ✅ نمایش خطا - اولویت با validate هست
-  const displayError = clientError || error || null;
+  const handleChange = (e) => {
+    const val = e.target.value;
+    setValue(val);
 
-  // ✅ placeholder رو با خطا نشون بده (برای جلب توجه)
+    // اگر pattern عددی هست و عدد نیست، فیلتر کن
+    if (pattern === "[0-9]*" && val && !/^[0-9]*$/.test(val)) {
+      const cleaned = val.replace(/[^0-9]/g, "");
+      e.target.value = cleaned;
+      setValue(cleaned);
+      if (register && name) {
+        register(name).onChange(e);
+      }
+      return;
+    }
+
+    if (register && name) {
+      register(name).onChange(e);
+    }
+  };
+
+  const displayError = clientError || error || null;
   const displayPlaceholder = displayError || placeholder;
 
   return (
@@ -57,9 +77,12 @@ export default function FormInput({
           className="register-input"
           placeholder={displayPlaceholder}
           onBlur={handleBlur}
+          onChange={handleChange}
           style={{
             color: displayError ? "#c0392b" : "#1a1a1a",
           }}
+          inputMode={inputMode}
+          pattern={pattern}
           {...(register ? register(name, { required }) : {})}
           {...props}
         />
