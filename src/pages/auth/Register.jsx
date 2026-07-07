@@ -1,3 +1,4 @@
+// src/pages/auth/Register.jsx
 import poem from "../../assets/images/poem.svg";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -73,7 +74,6 @@ export default function Register() {
                 <PersonalInfoForm
                   onSuccess={() => {
                     setCompleted({ personal: true });
-                    // اگه مرحله بعدی قبلاً کامل شده بود (مثلاً برگشته برای اصلاح شماره)، مستقیم برو works
                     setActiveTab(completed.additional ? "works" : "additional");
                   }}
                 />

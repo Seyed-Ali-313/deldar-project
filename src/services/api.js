@@ -54,6 +54,8 @@ api.interceptors.response.use(
         error,
         "ارتباط با سرور برقرار نشد. لطفاً اتصال اینترنت خود را بررسی کنید.",
       );
+      // ✅ جلوگیری از نمایش تکراری همین خطا در catch بلاک صفحات
+      error.handledByInterceptor = true;
       return Promise.reject(error);
     }
 
@@ -87,17 +89,21 @@ api.interceptors.response.use(
       localStorage.removeItem("refresh_token");
       localStorage.removeItem("draft_token");
 
-      // فقط اگه در صفحات لاگین نباشی، هدایت کن
-      if (
-        !window.location.pathname.includes("/login") &&
-        !window.location.pathname.includes("/verify-otp") &&
-        !window.location.pathname.includes("/register")
-      ) {
+      const isOnPublicFlow =
+        window.location.pathname.includes("/login") ||
+        window.location.pathname.includes("/verify-otp") ||
+        window.location.pathname.includes("/register");
+
+      // فقط اگه در صفحات لاگین/ثبت‌نام نباشی، پیام بده و هدایت کن
+      if (!isOnPublicFlow) {
+        showError(error, "نشست شما منقضی شده است. لطفاً دوباره وارد شوید.");
+        error.handledByInterceptor = true;
         window.location.href = "/login";
       }
     }
 
-    // ✅ نمایش خطا برای وضعیت‌های خاص
+    // ✅ نمایش خطا برای وضعیت‌های خاص (این‌ها خطاهای عمومی سرور هستن،
+    // پس دیگه نباید توی catch خود صفحه دوباره نمایش داده بشن)
     if (error.response?.status === 403) {
       showError(error, "شما دسترسی لازم برای این عملیات را ندارید.");
     }
@@ -120,6 +126,12 @@ api.interceptors.response.use(
       error.response?.status === 504
     ) {
       showError(error, "سرور در دسترس نیست. لطفاً چند دقیقه دیگر تلاش کنید.");
+    }
+
+    // ✅ این وضعیت‌ها بالا پیام‌شون نمایش داده شد؛ فلگ می‌زنیم تا
+    // صفحات (فرم‌ها) دوباره برای همون خطا توست جدا نفرستن و پیام قبلی پاک نشه
+    if ([403, 404, 405, 500, 502, 503, 504].includes(error.response?.status)) {
+      error.handledByInterceptor = true;
     }
 
     return Promise.reject(error);

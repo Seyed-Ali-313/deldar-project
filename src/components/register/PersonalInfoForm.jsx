@@ -112,7 +112,7 @@ export default function PersonalInfoForm({ onSuccess }) {
       };
 
       await submitStep1(payload);
-      success("اطلاعات با موفقیت ثبت شد");
+      success("اطلاعات شخصی شما ثبت شد");
 
       updatePersonal(payload);
 
@@ -121,7 +121,9 @@ export default function PersonalInfoForm({ onSuccess }) {
     } catch (err) {
       if (err.response?.data?.errors) {
         handleServerErrors(err.response.data);
-      } else {
+      } else if (!err.handledByInterceptor) {
+        // ✅ اگه اینترسپتور axios قبلاً پیام این خطا رو نشون داده،
+        // دوباره پیام جدید نمی‌فرستیم تا پیام قبلی پاک نشه
         error(getErrorMessage(err, "خطا در ثبت اطلاعات"));
       }
       isSubmitting.current = false;

@@ -100,7 +100,7 @@ export default function AdditionalInfoForm({ onSuccess }) {
       };
 
       await submitStep2(payload);
-      success("اطلاعات تکمیلی با موفقیت ثبت شد");
+      success("اطلاعات تکمیلی شما ثبت شد");
 
       updateAdditional(payload);
 
@@ -109,7 +109,9 @@ export default function AdditionalInfoForm({ onSuccess }) {
     } catch (err) {
       if (err.response?.data?.errors) {
         handleServerErrors(err.response.data);
-      } else {
+      } else if (!err.handledByInterceptor) {
+        // ✅ اگه اینترسپتور axios قبلاً پیام این خطا رو نشون داده،
+        // دوباره پیام جدید نمی‌فرستیم تا پیام قبلی پاک نشه
         error(getErrorMessage(err, "خطا در ثبت اطلاعات"));
       }
       isSubmitting.current = false;

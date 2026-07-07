@@ -32,8 +32,20 @@ export default function VerifyOtp() {
   const [activeIndex, setActiveIndex] = useState(null);
   const [shake, setShake] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [banner, setBanner] = useState(null); // { type: 'success' | 'error' | 'info', message: string }
   const inputsRef = useRef([]);
   const hasAutoSubmitted = useRef(false);
+  const bannerTimerRef = useRef(null);
+
+  const showBanner = (type, message, duration = 4000) => {
+    clearTimeout(bannerTimerRef.current);
+    setBanner({ type, message });
+    if (duration) {
+      bannerTimerRef.current = setTimeout(() => setBanner(null), duration);
+    }
+  };
+
+  useEffect(() => () => clearTimeout(bannerTimerRef.current), []);
 
   useEffect(() => {
     if (isLoggedIn) navigate("/dashboard", { replace: true });
@@ -48,7 +60,9 @@ export default function VerifyOtp() {
   const handleSubmit = async (codeOverride) => {
     const code = codeOverride ?? otp.join("");
     if (code.length !== OTP_LENGTH) {
-      toastError("کد ۴ رقمی را کامل وارد کنید");
+      const msg = "لطفاً هر ۴ رقم کد را کامل وارد کنید";
+      showBanner("error", msg);
+      toastError(msg);
       triggerShake();
       return;
     }
@@ -59,14 +73,25 @@ export default function VerifyOtp() {
       const success = await login(res.data.tokens, res.data.user);
 
       if (success) {
-        toastSuccess("ثبت‌نام با موفقیت انجام شد");
-        navigate("/dashboard", { replace: true });
+        const msg = "ثبت‌نام شما با موفقیت تکمیل شد";
+        showBanner("success", msg, 1800);
+        toastSuccess(msg);
+        setTimeout(() => navigate("/dashboard", { replace: true }), 700);
       } else {
-        toastError("خطا در دریافت اطلاعات کاربری");
+        const msg = "مشکلی در دریافت اطلاعات کاربری پیش آمد. دوباره تلاش کنید";
+        showBanner("error", msg);
+        toastError(msg);
       }
     } catch (err) {
-      const msg = err.response?.data?.detail || "کد وارد شده صحیح نیست";
-      toastError(msg);
+      // پیام دقیق از سرور در اولویت است؛ در غیر این صورت یک متن کوتاه و روشن نمایش داده می‌شود
+      const serverMsg =
+        err.response?.data?.detail || err.response?.data?.message;
+      const msg =
+        serverMsg || "کد وارد شده صحیح نیست. لطفاً دوباره امتحان کنید";
+      showBanner("error", msg);
+      // ✅ بنر داخل کارت همیشه نشون داده می‌شه؛ توست عمومی رو فقط وقتی می‌فرستیم
+      // که اینترسپتور axios قبلاً پیامی برای همین خطا نشون نداده باشه
+      if (!err.handledByInterceptor) toastError(msg);
       triggerShake();
       setOtp(Array(OTP_LENGTH).fill(""));
       hasAutoSubmitted.current = false;
@@ -121,7 +146,9 @@ export default function VerifyOtp() {
     setOtp(Array(OTP_LENGTH).fill(""));
     hasAutoSubmitted.current = false;
     inputsRef.current[0]?.focus();
-    toastInfo("کد جدید برای شما ارسال شد");
+    const msg = "کد جدید برای شما پیامک شد";
+    showBanner("info", msg, 3000);
+    toastInfo(msg);
   };
 
   const handleChangeNumber = () => {
@@ -177,6 +204,71 @@ export default function VerifyOtp() {
         </motion.div>
 
         <h1 className="otp-title">تأیید شماره موبایل</h1>
+
+        <AnimatePresence mode="wait">
+          {banner && (
+            <motion.div
+              key={banner.message}
+              initial={{ opacity: 0, y: -8, height: 0, marginBottom: 0 }}
+              animate={{ opacity: 1, y: 0, height: "auto", marginBottom: 14 }}
+              exit={{ opacity: 0, y: -6, height: 0, marginBottom: 0 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className={`otp-banner otp-banner-${banner.type}`}
+              role="status"
+            >
+              <span className="otp-banner-icon" aria-hidden="true">
+                {banner.type === "success" && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M4 12.5l5 5L20 6.5"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+                {banner.type === "error" && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="9"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M12 7.5v6"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                    />
+                    <circle cx="12" cy="16.5" r="1.1" fill="currentColor" />
+                  </svg>
+                )}
+                {banner.type === "info" && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="9"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M12 11v5.5"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                    />
+                    <circle cx="12" cy="7.8" r="1.1" fill="currentColor" />
+                  </svg>
+                )}
+              </span>
+              <span className="otp-banner-text">{banner.message}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <p className="otp-subtitle">
           کد تایید به شماره
@@ -331,7 +423,7 @@ export default function VerifyOtp() {
             0 24px 70px rgba(0,0,0,0.45),
             0 0 0 1px rgba(201,168,76,0.06),
             inset 0 1px 0 rgba(255,255,255,0.04);
-            margin-top: 5px;
+            margin-top:5px;
         }
 
         .otp-icon-wrap {
@@ -380,6 +472,46 @@ export default function VerifyOtp() {
           letter-spacing: 0.3px;
         }
 
+        .otp-banner {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          overflow: hidden;
+          padding: 10px 14px;
+          border-radius: 12px;
+          font-family: "w_Lotus", sans-serif;
+          font-size: 12.5px;
+          font-weight: 600;
+          line-height: 1.6;
+          text-align: center;
+        }
+
+        .otp-banner-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .otp-banner-success {
+          background: rgba(75, 181, 121, 0.12);
+          border: 1px solid rgba(75, 181, 121, 0.35);
+          color: #6fd19a;
+        }
+
+        .otp-banner-error {
+          background: rgba(224, 85, 85, 0.1);
+          border: 1px solid rgba(224, 85, 85, 0.35);
+          color: #f08a8a;
+        }
+
+        .otp-banner-info {
+          background: rgba(201, 168, 76, 0.1);
+          border: 1px solid rgba(201, 168, 76, 0.3);
+          color: #d9be74;
+        }
+
         .otp-subtitle {
           font-family: "w_Lotus", sans-serif;
           font-size: 13px;
@@ -390,7 +522,7 @@ export default function VerifyOtp() {
           flex-wrap: wrap;
           align-items: center;
           justify-content: center;
-          gap: 4px;
+          gap: 7px;
         }
 
         .otp-mobile {
@@ -418,6 +550,7 @@ export default function VerifyOtp() {
           transition: all 0.25s ease;
           margin: 0;
           flex-shrink: 0;
+          margin-right: 7px;
         }
 
         .otp-edit-btn:hover {

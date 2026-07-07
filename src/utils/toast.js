@@ -5,26 +5,26 @@ import { toast as toastify } from "react-toastify";
 export const success = (message, options = {}) => {
   toastify.success(message, {
     position: "top-center",
-    autoClose: 3500,
+    autoClose: 1500,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
     style: {
-      background: "#034120", // پس‌زمینه سبز تیره سایت
-      color: "#C9A84C", // متن طلایی روشن سایت
+      background: "#034120",
+      color: "#C9A84C",
       border: "1px solid rgba(201, 168, 76, 0.3)",
       borderRadius: "14px",
-      padding: "16px 24px",
+      padding: "12px 20px",
       fontFamily: "w_Nian, sans-serif",
-      fontSize: "15px",
+      fontSize: "14px",
       fontWeight: "700",
       boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
       letterSpacing: "0.3px",
     },
     progressStyle: {
-      background: "linear-gradient(90deg, #A4874D, #C9A84C)", // نوار پیشرفت طلایی
-      height: "4px",
+      background: "linear-gradient(90deg, #A4874D, #C9A84C)",
+      height: "3px",
       borderRadius: "0 0 14px 14px",
     },
     icon: false,
@@ -36,26 +36,26 @@ export const success = (message, options = {}) => {
 export const error = (message, options = {}) => {
   toastify.error(message, {
     position: "top-center",
-    autoClose: 3500,
+    autoClose: 2000,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
     style: {
-      background: "#2a0a0a", // پس‌زمینه قرمز تیره
-      color: "#ffffff", // متن سفید
+      background: "#2a0a0a",
+      color: "#ffffff",
       border: "1px solid rgba(176, 1, 1, 0.3)",
       borderRadius: "14px",
-      padding: "16px 24px",
+      padding: "12px 20px",
       fontFamily: "w_Nian, sans-serif",
-      fontSize: "15px",
+      fontSize: "14px",
       fontWeight: "700",
       boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
       letterSpacing: "0.3px",
     },
     progressStyle: {
       background: "linear-gradient(90deg, #B00101, #ff4444)",
-      height: "4px",
+      height: "3px",
       borderRadius: "0 0 14px 14px",
     },
     icon: false,
@@ -67,26 +67,26 @@ export const error = (message, options = {}) => {
 export const info = (message, options = {}) => {
   toastify.info(message, {
     position: "top-center",
-    autoClose: 3500,
+    autoClose: 1500,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
     style: {
-      background: "#0a1a12", // پس‌زمینه سبز خیلی تیره
-      color: "#E8D5A3", // متن طلایی روشن‌تر
+      background: "#0a1a12",
+      color: "#E8D5A3",
       border: "1px solid rgba(201, 168, 76, 0.2)",
       borderRadius: "14px",
-      padding: "16px 24px",
+      padding: "12px 20px",
       fontFamily: "w_Nian, sans-serif",
-      fontSize: "15px",
+      fontSize: "14px",
       fontWeight: "700",
       boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
       letterSpacing: "0.3px",
     },
     progressStyle: {
       background: "linear-gradient(90deg, #A4874D, #C9A84C)",
-      height: "4px",
+      height: "3px",
       borderRadius: "0 0 14px 14px",
     },
     icon: false,
@@ -95,29 +95,29 @@ export const info = (message, options = {}) => {
 };
 
 // ✅ Toast هشدار
-export const warn = (message, options = {}) => {
+export const warning = (message, options = {}) => {
   toastify.warning(message, {
     position: "top-center",
-    autoClose: 3500,
+    autoClose: 1500,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
     style: {
-      background: "#1a0e00", // پس‌زمینه نارنجی تیره
-      color: "#FFD54F", // متن زرد روشن
+      background: "#1a0e00",
+      color: "#FFD54F",
       border: "1px solid rgba(255, 152, 0, 0.3)",
       borderRadius: "14px",
-      padding: "16px 24px",
+      padding: "12px 20px",
       fontFamily: "w_Nian, sans-serif",
-      fontSize: "15px",
+      fontSize: "14px",
       fontWeight: "700",
       boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
       letterSpacing: "0.3px",
     },
     progressStyle: {
       background: "linear-gradient(90deg, #ff9800, #ff5722)",
-      height: "4px",
+      height: "3px",
       borderRadius: "0 0 14px 14px",
     },
     icon: false,
@@ -128,11 +128,14 @@ export const warn = (message, options = {}) => {
 // ✅ نمایش خطاهای چندگانه
 export const showErrors = (errors) => {
   if (!errors || errors.length === 0) return;
-  const message =
-    errors.length === 1
-      ? errors[0]
-      : errors.map((e, i) => `${i + 1}. ${e}`).join(" • ");
-  error(message);
+
+  if (errors.length === 1) {
+    error(`⚠️ ${errors[0]}`);
+    return;
+  }
+
+  const errorList = errors.map((e, i) => `${i + 1}. ${e}`).join(" • ");
+  error(`⚠️ ${errors.length} خطا: ${errorList}`);
 };
 
 // ✅ حذف همه toast ها
@@ -142,7 +145,10 @@ export const dismissAll = () => {
 
 // ✅ Toast عمومی
 export const show = (message, type = "info", options = {}) => {
-  const types = { success, error, info, warn };
+  const types = { success, error, info, warning };
   const fn = types[type] || info;
   fn(message, options);
 };
+
+// ✅ Alias برای سازگاری با کدهای قبلی
+export const warn = warning;

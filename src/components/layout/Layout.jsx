@@ -1,5 +1,8 @@
+// src/components/layout/Layout.jsx
 import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Header from "./Header";
 import useRegisterData from "../../hooks/useRegisterData";
 
@@ -21,7 +24,6 @@ export default function Layout() {
     const wasInFlow = isInRegisterFlow(prevPath);
     const isInFlowNow = isInRegisterFlow(currentPath);
 
-    // فقط وقتی از داخل فلو، به بیرون فلو رفت پاک می‌کنیم
     if (wasInFlow && !isInFlowNow) {
       clearAll();
     }
@@ -35,6 +37,28 @@ export default function Layout() {
       <main>
         <Outlet />
       </main>
+
+      {/* ✅ اضافه کردن ToastContainer */}
+      <ToastContainer
+        position="top-center"
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        style={{
+          direction: "rtl",
+          fontFamily: "w_Nian, sans-serif",
+        }}
+        toastStyle={{
+          borderRadius: "14px",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+        }}
+      />
     </>
   );
 }

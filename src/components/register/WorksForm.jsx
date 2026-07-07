@@ -172,7 +172,9 @@ export default function WorksForm({
       }
       if (errorList.length > 0) {
         showErrors(errorList);
-      } else {
+      } else if (!err.handledByInterceptor) {
+        // ✅ اگه اینترسپتور axios قبلاً پیام این خطا رو نشون داده،
+        // دوباره پیام جدید نمی‌فرستیم تا پیام قبلی پاک نشه
         error(getErrorMessage(err, "خطا در ارسال آثار"));
       }
     } finally {
