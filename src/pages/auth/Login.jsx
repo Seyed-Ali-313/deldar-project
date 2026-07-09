@@ -722,12 +722,15 @@ export default function Login() {
           .lg-otp-row {
             justify-content: center;
           }
+          /* ✅ هماهنگ و بزرگ‌تر از قبل، وسط‌چین */
           .lg-logo-block {
-            width: clamp(220px, 48vw, 320px);
+            width: clamp(600px, 80vw, 600px) !important;
+            margin: 0 auto !important;
           }
+          /* ✅ متن بزرگ‌تر و نزدیک‌تر به لوگو */
           .lg-caption {
-            font-size: 13px;
-            margin-top: -52px;
+            font-size: clamp(16px, 2.6vw, 20px) !important;
+            margin-top: -30px !important;
           }
           .lg-register-hint {
             font-size: 14px;
@@ -744,8 +747,15 @@ export default function Login() {
             height: 54px;
             font-size: 21px;
           }
+          /* ✅ بزرگ‌تر و وسط‌چین */
           .lg-logo-block {
-            width: clamp(165px, 58vw, 235px);
+            width: clamp(400px, 85vw, 520px) !important;
+            margin: 0 auto !important;
+          }
+          /* ✅ متن بزرگ‌تر و نزدیک‌تر به لوگو */
+          .lg-caption {
+            font-size: clamp(16px, 4.2vw, 19px) !important;
+            margin-top: -18px !important;
           }
           .lg-pill {
             height: 48px;

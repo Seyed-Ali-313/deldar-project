@@ -54,7 +54,7 @@ export default function Home() {
               delay: 0.25,
             }}
           >
-            <Countdown targetDate="2026-07-08T23:59:59" />
+            <Countdown targetDate="2026-08-08T23:59:59" />
           </motion.div>
 
           <motion.div
@@ -458,7 +458,7 @@ export default function Home() {
         }
 
         /* ============================================================ */
-        /* ===== ریسپانسیو ===== */
+        /* ===== ریسپانسیو (نسخه یکپارچه - بدون تکرار و تداخل) ===== */
         /* ============================================================ */
 
         @media (max-width: 1200px) {
@@ -493,214 +493,233 @@ export default function Home() {
           }
         }
 
+        /* ===== حالت تبلت (900px) - همون مدل موبایل (480) ولی کاستوم خودش ===== */
         @media (max-width: 900px) {
           .hm-hero {
             flex-direction: column-reverse;
-            gap: 30px;
-            padding: 24px 16px;
+            gap: 40px !important;
+            padding: 10px 16px 24px;
             margin-top: 0;
           }
+
           .hm-logo-stack {
-            width: clamp(240px, 40vw, 360px);
+            width: clamp(420px, 62vw, 520px) !important;
             max-height: none;
           }
-          .hm-illustration {
-            width: clamp(150px, 25vw, 200px);
-            height: clamp(200px, 35vh, 280px);
+
+          .hm-logo-bg,
+          .hm-logo-fg {
+            margin-top: -20% !important;
+            margin-left: -3.5% !important;
           }
-          .hm-bird-art {
-            width: 55px;
-            height: 56px;
-            left: 140px;
-          }
-          .hm-countdown-wrap .countdown-card {
-            max-width: 100%;
-          }
-          .hm-cta-row {
-            max-width: 100%;
-          }
+
           .hm-caption {
+            font-size: clamp(16px, 2.6vw, 20px) !important;
+            margin-top: -180px !important;
+            margin-bottom: 20px !important;
             margin-left: 0;
+            max-width: 94% !important;
+            line-height: 1.5 !important;
           }
+
+          .hm-caption br {
+            display: block !important;
+          }
+
           .hm-caption::after {
             left: 50%;
             transform: translateX(-50%);
+            width: 250px;
+            bottom: -15px;
           }
-        }
 
-        @media (max-width: 640px) {
-          .hm-hero {
-            padding: 16px 12px;
-            gap: 24px;
-          }
           .hm-illustration {
-            width: clamp(120px, 28vw, 160px);
-            height: clamp(160px, 38vh, 220px);
+            width: clamp(170px, 22vw, 210px);
+            height: clamp(230px, 34vh, 280px);
           }
+
           .hm-bird-art {
-            width: clamp(40px, 8vw, 48px);
-            height: clamp(40px, 8vw, 49px);
-            left: clamp(70px, 18vw, 100px);
+            width: clamp(48px, 5vw, 56px);
+            height: clamp(48px, 5vw, 57px);
+            left: clamp(90px, 11vw, 110px);
           }
+
+          /* ----- تایمر: ۷۰٪ عرض صفحه ----- */
+          .hm-countdown-wrap {
+            width: 70vw !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+          }
+
           .hm-countdown-wrap .countdown-card {
-            padding: 14px 10px;
-            border-radius: 18px;
+            padding: 18px 14px !important;
+            border-radius: 22px !important;
+            max-width: 100% !important;
+            width: 100% !important;
           }
+
           .hm-countdown-wrap .countdown-numbers {
-            font-size: clamp(22px, 4.5vh, 30px);
+            font-size: clamp(34px, 6.5vh, 44px) !important;
           }
+
           .hm-countdown-wrap .countdown-labels {
-            font-size: clamp(10px, 1.8vh, 13px);
+            font-size: clamp(13px, 2vh, 16px) !important;
+            margin-top: 8px !important;
           }
+
           .hm-countdown-wrap .countdown-numbers span::after {
-            right: -3px;
-            width: 3px;
-            height: 3px;
+            display: block !important;
+            right: -3px !important;
+            width: 3px !important;
+            height: 3px !important;
           }
+
+          .hm-countdown-wrap .countdown-numbers span:last-child::after {
+            display: none !important;
+          }
+
+          /* ----- دکمه‌ها: ردیف هم ۷۰٪ عرض صفحه، گردی گوشه هم‌اندازه تایمر ----- */
           .hm-cta-row {
-            flex-wrap: wrap;
-            gap: 10px;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            gap: 10px !important;
+            max-width: 70vw !important;
+            width: 70vw !important;
           }
+
           .hm-btn {
-            min-height: 38px;
-            padding: 6px 12px;
-            font-size: 12px;
+            flex: none !important;
           }
-          .hm-cta-row .hm-btn {
-            flex: 1 1 120px !important;
+
+          .hm-btn-primary {
+            width: 65% !important;
+            min-height: 48px !important;
+            height: 48px !important;
+            padding: 0 14px !important;
+            font-size: clamp(16px, 2.4vw, 18px) !important;
+            font-weight: 800 !important;
+            border-radius: 22px !important;
           }
-          .hm-logo-stack {
-            width: clamp(160px, 40vw, 240px);
-          }
-          .hm-caption {
-            font-size: 13px;
-            margin-top: -20px;
-            margin-bottom: 12px;
-            margin-left: 0;
-          }
-          .hm-caption br {
-            display: none;
-          }
-          .hm-caption::after {
-            width: 35px;
-            bottom: -6px;
+
+          .hm-btn-secondary {
+            width: 33% !important;
+            min-height: 48px !important;
+            height: 48px !important;
+            padding: 0 8px !important;
+            font-size: clamp(14px, 2vw, 16px) !important;
+            font-weight: 700 !important;
+            border-radius: 22px !important;
           }
         }
 
+        /* ===== موبایل (480px و کمتر) ===== */
         @media (max-width: 480px) {
           .hm-hero {
-            padding: 12px 8px;
-            gap: 18px;
+            padding: 1px 8px 18px !important;
+            gap: 62px !important;
           }
-          .hm-illustration {
-            width: clamp(90px, 22vw, 120px);
-            height: clamp(120px, 30vh, 160px);
-          }
-          .hm-bird-art {
-            width: clamp(30px, 6vw, 38px);
-            height: clamp(30px, 6vw, 39px);
-            left: clamp(50px, 14vw, 70px);
-          }
-          .hm-countdown-wrap .countdown-numbers {
-            font-size: clamp(18px, 4vh, 24px);
-          }
-          .hm-countdown-wrap .countdown-labels {
-            font-size: clamp(9px, 1.6vh, 11px);
-          }
-          .hm-countdown-wrap .countdown-card {
-            padding: 10px 8px;
-            border-radius: 14px;
-          }
-          .hm-cta-row {
-            flex-direction: column;
-            gap: 8px;
-          }
-          .hm-cta-row .hm-btn {
-            flex: 1 1 100% !important;
-            width: 100%;
-            min-height: 34px;
-            padding: 4px 10px;
-            font-size: 11px;
-          }
+
           .hm-logo-stack {
-            width: clamp(120px, 35vw, 180px);
+            width: clamp(380px, 80vw, 500px) !important;
+            max-height: none !important;
           }
+
+          .hm-logo-bg,
+          .hm-logo-fg {
+            margin-top: -20% !important;
+            margin-left: -3.5% !important;
+          }
+
           .hm-caption {
-            font-size: 11px;
-            margin-top: -15px;
-            margin-bottom: 8px;
+            font-size: clamp(15px, 4vw, 18px) !important;
+            margin-top: -180px !important;
+            margin-bottom: 6px !important;
             margin-left: 0;
+            max-width: 94% !important;
+            line-height: 1.5 !important;
           }
+
           .hm-caption::after {
-            width: 25px;
-            bottom: -4px;
+            width: 250px;
+            bottom: -15px;
           }
-          .hm-btn-primary {
-            order: 1;
-          }
-          .hm-btn-secondary {
-            order: 2;
-          }
-        }
 
-        @media (max-width: 380px) {
-          .hm-hero {
-            padding: 8px 6px;
-            gap: 14px;
-          }
           .hm-illustration {
-            width: clamp(70px, 18vw, 90px);
-            height: clamp(95px, 25vh, 125px);
+            width: clamp(150px, 36vw, 190px);
+            height: clamp(200px, 42vh, 250px);
           }
+
           .hm-bird-art {
-            width: clamp(22px, 5vw, 28px);
-            height: clamp(22px, 5vw, 29px);
-            left: clamp(35px, 12vw, 50px);
+            width: clamp(42px, 8vw, 50px);
+            height: clamp(42px, 8vw, 51px);
+            left: clamp(70px, 18vw, 95px);
           }
+
+          /* ----- تایمر: ۷۰٪ عرض صفحه ----- */
+          .hm-countdown-wrap {
+            width: 70vw !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+          }
+
+          .hm-countdown-wrap .countdown-card {
+            padding: 16px 12px !important;
+            border-radius: 20px !important;
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+
           .hm-countdown-wrap .countdown-numbers {
-            font-size: 16px;
+            font-size: clamp(28px, 7.5vh, 36px) !important;
           }
+
           .hm-countdown-wrap .countdown-labels {
-            font-size: 8px;
+            font-size: clamp(11px, 2.2vh, 14px) !important;
+            margin-top: 6px !important;
           }
+
           .hm-countdown-wrap .countdown-numbers span::after {
-            right: -2px;
-            width: 2px;
-            height: 2px;
+            display: block !important;
+            right: -3px !important;
+            width: 3px !important;
+            height: 3px !important;
           }
-          .hm-logo-stack {
-            width: clamp(90px, 30vw, 140px);
+
+          .hm-countdown-wrap .countdown-numbers span:last-child::after {
+            display: none !important;
           }
-          .hm-caption {
-            font-size: 10px;
-            margin-top: -10px;
-            margin-bottom: 6px;
+
+          /* ----- دکمه‌ها: ردیف هم ۷۰٪ عرض صفحه، گردی گوشه هم‌اندازه تایمر ----- */
+          .hm-cta-row {
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            gap: 8px !important;
+            max-width: 70vw !important;
+            width: 70vw !important;
           }
+
           .hm-btn {
-            font-size: 10px;
-            min-height: 28px;
-            padding: 3px 8px;
+            flex: none !important;
           }
-        }
 
-        @media (min-height: 900px) {
-          .hm-illustration {
-            height: clamp(280px, 30vh, 340px);
+          .hm-btn-primary {
+            width: 66% !important;
+            min-height: 44px !important;
+            height: 44px !important;
+            padding: 0 10px !important;
+            font-size: clamp(14px, 3.6vw, 16px) !important;
+            font-weight: 800 !important;
+            border-radius: 14px !important;
           }
-          .hm-logo-stack {
-            max-height: 62vh;
-          }
-        }
 
-        @media (prefers-reduced-motion: reduce) {
-          .hm-btn,
-          .hm-btn-primary::before,
-          .hm-logo-stack,
-          .hm-caption {
-            transition: none !important;
-          }
-          .hm-btn:hover {
-            transform: none !important;
+          .hm-btn-secondary {
+            width: 32% !important;
+            min-height: 44px !important;
+            height: 44px !important;
+            padding: 0 6px !important;
+            font-size: clamp(12px, 2.8vw, 14px) !important;
+            font-weight: 700 !important;
+            border-radius: 14px !important;
           }
         }
       `}</style>

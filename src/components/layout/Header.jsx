@@ -79,7 +79,7 @@ export default function Header() {
   return (
     <header className="header-premium">
       <div className="header-inner">
-        {/* لوگو - با بهینه‌سازی تصویر */}
+        {/* لوگو */}
         <div className="brand">
           <Link to="/" className="brand-logo">
             <img
@@ -105,21 +105,6 @@ export default function Header() {
             ✕
           </button>
 
-          {isLoggedIn && (
-            <div className="mobile-user-info">
-              <div className="mobile-avatar">
-                <UserIcon size={26} />
-              </div>
-              <div className="mobile-user-name">{getDisplayName()}</div>
-              <button
-                className="mobile-dashboard-btn"
-                onClick={handleDashboard}
-              >
-                📊 داشبورد
-              </button>
-            </div>
-          )}
-
           <ul>
             {navLinks.map((link) => (
               <li key={link.to}>
@@ -133,9 +118,17 @@ export default function Header() {
 
           <div className="mobile-footer">
             {isLoggedIn ? (
-              <button className="mobile-logout-btn" onClick={handleLogout}>
-                🚪 خروج از حساب
-              </button>
+              <>
+                <button
+                  className="mobile-dashboard-btn"
+                  onClick={handleDashboard}
+                >
+                  📊 داشبورد
+                </button>
+                <button className="mobile-logout-btn" onClick={handleLogout}>
+                  🚪 خروج از حساب
+                </button>
+              </>
             ) : (
               <Link
                 to="/login"
@@ -150,7 +143,7 @@ export default function Header() {
 
         <div className="header-spacer" />
 
-        {/* دکمه ورود / پروفایل (دسکتاپ) */}
+        {/* دکمه ورود / پروفایل */}
         <div className="auth-section">
           {isLoggedIn ? (
             <div className="profile-wrapper" ref={dropdownRef}>
@@ -296,7 +289,7 @@ export default function Header() {
       </AnimatePresence>
 
       <style>{`
-        /* فونت سایت برای همه چیز داخل هدر، بدون استثنا */
+        /* فونت سایت */
         .header-premium,
         .header-premium * {
           font-family: "w_Nian", "w_Lotus", sans-serif;
@@ -363,7 +356,8 @@ export default function Header() {
           display: flex;
           align-items: center;
           justify-content: flex-start;
-          flex-shrink: 0;    margin-right: -11px;
+          flex-shrink: 0;
+          margin-right: -11px;
         }
 
         .header-premium .main-nav ul {
@@ -381,7 +375,6 @@ export default function Header() {
           gap: inherit;
         }
 
-        /* ✅ حذف خط عمودی بعد از آخرین آیتم منو */
         .header-premium .main-nav li:last-child .divider {
           display: none;
         }
@@ -438,7 +431,7 @@ export default function Header() {
           flex-shrink: 0;
         }
 
-        /* ===== دکمه ورود — سبز و طلایی سایت ===== */
+        /* ===== دکمه ورود ===== */
         .header-premium .login-btn {
           position: relative;
           background: linear-gradient(135deg, #034120, #0a5a2e);
@@ -507,9 +500,7 @@ export default function Header() {
           left: 100%;
         }
 
-        /* ===================================================== */
-        /* ===== دکمه پروفایل — سبز و طلایی سایت، حتی بک‌گراند ===== */
-        /* ===================================================== */
+        /* ===== پروفایل ===== */
         .header-premium .profile-wrapper {
           position: relative;
         }
@@ -541,7 +532,6 @@ export default function Header() {
           white-space: nowrap;
         }
 
-        /* آیکون بزرگ‌تر و خوش‌تر با گرادیان طلایی */
         .header-premium .profile-icon-badge {
           display: flex;
           align-items: center;
@@ -730,54 +720,29 @@ export default function Header() {
           border-radius: 8px;
         }
 
-        .header-premium .mobile-user-info {
-          display: none;
-          text-align: center;
-          padding: 20px 0 16px;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-          margin-bottom: 12px;
-        }
-
-        .header-premium .mobile-avatar {
-          width: 56px;
-          height: 56px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #E0BE6B, #A4874D);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #fff;
-          margin: 0 auto 8px;
-        }
-
-        .header-premium .mobile-user-name {
-          font-size: 16px;
-          font-weight: 700;
-          color: #fff;
-        }
-
-        .header-premium .mobile-dashboard-btn {
-          background: rgba(201, 168, 76, 0.15);
-          color: #C9A84C;
-          border: 1px solid rgba(201, 168, 76, 0.2);
-          border-radius: 10px;
-          padding: 8px 20px;
-          margin-top: 10px;
-          font-size: 14px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .header-premium .mobile-dashboard-btn:hover {
-          background: rgba(201, 168, 76, 0.25);
-        }
-
         .header-premium .mobile-footer {
           display: none;
           margin-top: auto;
           padding-top: 16px;
           border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .header-premium .mobile-dashboard-btn {
+          width: 100%;
+          padding: 12px;
+          background: rgba(201, 168, 76, 0.15);
+          color: #C9A84C;
+          border: 1px solid rgba(201, 168, 76, 0.2);
+          border-radius: 10px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          margin-bottom: 8px;
+        }
+
+        .header-premium .mobile-dashboard-btn:hover {
+          background: rgba(201, 168, 76, 0.25);
         }
 
         .header-premium .mobile-logout-btn {
@@ -821,49 +786,42 @@ export default function Header() {
         }
 
         /* ================================================================ */
-        /* ===== ریسپانسیو — سه آیکون با چیدمان گرید و فاصله متقارن ===== */
+        /* ===== ریسپانسیو - فقط برای موبایل ===== */
         /* ================================================================ */
+
         @media (max-width: 900px) {
           .header-premium .header-inner {
-            display: grid;
-            grid-template-columns: 1fr 11fr;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            padding: 10px 16px;
+            padding: 10px clamp(14px, 4vw, 20px);
             gap: 0;
           }
 
+          /* حذف لوگو و جداکننده از هدر موبایل */
+          .header-premium .brand,
           .header-premium .header-divider,
           .header-premium .header-spacer {
-            display: none;
+            display: none !important;
           }
 
-          /* همبرگر: راست */
+          /* همبرگر: سمت راست */
           .header-premium .menu-toggle {
             display: flex !important;
-            grid-column: 1;
-            grid-row: 1;
-            justify-self: center;
+            order: 1;
           }
 
-          /* لوگوی برنامه: وسط */
-          .header-premium .brand {
-            grid-column: 2;
-            grid-row: 1;
-            justify-self: center;
-          }
-
-          /* آیکون کاربر / ورود: چپ */
+          /* اکانت/ورود: سمت چپ */
           .header-premium .auth-section {
-            grid-column: 3;
-            grid-row: 1;
-            justify-self: center;
+            order: 2;
           }
 
+          /* منوی کشویی */
           .header-premium .main-nav {
             position: fixed;
             top: 0;
             right: -100%;
-            width: 75%;
+            width: 78%;
             max-width: 320px;
             height: 100vh;
             background: linear-gradient(180deg, #0a1a12, #034120);
@@ -885,13 +843,6 @@ export default function Header() {
             display: block !important;
           }
 
-          .header-premium .mobile-user-info {
-            display: block !important;
-          }
-
-          .header-premium .mobile-footer {
-            display: block !important;
-          }
 
           .header-premium .main-nav ul {
             flex-direction: column;
@@ -901,14 +852,14 @@ export default function Header() {
 
           .header-premium .main-nav li {
             display: block;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
           }
 
           .header-premium .main-nav a {
-            font-size: 16px;
-            color: rgba(255,255,255,0.85);
+            font-size: clamp(14px, 3.8vw, 16px);
+            color: rgba(255, 255, 255, 0.85);
             display: block;
-            padding: 12px 8px;
+            padding: 13px 8px;
           }
 
           .header-premium .main-nav a::after {
@@ -925,68 +876,27 @@ export default function Header() {
             display: none;
           }
 
-          .header-premium .profile-btn .profile-name {
-            display: none;
-          }
-
-          .header-premium .profile-btn {
-            padding: 5px 5px 5px 5px;
-          }
-
-          .header-premium .profile-icon-badge {
-            width: 34px;
-            height: 34px;
-          }
-
-          .header-premium .login-btn {
-            min-width: 0;
-            min-height: 38px;
-            padding: 6px 14px 6px 6px;
-            font-size: 11px;
-          }
-
-          .header-premium .login-btn-icon {
-            width: 22px;
-            height: 22px;
+          .header-premium .profile-dropdown {
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: min(88vw, 280px);
           }
         }
 
         @media (max-width: 480px) {
-          .header-premium .brand-logo {
-            width: 28px;
-          }
-
-          .header-premium .login-btn .login-btn-text {
-            display: none;
-          }
-
-          .header-premium .login-btn {
-            min-width: 38px;
-            min-height: 38px;
-            width: 38px;
-            height: 38px;
-            padding: 0;
-            border-radius: 50%;
-          }
-
-          .header-premium .login-btn-icon {
-            width: 100%;
-            height: 100%;
-          }
-
-          .header-premium .profile-icon-badge {
-            width: 32px;
-            height: 32px;
+          .header-premium .header-inner {
+            padding: 8px clamp(10px, 3.5vw, 16px);
           }
 
           .header-premium .main-nav {
+            width: 82%;
             max-width: 280px;
             padding: 50px 14px 20px;
           }
 
           .header-premium .main-nav a {
             font-size: 14px;
-            padding: 10px 6px;
+            padding: 11px 6px;
           }
         }
       `}</style>

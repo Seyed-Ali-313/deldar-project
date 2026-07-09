@@ -391,41 +391,66 @@ export default function SubmittedWorks() {
         </div>
 
         <style>{`
-          .submitted-scroll::-webkit-scrollbar {
-            width: 4px;
-          }
-          .submitted-scroll::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.015);
-            border-radius: 6px;
-          }
-          .submitted-scroll::-webkit-scrollbar-thumb {
-            background: rgba(201, 168, 76, 0.3);
-            border-radius: 6px;
-          }
-          .submitted-scroll::-webkit-scrollbar-thumb:hover {
-            background: rgba(201, 168, 76, 0.5);
-          }
+  .submitted-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .submitted-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.015);
+    border-radius: 6px;
+  }
+  .submitted-scroll::-webkit-scrollbar-thumb {
+    background: rgba(201, 168, 76, 0.3);
+    border-radius: 6px;
+  }
+  .submitted-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(201, 168, 76, 0.5);
+  }
 
-          @media (max-width: 500px) {
-            .submitted-scroll > div {
-              grid-template-columns: 40px 1fr 28px 28px !important;
-              gap: 8px !important;
-              padding: 6px 10px 6px 6px !important;
-            }
-            .submitted-scroll > div > div:first-child {
-              width: 36px !important;
-              height: 36px !important;
-            }
-            .submitted-scroll > div > div:nth-child(2) span:first-child {
-              font-size: 12px !important;
-            }
-            .submitted-scroll > div button {
-              width: 26px !important;
-              height: 26px !important;
-              font-size: 12px !important;
-            }
-          }
-        `}</style>
+  @media (max-width: 900px) {
+    .submitted-scroll {
+      max-height: 320px !important;
+    }
+    .submitted-scroll > div {
+      grid-template-columns: 46px 1fr 30px 30px !important;
+      gap: 9px !important;
+      padding: 7px 12px 7px 7px !important;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .submitted-scroll > div {
+      grid-template-columns: 40px 1fr 28px 28px !important;
+      gap: 8px !important;
+      padding: 6px 10px 6px 6px !important;
+    }
+    .submitted-scroll > div > div:first-child {
+      width: 36px !important;
+      height: 36px !important;
+    }
+    .submitted-scroll > div > div:nth-child(2) span:first-child {
+      font-size: 12px !important;
+    }
+    .submitted-scroll > div button {
+      width: 26px !important;
+      height: 26px !important;
+      font-size: 12px !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .edit-modal-card {
+      padding: 28px 18px 22px !important;
+    }
+    .edit-modal-actions {
+      flex-direction: column-reverse !important;
+      gap: 10px !important;
+    }
+    .edit-modal-actions button {
+      flex: 1 1 auto !important;
+      width: 100% !important;
+    }
+  }
+`}</style>
       </div>
 
       <ConfirmModal
@@ -458,6 +483,7 @@ export default function SubmittedWorks() {
             onClick={closeEditModal}
           >
             <motion.div
+              className="edit-modal-card"
               initial={{ opacity: 0, scale: 0.9, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 30 }}
@@ -727,6 +753,7 @@ export default function SubmittedWorks() {
                 </motion.button>
 
                 <motion.button
+                  className="edit-modal-actions"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={handleSaveEdit}

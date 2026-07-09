@@ -8,6 +8,7 @@ export default function UploadSuccess() {
 
   return (
     <div
+      className="upload-success-page"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -20,6 +21,7 @@ export default function UploadSuccess() {
       }}
     >
       <motion.div
+        className="upload-success-card"
         initial={{ opacity: 0, y: 30, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -43,6 +45,7 @@ export default function UploadSuccess() {
 
         {/* محتوای داخل تصویر - با پدینگ بیشتر */}
         <div
+          className="upload-success-overlay"
           style={{
             position: "absolute",
             top: 0,
@@ -95,8 +98,8 @@ export default function UploadSuccess() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
             style={{
-              fontSize: "17px",
-              color: "rgba(255,255,255,0.75)",
+              fontSize: "15px",
+              color: "#C9A84C",
               fontFamily: "w_Lotus, sans-serif",
               lineHeight: "2",
               marginBottom: "12px",
@@ -129,9 +132,9 @@ export default function UploadSuccess() {
           </motion.p>
         </div>
       </motion.div>
-
       {/* ✅ دکمه بیرون از عکس - پایین */}
       <motion.button
+        className="upload-success-btn"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.5 }}
@@ -165,7 +168,57 @@ export default function UploadSuccess() {
         }}
       >
         ورود به صفحه کاربری
-      </motion.button>
+      </motion.button>{" "}
+      <style>{`
+  @media (max-width: 900px) {
+    .upload-success-card {
+      margin-top: -60px !important;
+    }
+    .upload-success-overlay {
+      padding: 8% 9% !important;
+    }
+    .upload-success-title {
+      font-size: clamp(15px, 4.2vw, 20px) !important;
+    }
+    .upload-success-text {
+      font-size: clamp(11px, 3.2vw, 15px) !important;
+      line-height: 1.8 !important;
+      margin-bottom: 8px !important;
+    }
+    .upload-success-thanks {
+      font-size: clamp(10px, 2.8vw, 13px) !important;
+    }
+    .upload-success-btn {
+      max-width: 260px !important;
+      min-height: 46px !important;
+      font-size: 14px !important;
+      margin-top: 18px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .upload-success-page {
+      padding: 14px !important;
+    }
+    .upload-success-card {
+      margin-top: -30px !important;
+    }
+    .upload-success-overlay {
+      padding: 7% 8% !important;
+    }
+    .upload-success-title {
+      font-size: clamp(13px, 4vw, 17px) !important;
+    }
+    .upload-success-text {
+      font-size: clamp(10px, 3vw, 13px) !important;
+    }
+    .upload-success-btn {
+      max-width: 100% !important;
+      min-height: 44px !important;
+      font-size: 13px !important;
+    }
+  }
+`}</style>
     </div>
   );
 }

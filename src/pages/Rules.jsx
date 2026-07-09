@@ -320,7 +320,61 @@ export default function Rules() {
           font-family: "w_Lotus", sans-serif;
           white-space: nowrap;
         }
+          @media (max-width: 480px) {
+  .page-content {
+    padding: 14px 12px;
+    gap: 18px;
+  }
 
+  .rules-list li {
+    font-size: 12px;
+    padding-bottom: 9px;
+    padding-right: 16px;
+    line-height: 1.7;
+  }
+
+  .rules-list li::before {
+    font-size: 13px;
+  }
+
+  .info-section ul li {
+    font-size: 12px;
+    padding-right: 16px;
+    line-height: 1.7;
+  }
+
+  .info-section ul li::before {
+    font-size: 13px;
+  }
+
+  .info-section h2 {
+    font-size: 14.5px;
+  }
+
+  .info-section h2 img {
+    width: 15px !important;
+  }
+
+  .agreement-check span:last-child {
+    font-size: 12px;
+  }
+
+  .agreement-check .checkbox {
+    width: 18px;
+    height: 18px;
+  }
+
+  .btn-accept {
+    font-size: 13px;
+    min-height: 44px;
+    padding: 8px 16px;
+  }
+
+  .cta-section {
+    padding: 10px 12px 16px;
+    gap: 10px;
+  }
+}
         /* ===== دکمه طلایی ===== */
         .btn-accept {
           background: linear-gradient(135deg, #A4874D, #C9A84C);
@@ -360,76 +414,58 @@ export default function Rules() {
         }
 
         /* ===== ریسپانسیو ===== */
-        @media (max-width: 900px) {
-          .page-content {
-            grid-template-columns: 1fr;
-            gap: 20px;
-            padding: 16px 16px;
-          }
+       @media (max-width: 900px) {
+  .page-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 16px clamp(14px, 4vw, 20px);
+    margin-top: 0;
+  }
 
-          .cta-section {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 10px;
-            padding: 10px 16px 16px;
-            flex-wrap: wrap;
-            margin-right: 0;
-          }
+  .info-column {
+    margin-top: 0;
+    gap: 20px;
+  }
 
-          .agreement-check {
-            justify-content: center;
-          }
+  .info-section h2 {
+    font-size: clamp(15px, 4vw, 18px);
+    margin-bottom: 10px;
+  }
 
-          .agreement-check span:last-child {
-            white-space: normal;
-            text-align: center;
-          }
+  .rules-list li,
+  .info-section ul li {
+    font-size: clamp(12px, 3.2vw, 13.5px);
+    line-height: 1.75;
+  }
 
-          .btn-accept {
-            width: 100%;
-            min-width: unset;
-            min-height: 42px;
-          }
-        }
+  .cta-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px 16px 18px;
+    flex-wrap: wrap;
+    margin-right: 0;
+  }
 
-        @media (max-width: 480px) {
-          .rules-list li {
-            font-size: 11px;
-            padding-bottom: 8px;
-            padding-right: 16px;
-          }
+  .agreement-check {
+    justify-content: center;
+    padding: 4px 0;
+  }
 
-          .rules-list li::before {
-            font-size: 13px;
-          }
+  .agreement-check span:last-child {
+    white-space: normal;
+    text-align: center;
+    font-size: clamp(12px, 3.4vw, 14px);
+    line-height: 1.7;
+  }
 
-          .info-section ul li {
-            font-size: 11px;
-            padding-right: 16px;
-          }
-
-          .info-section ul li::before {
-            font-size: 13px;
-          }
-
-          .info-section h2 {
-            font-size: 14px;
-          }
-
-          .agreement-check span:last-child {
-            font-size: 11px;
-          }
-
-          .btn-accept {
-            font-size: 12px;
-            min-height: 38px;
-            padding: 6px 14px;
-          }
-
-          .cta-section {
-            padding: 8px 12px 14px;
-            gap: 8px;
-          }
+  .btn-accept {
+    width: 100%;
+    min-width: unset;
+    min-height: 46px;
+    font-size: clamp(13px, 3.6vw, 15px);
+  }
+}
         }
       `}</style>
     </div>

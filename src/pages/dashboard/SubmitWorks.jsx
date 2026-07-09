@@ -130,6 +130,7 @@ export default function SubmitWorks() {
 
   return (
     <div
+      className="submit-works-container"
       style={{
         width: "100%",
         maxWidth: "780px",
@@ -245,6 +246,7 @@ export default function SubmitWorks() {
       </div>
 
       <div
+        className="submit-works-add-row"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr auto",
@@ -408,6 +410,7 @@ export default function SubmitWorks() {
         <AnimatePresence>
           {uploadedWorks.map((work, index) => (
             <motion.div
+              className="submit-work-item"
               key={work.id}
               initial={{ opacity: 0, y: -10, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -613,25 +616,80 @@ export default function SubmitWorks() {
       </motion.button>
 
       <style>{`
-        .submit-works-scroll::-webkit-scrollbar {
-          width: 3px;
-        }
-        .submit-works-scroll::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.02);
-          border-radius: 4px;
-        }
-        .submit-works-scroll::-webkit-scrollbar-thumb {
-          background: linear-gradient(180deg, #A4874D, #C9A84C);
-          border-radius: 4px;
-        }
-        .submit-works-scroll::-webkit-scrollbar-thumb:hover {
-          background: #C9A84C;
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+  .submit-works-scroll::-webkit-scrollbar {
+    width: 3px;
+  }
+  .submit-works-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 4px;
+  }
+  .submit-works-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #A4874D, #C9A84C);
+    border-radius: 4px;
+  }
+  .submit-works-scroll::-webkit-scrollbar-thumb:hover {
+    background: #C9A84C;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 900px) {
+    .submit-works-container {
+      max-height: 520px !important;
+      margin: 0 auto !important;
+    }
+    .submit-works-add-row {
+      grid-template-columns: 1fr 1fr !important;
+      grid-template-rows: auto auto !important;
+    }
+    .submit-works-add-row > button {
+      grid-column: 1 / -1 !important;
+      width: 100% !important;
+      min-width: unset !important;
+      height: 40px !important;
+    }
+    .submit-works-scroll {
+      height: 160px !important;
+    }
+    .submit-work-item {
+      grid-template-columns: 32px 1fr 1fr 26px !important;
+      gap: 8px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .submit-works-container {
+      padding-top: 0 !important;
+    }
+    .submit-works-add-row {
+      grid-template-columns: 1fr !important;
+      grid-template-rows: auto auto auto !important;
+      gap: 6px !important;
+    }
+    .submit-works-add-row .pill {
+      height: 42px !important;
+    }
+    .submit-works-add-row .register-input {
+      font-size: 14px !important;
+    }
+    .submit-work-item {
+      grid-template-columns: 28px 1fr 26px !important;
+      grid-template-areas: "num desc close" "num file close" !important;
+    }
+    .submit-work-item > span:nth-child(2) {
+      grid-area: desc !important;
+      font-size: 11px !important;
+    }
+    .submit-work-item > div:nth-child(3) {
+      grid-area: file !important;
+    }
+    .submit-work-item > div:nth-child(3) span:last-child {
+      display: none !important;
+    }
+  }
+`}</style>
     </div>
   );
 }
