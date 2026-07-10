@@ -180,10 +180,11 @@ export default function Home() {
           height: 100%;
         }
         .hm-branch-art img {
-          width: 100%;
-          height: 100%;
-          filter: drop-shadow(0 2px 16px rgba(164, 135, 77, 0.25));
-        }
+    width: 100%;
+    height: 106%;
+    margin-top: -7px;
+    filter: drop-shadow(0 2px 16px rgba(164, 135, 77, 0.25));
+}
 
         .hm-bird-art {
           position: absolute;
@@ -721,7 +722,47 @@ export default function Home() {
             font-weight: 700 !important;
             border-radius: 14px !important;
           }
-        }
+        }/* ============================================================ */
+        /* ===== فقط دسکتاپ (۹۰۱px به بالا) - بدون دست‌زدن به کلاس‌های اصلی ===== */
+        /* ============================================================ */
+       /* ============================================================ */
+        /* ===== فقط دسکتاپ (۹۰۱px به بالا) - بدون دست‌زدن به کلاس‌های اصلی ===== */
+        /* ============================================================ */
+        /* ============================================================ */
+/* ===== فقط دسکتاپ (۹۰۱px به بالا) ===== */
+/* ============================================================ */
+@media (min-width: 901px) {
+  .hm-hero {
+    max-width: 1800px !important;
+    justify-content: space-between !important;
+    padding: 20px clamp(38px, 7vw, 74px) !important;
+    gap: clamp(60px, 8vw, 160px) !important;
+    margin-top: -80px !important;
+  }
+
+  .hm-hero-left, .hm-hero-right {
+        align-self: center !important;
+        margin-left: 80px;
+    }
+
+  .hm-logo-stack {
+    width: clamp(380px, 42vw, 780px) !important;
+    max-height: 68vh !important;
+    margin-bottom: 0 !important;
+  }
+
+  .hm-logo-bg,
+  .hm-logo-fg {
+    top: -26.7% !important;
+    margin-top: 0 !important;
+  }
+
+  .hm-caption {
+    margin-left: clamp(12px, 2.5vw, 36px) !important;
+    margin-top: -41px !important;
+    margin-bottom: 32px;
+  }
+}
       `}</style>
     </div>
   );

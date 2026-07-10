@@ -342,13 +342,12 @@ export default function Header() {
         }
 
         .header-premium .header-divider {
-          width: 2px;
-          height: 34px;
-          margin: 0;
-          background: linear-gradient(180deg, transparent, #C9A84C, #A4874D, #C9A84C, transparent);
+          width: 1.5px;
+          height: 27px;
+          background: #1a1a1a;           /* تغییر به مشکی */
           flex-shrink: 0;
           border-radius: 4px;
-          opacity: 0.6;
+          opacity: 0.65;
         }
 
         .header-premium .main-nav {
@@ -413,12 +412,12 @@ export default function Header() {
         }
 
         .header-premium .main-nav .divider {
-          width: 1.5px;
-          height: 20px;
-          background: linear-gradient(180deg, transparent, #C9A84C, #A4874D, #C9A84C, transparent);
+          width: 1.2px;
+          height: 15px;
+          background: #1a1a1a;           /* تغییر به مشکی */
           display: inline-block;
           flex-shrink: 0;
-          opacity: 0.4;
+          opacity: 0.6  ;                 /* کمی شفاف‌تر برای زیبایی */
           border-radius: 3px;
         }
 
