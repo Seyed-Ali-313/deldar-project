@@ -19,6 +19,7 @@ export default function SubmittedWorks() {
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [previewWork, setPreviewWork] = useState(null);
 
   const [editingWork, setEditingWork] = useState(null);
   const [editDescription, setEditDescription] = useState("");
@@ -354,6 +355,7 @@ export default function SubmittedWorks() {
             {works.map((work, index) => (
               <motion.div
                 key={work.id}
+                onClick={() => setPreviewWork(work)}
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, height: 0, marginBottom: 0 }}
@@ -367,6 +369,7 @@ export default function SubmittedWorks() {
                   padding: "8px 14px 8px 8px",
                   borderRadius: "12px",
                   border: "1px solid rgba(255,255,255,0.04)",
+                  cursor: "pointer",
                   transition: "all 0.25s ease",
                 }}
                 whileHover={{
@@ -439,7 +442,10 @@ export default function SubmittedWorks() {
                 </div>
 
                 <button
-                  onClick={() => handleEdit(work)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEdit(work);
+                  }}
                   style={{
                     background: "rgba(201, 168, 76, 0.08)",
                     border: "1px solid rgba(201, 168, 76, 0.15)",
@@ -492,7 +498,10 @@ export default function SubmittedWorks() {
                 </button>
 
                 <button
-                  onClick={() => handleDelete(work.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(work.id);
+                  }}
                   style={{
                     background: "rgba(176, 1, 1, 0.06)",
                     border: "1px solid rgba(176, 1, 1, 0.1)",
@@ -557,6 +566,73 @@ export default function SubmittedWorks() {
             background: rgba(201, 168, 76, 0.5);
           }
 
+          .work-preview-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            cursor: pointer;
+          }
+
+          .work-preview-card {
+            position: relative;
+            background: #0a2416;
+            border: 1px solid rgba(201, 168, 76, 0.25);
+            border-radius: 18px;
+            padding: 16px;
+            max-width: 420px;
+            width: 100%;
+            max-height: 85vh;
+            overflow: auto;
+            cursor: default;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+          }
+
+          .work-preview-img {
+            width: 100%;
+            max-height: 60vh;
+            object-fit: contain;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+          }
+
+          .work-preview-desc {
+            margin: 12px 0 0;
+            color: rgba(255, 255, 255, 0.9);
+            font-family: "w_Lotus", sans-serif;
+            font-size: 17px;
+            font-weight: 600;
+            line-height: 1.8;
+            text-align: center;
+          }
+
+          .work-preview-close {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+          }
+
+          .work-preview-close:hover {
+            background: rgba(192, 57, 43, 0.5);
+          }
+
           @media (max-width: 900px) {
             .submitted-scroll {
               max-height: 320px !important;
@@ -616,6 +692,46 @@ export default function SubmittedWorks() {
         confirmText="حذف"
         cancelText="انصراف"
       />
+
+      <AnimatePresence>
+        {previewWork && (
+          <motion.div
+            className="work-preview-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setPreviewWork(null)}
+          >
+            <motion.div
+              className="work-preview-card"
+              initial={{ opacity: 0, scale: 0.92, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 12 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="work-preview-close"
+                onClick={() => setPreviewWork(null)}
+              >
+                ✕
+              </button>
+              <img
+                src={previewWork.image || "/src/assets/images/logo-bg.png"}
+                alt="پیش‌نمایش عکس"
+                className="work-preview-img"
+                onError={(e) => {
+                  e.target.src = "/src/assets/images/logo-bg.png";
+                }}
+              />
+              <p className="work-preview-desc">
+                {previewWork.description || "بدون شرح"}
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {isEditing && editingWork && (
