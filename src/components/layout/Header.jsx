@@ -123,10 +123,10 @@ export default function Header() {
                   className="mobile-dashboard-btn"
                   onClick={handleDashboard}
                 >
-                  📊 داشبورد
+                  داشبورد
                 </button>
                 <button className="mobile-logout-btn" onClick={handleLogout}>
-                  🚪 خروج از حساب
+                  خروج از حساب
                 </button>
               </>
             ) : (
@@ -154,29 +154,9 @@ export default function Header() {
                 whileTap={{ scale: 0.96 }}
                 transition={{ duration: 0.2 }}
               >
-                <span className="profile-name">{getDisplayName()}</span>
-
                 <span className="profile-icon-badge">
-                  <UserIcon size={17} />
+                  <UserIcon size={20} />
                 </span>
-
-                <motion.svg
-                  className="profile-arrow"
-                  width="11"
-                  height="11"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  animate={{ rotate: isProfileOpen ? 180 : 0 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                >
-                  <path
-                    d="M6 9l6 6 6-6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </motion.svg>
               </motion.button>
 
               <AnimatePresence>
@@ -255,9 +235,6 @@ export default function Header() {
             </div>
           ) : (
             <button className="login-btn" onClick={() => navigate("/login")}>
-              <span className="login-btn-icon">
-                <UserIcon size={15} />
-              </span>
               <span className="login-btn-text">ورود / ثبت‌نام</span>
               <span className="login-btn-shine" aria-hidden="true" />
             </button>
@@ -289,7 +266,6 @@ export default function Header() {
       </AnimatePresence>
 
       <style>{`
-        /* فونت سایت */
         .header-premium,
         .header-premium * {
           font-family: "w_Nian", "w_Lotus", sans-serif;
@@ -344,7 +320,7 @@ export default function Header() {
         .header-premium .header-divider {
           width: 1.5px;
           height: 27px;
-          background: #1a1a1a;           /* تغییر به مشکی */
+          background: #1a1a1a;
           flex-shrink: 0;
           border-radius: 4px;
           opacity: 0.65;
@@ -414,10 +390,10 @@ export default function Header() {
         .header-premium .main-nav .divider {
           width: 1.2px;
           height: 15px;
-          background: #1a1a1a;           /* تغییر به مشکی */
+          background: #1a1a1a;
           display: inline-block;
           flex-shrink: 0;
-          opacity: 0.6  ;                 /* کمی شفاف‌تر برای زیبایی */
+          opacity: 0.6;
           border-radius: 3px;
         }
 
@@ -430,18 +406,17 @@ export default function Header() {
           flex-shrink: 0;
         }
 
-        /* ===== دکمه ورود ===== */
+        /* ===== دکمه ورود (بدون آیکون) ===== */
         .header-premium .login-btn {
           position: relative;
           background: linear-gradient(135deg, #034120, #0a5a2e);
           color: #ffffff;
           border: 1.5px solid rgba(201, 168, 76, 0.35);
           border-radius: 30px;
-          padding: 7px 3px 8px 8px;
+          padding: 12px 22px;
           min-height: 44px;
-          min-width: 130px;
           font-weight: 700;
-          font-size: clamp(15px, 1vw, 15px);
+          font-size: clamp(14px, 1vw, 15px);
           cursor: pointer;
           transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
           overflow: hidden;
@@ -449,23 +424,7 @@ export default function Header() {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 9px;
           white-space: nowrap;
-        }
-
-        .header-premium .login-btn-icon {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 26px;
-          height: 26px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #C9A84C, #8E703A);
-          color: #ffffff;
-          flex-shrink: 0;
-          position: relative;
-          z-index: 2;
-          transition: transform 0.3s ease;
         }
 
         .header-premium .login-btn .login-btn-text {
@@ -491,15 +450,11 @@ export default function Header() {
           border-color: rgba(201, 168, 76, 0.6);
         }
 
-        .header-premium .login-btn:hover .login-btn-icon {
-          transform: scale(1.1) rotate(-6deg);
-        }
-
         .header-premium .login-btn:hover .login-btn-shine {
           left: 100%;
         }
 
-        /* ===== پروفایل ===== */
+        /* ===== پروفایل (فقط آیکون گرد) ===== */
         .header-premium .profile-wrapper {
           position: relative;
         }
@@ -507,56 +462,35 @@ export default function Header() {
         .header-premium .profile-btn {
           display: flex;
           align-items: center;
-          gap: 11px;
-          background: linear-gradient(135deg, #034120, #0a5a2e);
-          border: 1.5px solid rgba(201, 168, 76, 0.4);
-          border-radius: 30px;
-          padding: 6px 8px 6px 20px;
+          justify-content: center;
+          background: transparent;
+          border: none;
+          border-radius: 50%;
+          padding: 0;
           cursor: pointer;
-          box-shadow: 0 4px 16px rgba(3, 65, 32, 0.2);
-        }
-
-        .header-premium .profile-btn:hover {
-          border-color: rgba(201, 168, 76, 0.65);
-          box-shadow: 0 8px 26px rgba(3, 65, 32, 0.32);
-        }
-
-        .header-premium .profile-name {
-          font-size: 13.5px;
-          font-weight: 700;
-          color: #ffffff;
-          max-width: 110px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
         }
 
         .header-premium .profile-icon-badge {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 34px;
-          height: 34px;
+          width: 38px;
+          height: 38px;
           border-radius: 50%;
           flex-shrink: 0;
-          background: linear-gradient(135deg, #E0BE6B, #C9A84C 45%, #8E703A);
+          background: linear-gradient(135deg, #034120, #0a5a2e);
           color: #ffffff;
           box-shadow:
             0 0 0 2px rgba(255, 255, 255, 0.9),
-            0 4px 12px rgba(164, 135, 77, 0.5);
+            0 4px 12px rgba(3, 65, 32, 0.35);
           transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
         }
 
         .header-premium .profile-btn:hover .profile-icon-badge {
-          transform: scale(1.1) rotate(-6deg);
+          transform: scale(1.08);
           box-shadow:
             0 0 0 2.5px rgba(255, 255, 255, 0.95),
-            0 6px 20px rgba(164, 135, 77, 0.7);
-        }
-
-        .header-premium .profile-arrow {
-          color: #E0BE6B;
-          flex-shrink: 0;
+            0 6px 20px rgba(3, 65, 32, 0.5);
         }
 
         /* ===== Dropdown ===== */
@@ -797,25 +731,21 @@ export default function Header() {
             gap: 0;
           }
 
-          /* حذف لوگو و جداکننده از هدر موبایل */
           .header-premium .brand,
           .header-premium .header-divider,
           .header-premium .header-spacer {
             display: none !important;
           }
 
-          /* همبرگر: سمت راست */
           .header-premium .menu-toggle {
             display: flex !important;
             order: 1;
           }
 
-          /* اکانت/ورود: سمت چپ */
           .header-premium .auth-section {
             order: 2;
           }
 
-          /* منوی کشویی */
           .header-premium .main-nav {
             position: fixed;
             top: 0;
@@ -841,7 +771,6 @@ export default function Header() {
           .header-premium .mobile-close-btn {
             display: block !important;
           }
-
 
           .header-premium .main-nav ul {
             flex-direction: column;

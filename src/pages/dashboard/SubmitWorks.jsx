@@ -350,7 +350,6 @@ export default function SubmitWorks() {
                 </>
               ) : (
                 <>
-                  <span style={{ fontSize: "14px" }}>🖼</span>
                   <span style={{ fontSize: "11px", color: "rgba(0,0,0,0.5)" }}>
                     انتخاب عکس
                   </span>

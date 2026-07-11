@@ -586,7 +586,6 @@ export default function WorksForm({
               gap: "2px",
             }}
           >
-            <span style={{ fontSize: "28px" }}>🖼</span>
             <span>هیچ عکسی انتخاب نشده است</span>
           </div>
         )}
