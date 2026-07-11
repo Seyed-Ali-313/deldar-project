@@ -1,5 +1,5 @@
 // src/pages/dashboard/SubmittedWorks.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   getWorks,
@@ -13,7 +13,7 @@ import {
 } from "../../utils/toast";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import SkeletonWorks from "../../components/common/SkeletonWorks";
-
+import toPersianDigits from "../../utils/toPersianNumber";
 export default function SubmittedWorks() {
   const [works, setWorks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,11 @@ export default function SubmittedWorks() {
 
   const [editingWork, setEditingWork] = useState(null);
   const [editDescription, setEditDescription] = useState("");
+  const [editImage, setEditImage] = useState(null);
+  const [editImagePreview, setEditImagePreview] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -37,7 +41,8 @@ export default function SubmittedWorks() {
         setLoading(false);
       })
       .catch((err) => {
-        showError(err);
+        const errorMsg = err.response?.data?.detail || "خطا در دریافت اطلاعات";
+        toastError(errorMsg);
         setLoading(false);
       });
   }, []);
@@ -55,7 +60,8 @@ export default function SubmittedWorks() {
       setShowDeleteModal(false);
       setDeleteTargetId(null);
     } catch (err) {
-      showError(err);
+      const errorMsg = err.response?.data?.detail || "خطا در حذف اثر";
+      toastError(errorMsg);
       setShowDeleteModal(false);
     }
   };
@@ -63,28 +69,170 @@ export default function SubmittedWorks() {
   const handleEdit = (work) => {
     setEditingWork(work);
     setEditDescription(work.description || "");
+    setEditImagePreview(work.image || null);
+    setEditImage(null);
     setIsEditing(true);
+  };
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // اعتبارسنجی با یک پیام (نه دو تا)
+    if (file.size > 5 * 1024 * 1024) {
+      toastError("حجم فایل باید کمتر از ۵ مگابایت باشد");
+      e.target.value = "";
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      toastError("فایل باید از نوع تصویر باشد");
+      e.target.value = "";
+      return;
+    }
+
+    setEditImage(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setEditImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // ✅ بررسی ابعاد عکس
+  const checkImageDimensions = (file) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const width = img.width;
+        const height = img.height;
+        URL.revokeObjectURL(url);
+        resolve({
+          width,
+          height,
+          valid:
+            width >= 1000 && width <= 1500 && height >= 1000 && height <= 1500,
+        });
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve({ width: 0, height: 0, valid: false });
+      };
+      img.src = url;
+    });
   };
 
   const handleSaveEdit = async () => {
     if (!editingWork) return;
 
+    // اعتبارسنجی توضیحات
+    if (!editDescription.trim()) {
+      toastError("لطفاً توضیحات را وارد کنید");
+      return;
+    }
+
+    // ✅ اعتبارسنجی عکس قبل از ارسال
+    if (editImage) {
+      // حجم
+      if (editImage.size > 5 * 1024 * 1024) {
+        toastError("حجم عکس باید کمتر از ۵ مگابایت باشد");
+        return;
+      }
+      // فرمت
+      if (!editImage.type.startsWith("image/")) {
+        toastError("فرمت عکس نامعتبر است. لطفاً از فرمت JPG استفاده کنید.");
+        return;
+      }
+      // ابعاد
+      const { width, height, valid } = await checkImageDimensions(editImage);
+      if (!valid) {
+        if (width < 1000 || height < 1000) {
+          toastError("ابعاد عکس باید حداقل ۱۰۰۰ پیکسل باشد");
+        } else if (width > 1500 || height > 1500) {
+          toastError("ابعاد عکس باید حداکثر ۱۵۰۰ پیکسل باشد");
+        } else {
+          toastError("ابعاد عکس باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد");
+        }
+        return;
+      }
+    }
+
+    setIsUploading(true);
     try {
-      await updateWork(editingWork.id, { description: editDescription });
+      const formData = new FormData();
+      formData.append("description", editDescription.trim());
 
-      setWorks((prev) =>
-        prev.map((w) =>
-          w.id === editingWork.id ? { ...w, description: editDescription } : w,
-        ),
+      if (editImage) {
+        formData.append("image", editImage);
+      }
+
+      await updateWork(editingWork.id, formData);
+
+      const updatedWorks = works.map((w) =>
+        w.id === editingWork.id
+          ? {
+              ...w,
+              description: editDescription.trim(),
+              image: editImagePreview || w.image,
+            }
+          : w,
       );
+      setWorks(updatedWorks);
 
-      toastSuccess("توضیحات با موفقیت ویرایش شد");
+      toastSuccess("اطلاعات با موفقیت ویرایش شد");
       setIsEditing(false);
       setEditingWork(null);
       setEditDescription("");
+      setEditImage(null);
+      setEditImagePreview(null);
     } catch (err) {
-      toastError("خطا در ویرایش توضیحات");
-      showError(err);
+      console.log("❌ خطای کامل:", err);
+      console.log("❌ پاسخ سرور:", err.response?.data);
+
+      // دریافت پیام دقیق از سرور
+      const errorData = err.response?.data;
+      let errorMsg = "خطا در ویرایش اطلاعات";
+
+      if (errorData?.detail) {
+        errorMsg = errorData.detail;
+      } else if (errorData?.message) {
+        errorMsg = errorData.message;
+      } else if (errorData?.errors) {
+        const firstError = Object.values(errorData.errors)[0]?.[0];
+        if (firstError) errorMsg = firstError;
+      }
+
+      // خطاهای مربوط به عکس
+      if (
+        errorMsg.includes("image") ||
+        errorMsg.includes("عکس") ||
+        errorMsg.includes("photo")
+      ) {
+        if (errorMsg.includes("size") || errorMsg.includes("حجم")) {
+          errorMsg = "حجم عکس باید کمتر از ۵ مگابایت باشد";
+        } else if (
+          errorMsg.includes("dimension") ||
+          errorMsg.includes("ابعاد") ||
+          errorMsg.includes("width") ||
+          errorMsg.includes("height")
+        ) {
+          errorMsg = "ابعاد عکس باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد";
+        } else if (
+          errorMsg.includes("format") ||
+          errorMsg.includes("فرمت") ||
+          errorMsg.includes("type")
+        ) {
+          errorMsg = "فرمت عکس نامعتبر است. لطفاً از فرمت JPG استفاده کنید";
+        } else {
+          errorMsg =
+            "فرمت یا ابعاد عکس نامعتبر است. لطفاً عکس را با فرمت JPG و ابعاد ۱۰۰۰ تا ۱۵۰۰ پیکسل ارسال کنید";
+        }
+      }
+
+      toastError(errorMsg);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -92,6 +240,8 @@ export default function SubmittedWorks() {
     setIsEditing(false);
     setEditingWork(null);
     setEditDescription("");
+    setEditImage(null);
+    setEditImagePreview(null);
   };
 
   if (loading) {
@@ -184,7 +334,7 @@ export default function SubmittedWorks() {
                 border: "1px solid rgba(201, 168, 76, 0.1)",
               }}
             >
-              {works.length}
+              {toPersianDigits(works.length)}
             </span>
           </div>
         </div>
@@ -244,6 +394,7 @@ export default function SubmittedWorks() {
                     decoding="async"
                     width="44"
                     height="44"
+                    referrerPolicy="no-referrer"
                     style={{
                       width: "100%",
                       height: "100%",
@@ -283,7 +434,7 @@ export default function SubmittedWorks() {
                       fontFamily: "w_Lotus, sans-serif",
                     }}
                   >
-                    شناسه: {String(work.id).padStart(3, "0")}
+                    شناسه: {toPersianDigits(String(work.id).padStart(3, "0"))}
                   </span>
                 </div>
 
@@ -391,66 +542,66 @@ export default function SubmittedWorks() {
         </div>
 
         <style>{`
-  .submitted-scroll::-webkit-scrollbar {
-    width: 4px;
-  }
-  .submitted-scroll::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.015);
-    border-radius: 6px;
-  }
-  .submitted-scroll::-webkit-scrollbar-thumb {
-    background: rgba(201, 168, 76, 0.3);
-    border-radius: 6px;
-  }
-  .submitted-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(201, 168, 76, 0.5);
-  }
+          .submitted-scroll::-webkit-scrollbar {
+            width: 4px;
+          }
+          .submitted-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.015);
+            border-radius: 6px;
+          }
+          .submitted-scroll::-webkit-scrollbar-thumb {
+            background: rgba(201, 168, 76, 0.3);
+            border-radius: 6px;
+          }
+          .submitted-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(201, 168, 76, 0.5);
+          }
 
-  @media (max-width: 900px) {
-    .submitted-scroll {
-      max-height: 320px !important;
-    }
-    .submitted-scroll > div {
-      grid-template-columns: 46px 1fr 30px 30px !important;
-      gap: 9px !important;
-      padding: 7px 12px 7px 7px !important;
-    }
-  }
+          @media (max-width: 900px) {
+            .submitted-scroll {
+              max-height: 320px !important;
+            }
+            .submitted-scroll > div {
+              grid-template-columns: 46px 1fr 30px 30px !important;
+              gap: 9px !important;
+              padding: 7px 12px 7px 7px !important;
+            }
+          }
 
-  @media (max-width: 500px) {
-    .submitted-scroll > div {
-      grid-template-columns: 40px 1fr 28px 28px !important;
-      gap: 8px !important;
-      padding: 6px 10px 6px 6px !important;
-    }
-    .submitted-scroll > div > div:first-child {
-      width: 36px !important;
-      height: 36px !important;
-    }
-    .submitted-scroll > div > div:nth-child(2) span:first-child {
-      font-size: 12px !important;
-    }
-    .submitted-scroll > div button {
-      width: 26px !important;
-      height: 26px !important;
-      font-size: 12px !important;
-    }
-  }
+          @media (max-width: 500px) {
+            .submitted-scroll > div {
+              grid-template-columns: 40px 1fr 28px 28px !important;
+              gap: 8px !important;
+              padding: 6px 10px 6px 6px !important;
+            }
+            .submitted-scroll > div > div:first-child {
+              width: 36px !important;
+              height: 36px !important;
+            }
+            .submitted-scroll > div > div:nth-child(2) span:first-child {
+              font-size: 12px !important;
+            }
+            .submitted-scroll > div button {
+              width: 26px !important;
+              height: 26px !important;
+              font-size: 12px !important;
+            }
+          }
 
-  @media (max-width: 420px) {
-    .edit-modal-card {
-      padding: 28px 18px 22px !important;
-    }
-    .edit-modal-actions {
-      flex-direction: column-reverse !important;
-      gap: 10px !important;
-    }
-    .edit-modal-actions button {
-      flex: 1 1 auto !important;
-      width: 100% !important;
-    }
-  }
-`}</style>
+          @media (max-width: 420px) {
+            .edit-modal-card {
+              padding: 28px 18px 22px !important;
+            }
+            .edit-modal-actions {
+              flex-direction: column-reverse !important;
+              gap: 10px !important;
+            }
+            .edit-modal-actions button {
+              flex: 1 1 auto !important;
+              width: 100% !important;
+            }
+          }
+        `}</style>
       </div>
 
       <ConfirmModal
@@ -573,7 +724,7 @@ export default function SubmittedWorks() {
                   letterSpacing: "0.3px",
                 }}
               >
-                ويرايش توضيحات
+                ويرايش اثر
               </h3>
 
               <p
@@ -585,10 +736,9 @@ export default function SubmittedWorks() {
                   lineHeight: "1.6",
                 }}
               >
-                توضيحات جديد را براي اين اثر وارد کنيد
+                توضيحات و عکس جديد را وارد کنيد
               </p>
 
-              {/* ✅ بخش با بک‌گراند طلایی */}
               <div
                 style={{
                   display: "flex",
@@ -598,14 +748,14 @@ export default function SubmittedWorks() {
                   padding: "12px 16px",
                   borderRadius: "14px",
                   border: "1px solid rgba(201, 168, 76, 0.1)",
-                  marginBottom: "20px",
+                  marginBottom: "16px",
                   textAlign: "right",
                 }}
               >
                 <div
                   style={{
-                    width: "48px",
-                    height: "48px",
+                    width: "64px",
+                    height: "64px",
                     borderRadius: "10px",
                     overflow: "hidden",
                     flexShrink: 0,
@@ -614,7 +764,11 @@ export default function SubmittedWorks() {
                   }}
                 >
                   <img
-                    src={editingWork.image || "/src/assets/images/logo-bg.png"}
+                    src={
+                      editImagePreview ||
+                      editingWork.image ||
+                      "/src/assets/images/logo-bg.png"
+                    }
                     alt=""
                     style={{
                       width: "100%",
@@ -639,7 +793,7 @@ export default function SubmittedWorks() {
                       fontFamily: "w_Lotus, sans-serif",
                     }}
                   >
-                    توضيحات فعلي
+                    {editImage ? "عکس جدید انتخاب شد" : "عکس فعلی"}
                   </div>
                   <div
                     style={{
@@ -649,10 +803,48 @@ export default function SubmittedWorks() {
                       fontWeight: 600,
                     }}
                   >
-                    {editingWork.description || "بدون شرح"}
+                    {editImage
+                      ? editImage.name
+                      : editingWork.image
+                        ? "عکس موجود"
+                        : "بدون عکس"}
                   </div>
                 </div>
               </div>
+
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  background: "rgba(201, 168, 76, 0.06)",
+                  border: "1.5px dashed rgba(201, 168, 76, 0.2)",
+                  borderRadius: "12px",
+                  color: "rgba(255,255,255,0.6)",
+                  fontSize: "13px",
+                  fontFamily: "w_Lotus, sans-serif",
+                  cursor: "pointer",
+                  transition: "all 0.25s ease",
+                  marginBottom: "16px",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(201, 168, 76, 0.4)";
+                  e.currentTarget.style.background = "rgba(201, 168, 76, 0.1)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(201, 168, 76, 0.2)";
+                  e.currentTarget.style.background = "rgba(201, 168, 76, 0.06)";
+                }}
+              >
+                انتخاب عکس جدید (اختیاری)
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                style={{ display: "none" }}
+              />
 
               <div
                 style={{
@@ -712,11 +904,13 @@ export default function SubmittedWorks() {
                     direction: "ltr",
                   }}
                 >
-                  {editDescription.length} / 200
+                  {toPersianDigits(editDescription.length)} /{" "}
+                  {toPersianDigits(200)}
                 </span>
               </div>
 
               <div
+                className="edit-modal-actions"
                 style={{
                   display: "flex",
                   gap: "12px",
@@ -727,6 +921,7 @@ export default function SubmittedWorks() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={closeEditModal}
+                  disabled={isUploading}
                   style={{
                     flex: 1,
                     minHeight: "48px",
@@ -737,12 +932,16 @@ export default function SubmittedWorks() {
                     fontSize: "15px",
                     fontWeight: 600,
                     fontFamily: "w_Lotus, sans-serif",
-                    cursor: "pointer",
+                    cursor: isUploading ? "not-allowed" : "pointer",
                     transition: "all 0.25s ease",
+                    opacity: isUploading ? 0.5 : 1,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                    e.currentTarget.style.color = "rgba(255,255,255,0.7)";
+                    if (!isUploading) {
+                      e.currentTarget.style.background =
+                        "rgba(255,255,255,0.08)";
+                      e.currentTarget.style.color = "rgba(255,255,255,0.7)";
+                    }
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = "rgba(255,255,255,0.04)";
@@ -753,36 +952,66 @@ export default function SubmittedWorks() {
                 </motion.button>
 
                 <motion.button
-                  className="edit-modal-actions"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={handleSaveEdit}
+                  disabled={isUploading}
                   style={{
                     flex: 1.5,
                     minHeight: "48px",
-                    background: "linear-gradient(135deg, #A4874D, #C9A84C)",
+                    background: isUploading
+                      ? "rgba(100,100,100,0.3)"
+                      : "linear-gradient(135deg, #A4874D, #C9A84C)",
                     color: "#ffffff",
                     borderRadius: "14px",
                     border: "none",
                     fontSize: "15px",
                     fontWeight: 700,
                     fontFamily: "w_Lotus, sans-serif",
-                    cursor: "pointer",
-                    boxShadow: "0 4px 24px rgba(164,135,77,0.25)",
+                    cursor: isUploading ? "not-allowed" : "pointer",
+                    boxShadow: isUploading
+                      ? "none"
+                      : "0 4px 24px rgba(164,135,77,0.25)",
                     transition: "all 0.25s ease",
+                    opacity: isUploading ? 0.6 : 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 8px 32px rgba(164,135,77,0.4)";
-                    e.currentTarget.style.transform = "translateY(-2px)";
+                    if (!isUploading) {
+                      e.currentTarget.style.boxShadow =
+                        "0 8px 32px rgba(164,135,77,0.4)";
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 4px 24px rgba(164,135,77,0.25)";
-                    e.currentTarget.style.transform = "translateY(0)";
+                    if (!isUploading) {
+                      e.currentTarget.style.boxShadow =
+                        "0 4px 24px rgba(164,135,77,0.25)";
+                      e.currentTarget.style.transform = "translateY(0)";
+                    }
                   }}
                 >
-                  ذخيره تغييرات
+                  {isUploading ? (
+                    <>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          width: "18px",
+                          height: "18px",
+                          border: "2px solid rgba(255,255,255,0.2)",
+                          borderTop: "2px solid #ffffff",
+                          borderRadius: "50%",
+                          animation: "spin 0.8s linear infinite",
+                        }}
+                      />
+                      در حال ذخیره...
+                    </>
+                  ) : (
+                    "ذخيره تغييرات"
+                  )}
                 </motion.button>
               </div>
 
@@ -794,6 +1023,13 @@ export default function SubmittedWorks() {
                     "linear-gradient(90deg, transparent, rgba(201,168,76,0.08), transparent)",
                 }}
               />
+
+              <style>{`
+                @keyframes spin {
+                  from { transform: rotate(0deg); }
+                  to { transform: rotate(360deg); }
+                }
+              `}</style>
             </motion.div>
           </div>
         )}

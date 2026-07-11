@@ -876,9 +876,13 @@ export default function Header() {
           }
 
           .header-premium .profile-dropdown {
-            left: 50%;
-            transform: translateX(-50%);
-            min-width: min(88vw, 280px);
+            position: fixed !important;
+            top: 62px !important;
+            left: 50% !important;
+            right: auto !important;
+            transform: translateX(-50%) !important;
+            width: min(90vw, 320px) !important;
+            min-width: unset !important;
           }
         }
 

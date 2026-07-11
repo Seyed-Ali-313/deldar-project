@@ -1,6 +1,7 @@
 // src/pages/Home.jsx
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import branchArt from "../assets/images/branch-art.svg";
 import birdArt from "../assets/images/bird-art.svg";
 import logoBg from "../assets/images/logo-bg.png";
@@ -9,7 +10,20 @@ import Countdown from "../components/common/Countdown";
 
 export default function Home() {
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+  // ✅ دکمه ثبت نام و ارسال عکس
+  const handleRegisterClick = () => {
+    if (isLoggedIn) {
+      navigate("/dashboard");
+    } else {
+      navigate("/login");
+    }
+  };
 
+  // ✅ دکمه مطالعه فراخوان - همیشه به فراخوان میره
+  const handleAnnouncementClick = () => {
+    navigate("/announcement");
+  };
   return (
     <div className="page hm-page">
       <div className="hm-bg-glow" aria-hidden="true" />
@@ -69,15 +83,15 @@ export default function Home() {
           >
             <button
               className="hm-btn hm-btn-secondary"
-              onClick={() => navigate("/announcement")}
+              onClick={handleAnnouncementClick}
             >
               مطالعه فراخوان
             </button>
             <button
               className="hm-btn hm-btn-primary"
-              onClick={() => navigate("/login")}
+              onClick={handleRegisterClick}
             >
-              ثبت نام و ارسال عکس
+              {isLoggedIn ? "ورود به صفحه کاربری" : "ثبت نام و ارسال عکس"}
             </button>
           </motion.div>
         </motion.div>

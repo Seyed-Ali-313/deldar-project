@@ -2,7 +2,13 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
-export default function PrivateRoute() {
+// ✅ مسیرهایی که اگر کاربر لاگین بود، نباید بهش دسترسی داشته باشه
+const PUBLIC_ONLY_ROUTES = ["/login", "/register", "/rules"];
+
+export default function PrivateRoute({
+  requireAuth = true,
+  redirectTo = "/login",
+}) {
   const { isLoggedIn, isLoading } = useAuth();
 
   console.log(
@@ -29,11 +35,18 @@ export default function PrivateRoute() {
     );
   }
 
-  if (!isLoggedIn) {
-    console.log("🔒 رفتن به لاگین");
-    return <Navigate to="/login" replace />;
+  // ✅ اگر کاربر لاگین است و مسیر عمومی (لاگین، ثبت‌نام، قوانین) هست → بره داشبورد
+  if (isLoggedIn && PUBLIC_ONLY_ROUTES.includes(window.location.pathname)) {
+    console.log("🔒 کاربر لاگین است، رفتن به داشبورد");
+    return <Navigate to="/dashboard" replace />;
   }
 
-  console.log("🔒 نمایش داشبورد");
+  // ✅ اگر کاربر لاگین نیست و مسیر نیاز به احراز هویت دارد → بره لاگین
+  if (!isLoggedIn && requireAuth) {
+    console.log("🔒 رفتن به لاگین");
+    return <Navigate to={redirectTo} replace />;
+  }
+
+  console.log("🔒 نمایش محتوا");
   return <Outlet />;
 }

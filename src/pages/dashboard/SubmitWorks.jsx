@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { addWork } from "../../services/dashboardService";
 import { showError } from "../../utils/errorHandler";
+import toPersianDigits from "../../utils/toPersianNumber";
 import {
   success as toastSuccess,
   error as toastError,
@@ -65,7 +66,7 @@ export default function SubmitWorks() {
     }
 
     if (uploadedWorks.length >= MAX_WORKS) {
-      toastWarn(`حداکثر ${MAX_WORKS} اثر مجاز است`);
+      toastWarn(`حداکثر ${toPersianDigits(MAX_WORKS)} اثر مجاز است`);
       return;
     }
 
@@ -119,7 +120,9 @@ export default function SubmitWorks() {
         await addWork(formData);
       }
 
-      toastSuccess(`${uploadedWorks.length} اثر با موفقیت اضافه شد`);
+      toastSuccess(
+        `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت اضافه شد`,
+      );
       setUploadedWorks([]);
     } catch (err) {
       showError(err);
@@ -178,7 +181,7 @@ export default function SubmitWorks() {
           <span style={{ color: "rgba(255,255,255,0.7)" }}>
             • هر عکاس می‌تواند حداکثر{" "}
             <span style={{ color: "#C9A84C", fontWeight: 600 }}>
-              {MAX_WORKS}
+              {toPersianDigits(MAX_WORKS)}
             </span>{" "}
             تک عکس ارسال کند.
           </span>
@@ -231,7 +234,7 @@ export default function SubmitWorks() {
             textAlign: "center",
           }}
         >
-          {uploadedWorks.length}
+          {toPersianDigits(uploadedWorks.length)}
         </span>
         <span
           style={{
@@ -241,7 +244,7 @@ export default function SubmitWorks() {
             fontWeight: 300,
           }}
         >
-          / {MAX_WORKS}
+          / {toPersianDigits(MAX_WORKS)}
         </span>
       </div>
 
@@ -353,7 +356,7 @@ export default function SubmitWorks() {
                 </>
               )}
             </span>
-            <span style={{ color: "#C9A84C", fontSize: "14px" }}>📷</span>
+            <span style={{ color: "#C9A84C", fontSize: "14px" }}></span>
           </label>
         </div>
 
@@ -448,9 +451,9 @@ export default function SubmitWorks() {
                     fontFamily: "w_Lotus, sans-serif",
                   }}
                 >
-                  #{index + 1}
+                  #{toPersianDigits(index + 1)}
                 </span>
-                <span style={{ color: "#4CAF50", fontSize: "9px" }}>✓</span>
+                <span style={{ color: "#4CAF50", fontSize: "9px" }}></span>
               </div>
 
               <span
@@ -609,8 +612,10 @@ export default function SubmitWorks() {
           </>
         ) : (
           <>
-            <span style={{ fontSize: "18px" }}>📤</span>
-            <span>ارسال مجموع آثار ({uploadedWorks.length} عکس)</span>
+            <span style={{ fontSize: "18px" }}></span>
+            <span>
+              ارسال مجموع آثار ({toPersianDigits(uploadedWorks.length)} عکس)
+            </span>
           </>
         )}
       </motion.button>

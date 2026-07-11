@@ -40,6 +40,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <LayoutWithAnimation />,
     children: [
+      // ✅ صفحه اصلی - همیشه قابل دسترس
       {
         index: true,
         element: (
@@ -48,30 +49,7 @@ const router = createBrowserRouter([
           </PageTransition>
         ),
       },
-      {
-        path: "rules",
-        element: (
-          <PageTransition>
-            <Rules />
-          </PageTransition>
-        ),
-      },
-      {
-        path: "about",
-        element: (
-          <PageTransition>
-            <About />
-          </PageTransition>
-        ),
-      },
-      {
-        path: "contact",
-        element: (
-          <PageTransition>
-            <Contact />
-          </PageTransition>
-        ),
-      },
+      // ✅ فراخوان - همیشه قابل دسترس
       {
         path: "announcement",
         element: (
@@ -80,22 +58,70 @@ const router = createBrowserRouter([
           </PageTransition>
         ),
       },
+      // ✅ درباره ما - همیشه قابل دسترس
+      {
+        path: "about",
+        element: (
+          <PageTransition>
+            <About />
+          </PageTransition>
+        ),
+      },
+      // ✅ تماس با ما - همیشه قابل دسترس
+      {
+        path: "contact",
+        element: (
+          <PageTransition>
+            <Contact />
+          </PageTransition>
+        ),
+      },
+      // ✅ قوانین - اگر لاگین باشی به داشبورد میره
+      {
+        path: "rules",
+        element: <PrivateRoute requireAuth={false} redirectTo="/dashboard" />,
+        children: [
+          {
+            index: true,
+            element: (
+              <PageTransition>
+                <Rules />
+              </PageTransition>
+            ),
+          },
+        ],
+      },
+      // ✅ ثبت‌نام - اگر لاگین باشی به داشبورد میره
       {
         path: "register",
-        element: (
-          <PageTransition>
-            <Register />
-          </PageTransition>
-        ),
+        element: <PrivateRoute requireAuth={false} redirectTo="/dashboard" />,
+        children: [
+          {
+            index: true,
+            element: (
+              <PageTransition>
+                <Register />
+              </PageTransition>
+            ),
+          },
+        ],
       },
+      // ✅ لاگین - اگر لاگین باشی به داشبورد میره
       {
         path: "login",
-        element: (
-          <PageTransition>
-            <Login />
-          </PageTransition>
-        ),
+        element: <PrivateRoute requireAuth={false} redirectTo="/dashboard" />,
+        children: [
+          {
+            index: true,
+            element: (
+              <PageTransition>
+                <Login />
+              </PageTransition>
+            ),
+          },
+        ],
       },
+      // ✅ تایید OTP - همیشه قابل دسترس (برای تکمیل ثبت‌نام)
       {
         path: "verify-otp",
         element: (
@@ -104,17 +130,25 @@ const router = createBrowserRouter([
           </PageTransition>
         ),
       },
+      // ✅ آپلود موفق - نیاز به لاگین
       {
         path: "upload-success",
-        element: (
-          <PageTransition>
-            <UploadSuccess />
-          </PageTransition>
-        ),
+        element: <PrivateRoute requireAuth={true} />,
+        children: [
+          {
+            index: true,
+            element: (
+              <PageTransition>
+                <UploadSuccess />
+              </PageTransition>
+            ),
+          },
+        ],
       },
+      // ✅ داشبورد - نیاز به لاگین
       {
         path: "dashboard",
-        element: <PrivateRoute />,
+        element: <PrivateRoute requireAuth={true} />,
         children: [
           {
             index: true,
@@ -126,6 +160,7 @@ const router = createBrowserRouter([
           },
         ],
       },
+      // ✅ ۴۰۴
       {
         path: "*",
         element: (

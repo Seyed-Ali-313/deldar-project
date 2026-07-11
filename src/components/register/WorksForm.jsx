@@ -4,6 +4,7 @@ import { success, error, showErrors } from "../../utils/toast";
 import { uploadWork, submitAllWorks } from "../../services/onboardingService";
 import { getErrorMessage } from "../../utils/validators";
 import useRegisterData from "../../hooks/useRegisterData";
+import toPersianDigits from "../../utils/toPersianNumber";
 
 const MAX_WORKS = 50;
 const MAX_DESCRIPTION_LENGTH = 200;
@@ -90,7 +91,7 @@ export default function WorksForm({
       errs.push(`شرح عکس باید کمتر از ${MAX_DESCRIPTION_LENGTH} کاراکتر باشد`);
     }
     if (uploadedWorks.length >= MAX_WORKS)
-      errs.push(`حداکثر ${MAX_WORKS} اثر مجاز است`);
+      errs.push(`حداکثر ${toPersianDigits(MAX_WORKS)} اثر مجاز است`);
 
     if (errs.length > 0) {
       showErrors(errs);
@@ -157,7 +158,9 @@ export default function WorksForm({
         await submitAllWorks();
       }
 
-      success(`${uploadedWorks.length} اثر با موفقیت ارسال شد`);
+      success(
+        `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ارسال شد`,
+      );
 
       setTimeout(() => {
         onSuccess();
@@ -173,8 +176,6 @@ export default function WorksForm({
       if (errorList.length > 0) {
         showErrors(errorList);
       } else if (!err.handledByInterceptor) {
-        // ✅ اگه اینترسپتور axios قبلاً پیام این خطا رو نشون داده،
-        // دوباره پیام جدید نمی‌فرستیم تا پیام قبلی پاک نشه
         error(getErrorMessage(err, "خطا در ارسال آثار"));
       }
     } finally {
@@ -184,10 +185,11 @@ export default function WorksForm({
 
   return (
     <div
+      className="works-form-outer submit-works-container"
       style={{
         width: "100%",
         maxWidth: "780px",
-        margin: "-5px auto",
+        margin: "11px auto",
         display: "flex",
         flexDirection: "column",
         height: "100%",
@@ -199,7 +201,7 @@ export default function WorksForm({
         style={{
           textAlign: "right",
           marginBottom: "8px",
-          marginTop: "-22px",
+          marginTop: "-40px",
           padding: "8px 14px",
           background:
             "linear-gradient(135deg, rgba(164, 135, 77, 0.08), rgba(164, 135, 77, 0.03))",
@@ -225,7 +227,7 @@ export default function WorksForm({
           <span style={{ color: "rgba(255,255,255,0.7)" }}>
             • هر عکاس می‌تواند حداکثر{" "}
             <span style={{ color: "#C9A84C", fontWeight: 600 }}>
-              {MAX_WORKS}
+              {toPersianDigits(MAX_WORKS)}
             </span>{" "}
             تک عکس ارسال کند.
           </span>
@@ -278,7 +280,7 @@ export default function WorksForm({
             textAlign: "center",
           }}
         >
-          {uploadedWorks.length}
+          {toPersianDigits(uploadedWorks.length)}
         </span>
         <span
           style={{
@@ -288,11 +290,12 @@ export default function WorksForm({
             fontWeight: 300,
           }}
         >
-          / {MAX_WORKS}
+          / {toPersianDigits(MAX_WORKS)}
         </span>
       </div>
 
       <div
+        className="submit-works-add-row"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr auto",
@@ -397,7 +400,7 @@ export default function WorksForm({
                 </>
               )}
             </span>
-            <span style={{ color: "#C9A84C", fontSize: "14px" }}>📷</span>
+            <span style={{ color: "#C9A84C", fontSize: "14px" }}></span>
           </label>
         </div>
 
@@ -442,18 +445,19 @@ export default function WorksForm({
       <div
         ref={containerRef}
         style={{
-          height: "140px",
+          height: "115px",
           overflowY: "auto",
           paddingRight: "2px",
           marginBottom: "8px",
           scrollBehavior: "smooth",
           flexShrink: 0,
         }}
-        className="works-scroll-container"
+        className="submit-works-scroll"
       >
         <AnimatePresence>
           {uploadedWorks.map((work, index) => (
             <motion.div
+              className="submit-work-item"
               key={work.id}
               initial={{ opacity: 0, y: -10, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -491,9 +495,9 @@ export default function WorksForm({
                     fontFamily: "w_Lotus, sans-serif",
                   }}
                 >
-                  #{index + 1}
+                  #{toPersianDigits(index + 1)}
                 </span>
-                <span style={{ color: "#4CAF50", fontSize: "9px" }}>✓</span>
+                <span style={{ color: "#4CAF50", fontSize: "9px" }}></span>
               </div>
 
               <span
@@ -635,19 +639,85 @@ export default function WorksForm({
           </>
         ) : (
           <>
-            <span style={{ fontSize: "18px" }}>📤</span>
-            <span>ارسال مجموع آثار ({uploadedWorks.length} عکس)</span>
+            <span style={{ fontSize: "18px" }}></span>
+            <span>
+              ارسال مجموع آثار ({toPersianDigits(uploadedWorks.length)} عکس)
+            </span>
           </>
         )}
       </motion.button>
 
       <style>{`
-        .works-scroll-container::-webkit-scrollbar { width: 3px; }
-        .works-scroll-container::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 4px; }
-        .works-scroll-container::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #A4874D, #C9A84C); border-radius: 4px; }
-        .works-scroll-container::-webkit-scrollbar-thumb:hover { background: #C9A84C; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
+  .works-form-outer.submit-works-container {
+    max-width: 1050px !important;
+  }
+  @media (min-width: 901px) {
+    .page .works-form-outer.submit-works-container {
+      max-width: 1050px !important;
+    }
+  }
+
+  .submit-works-scroll::-webkit-scrollbar { width: 3px; }
+  .submit-works-scroll::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 4px; }
+  .submit-works-scroll::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #A4874D, #C9A84C); border-radius: 4px; }
+  .submit-works-scroll::-webkit-scrollbar-thumb:hover { background: #C9A84C; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  @media (max-width: 900px) {
+    .submit-works-container {
+      max-height: 520px !important;
+      margin: 0 auto !important;
+    }
+    .submit-works-add-row {
+      grid-template-columns: 1fr 1fr !important;
+      grid-template-rows: auto auto !important;
+    }
+    .submit-works-add-row > button {
+      grid-column: 1 / -1 !important;
+      width: 100% !important;
+      min-width: unset !important;
+      height: 40px !important;
+    }
+    .submit-works-scroll {
+      height: 160px !important;
+    }
+    .submit-work-item {
+      grid-template-columns: 32px 1fr 1fr 26px !important;
+      gap: 8px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .submit-works-container {
+      padding-top: 0 !important;
+    }
+    .submit-works-add-row {
+      grid-template-columns: 1fr !important;
+      grid-template-rows: auto auto auto !important;
+      gap: 6px !important;
+    }
+    .submit-works-add-row .pill {
+      height: 42px !important;
+    }
+    .submit-works-add-row .register-input {
+      font-size: 14px !important;
+    }
+    .submit-work-item {
+      grid-template-columns: 28px 1fr 26px !important;
+      grid-template-areas: "num desc close" "num file close" !important;
+    }
+    .submit-work-item > span:nth-child(2) {
+      grid-area: desc !important;
+      font-size: 11px !important;
+    }
+    .submit-work-item > div:nth-child(3) {
+      grid-area: file !important;
+    }
+    .submit-work-item > div:nth-child(3) span:last-child {
+      display: none !important;
+    }
+  }
+`}</style>
     </div>
   );
 }

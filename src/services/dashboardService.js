@@ -18,9 +18,18 @@ export const verifyMobileChange = (new_mobile, otp_code) =>
 // دریافت لیست آثار
 export const getWorks = () => api.get("/dashboard/works/");
 
-// بروزرسانی یک اثر (کپشن یا عکس)
-export const updateWork = (id, data) =>
-  api.patch(`/dashboard/works/${id}/`, data);
+// ✅ بروزرسانی یک اثر (با پشتیبانی از FormData برای عکس)
+export const updateWork = (id, data) => {
+  // اگر data از نوع FormData است، هدر رو خودکار تنظیم کن
+  if (data instanceof FormData) {
+    return api.patch(`/dashboard/works/${id}/`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  }
+  return api.patch(`/dashboard/works/${id}/`, data);
+};
 
 // حذف یک اثر
 export const deleteWork = (id) => api.delete(`/dashboard/works/${id}/`);

@@ -1,76 +1,139 @@
 // src/utils/errorHandler.js
 import { error as toastError } from "./toast";
 
-// ✅ پیام‌های خطای فارسی
+// ✅ پیام‌های خطای فارسی دقیق و بدون ایموجی
 const ERROR_MESSAGES = {
-  // شبکه
+  // ===== خطاهای شبکه =====
   "Network Error":
-    "❌ ارتباط با سرور برقرار نشد. لطفاً اتصال اینترنت خود را بررسی کنید.",
-  ERR_NETWORK: "❌ ارتباط با سرور قطع شده است.",
-  ECONNABORTED: "⏱️ درخواست شما زمان‌بر بود. لطفاً مجدداً تلاش کنید.",
-  ETIMEDOUT: "⏱️ زمان پاسخگویی سرور به پایان رسید. لطفاً مجدداً تلاش کنید.",
-  ERR_CONNECTION_REFUSED:
-    "❌ سرور پاسخ نمی‌دهد. لطفاً چند دقیقه دیگر تلاش کنید.",
-  ERR_INTERNET_DISCONNECTED: "📡 اتصال اینترنت خود را بررسی کنید.",
+    "ارتباط با سرور برقرار نشد. لطفاً اتصال اینترنت خود را بررسی کنید.",
+  ERR_NETWORK:
+    "ارتباط با سرور قطع شده است. لطفاً اتصال اینترنت خود را بررسی کنید.",
+  ECONNABORTED: "درخواست شما زمان‌بر بود. لطفاً مجدداً تلاش کنید.",
+  ETIMEDOUT: "زمان پاسخگویی سرور به پایان رسید. لطفاً مجدداً تلاش کنید.",
+  "timeout of 30000ms exceeded":
+    "درخواست شما زمان‌بر بود. لطفاً مجدداً تلاش کنید.",
+  ERR_CONNECTION_REFUSED: "سرور پاسخ نمی‌دهد. لطفاً چند دقیقه دیگر تلاش کنید.",
+  ERR_INTERNET_DISCONNECTED: "اتصال اینترنت خود را بررسی کنید.",
 
-  // احراز هویت
-  401: "⏰ نشست شما منقضی شده است. لطفاً مجدداً وارد شوید.",
-  403: "🔒 شما دسترسی لازم برای این عملیات را ندارید.",
+  // ===== خطاهای احراز هویت =====
+  401: "نشست شما منقضی شده است. لطفاً مجدداً وارد شوید.",
+  403: "شما دسترسی لازم برای این عملیات را ندارید.",
 
-  // سرور
-  404: "🔍 اطلاعات مورد نظر یافت نشد.",
-  405: "🚫 این عملیات در سرور پشتیبانی نمی‌شود.",
-  500: "⚠️ خطای داخلی سرور. لطفاً مجدداً تلاش کنید.",
-  502: "🔧 سرور در دسترس نیست. لطفاً چند دقیقه دیگر تلاش کنید.",
-  503: "🔧 سرور در حال تعمیرات است. لطفاً بعداً تلاش کنید.",
-  504: "⏱️ زمان پاسخگویی سرور به پایان رسید.",
+  // ===== خطاهای سرور =====
+  400: "اطلاعات ارسالی معتبر نیست. لطفاً داده‌ها را بررسی کنید.",
+  404: "اطلاعات مورد نظر یافت نشد.",
+  405: "این عملیات در سرور پشتیبانی نمی‌شود.",
+  409: "این اطلاعات قبلاً ثبت شده است.",
+  422: "اطلاعات ارسالی معتبر نیست. لطفاً داده‌ها را بررسی کنید.",
+  429: "تعداد درخواست‌های شما بیش از حد مجاز است. لطفاً کمی صبر کنید.",
+  500: "خطای داخلی سرور. لطفاً مجدداً تلاش کنید.",
+  502: "سرور در دسترس نیست. لطفاً چند دقیقه دیگر تلاش کنید.",
+  503: "سرور در دسترس نیست. لطفاً چند دقیقه دیگر تلاش کنید.",
+  504: "سرور پاسخ نمی‌دهد. لطفاً چند دقیقه دیگر تلاش کنید.",
 
-  // ثبت‌نام
+  // ===== خطاهای ثبت‌نام و ورود =====
   "کاربری با این تلفن همراه یا کد ملی ثبت نشده است":
-    "❌ کاربری با این مشخصات یافت نشد.",
-  "کد وارد شده صحیح نیست": "❌ کد وارد شده اشتباه است. مجدداً تلاش کنید.",
-  "کد منقضی شده است": "⏰ کد منقضی شده است. درخواست مجدد کنید.",
-  "شماره موبایل باید ۱۱ رقم باشد": "📱 شماره موبایل باید ۱۱ رقم باشد.",
-  "کد ملی باید ۱۰ رقم باشد": "🆔 کد ملی باید ۱۰ رقم باشد.",
-  "کدپستی باید ۱۰ رقم باشد": "📮 کدپستی باید ۱۰ رقم باشد.",
-  "این فیلد الزامی است": "⚠️ لطفاً تمام فیلدهای الزامی را پر کنید.",
+    "کاربری با این مشخصات یافت نشد. لطفاً ثبت‌نام کنید.",
+  "کاربری با این شماره موبایل ثبت نشده است":
+    "کاربری با این شماره یافت نشد. لطفاً ثبت‌نام کنید.",
+  "کد وارد شده صحیح نیست": "کد تأیید اشتباه است. مجدداً تلاش کنید.",
+  "کد منقضی شده است": "کد تأیید منقضی شده است. درخواست مجدد کنید.",
+  "شماره موبایل باید ۱۱ رقم باشد": "شماره موبایل باید ۱۱ رقم باشد.",
+  "کد ملی باید ۱۰ رقم باشد": "کد ملی باید ۱۰ رقم باشد.",
+  "این فیلد الزامی است": "لطفاً تمام فیلدهای الزامی را پر کنید.",
+  "کدپستی باید ۱۰ رقم باشد": "کدپستی باید ۱۰ رقم باشد.",
+  "تاریخ تولد نامعتبر است": "تاریخ تولد وارد شده معتبر نیست.",
 
-  // آثار
-  "ارسال آثار با موفقیت انجام شد": "✅ آثار شما با موفقیت ارسال شد",
-  "حداکثر ۵۰ اثر مجاز است": "⚠️ شما حداکثر ۵۰ اثر می‌توانید ارسال کنید",
-  "فرمت فایل پشتیبانی نمی‌شود": "⚠️ فقط فرمت‌های تصویر مجاز هستند",
-  "حجم فایل بیشتر از حد مجاز است": "⚠️ حجم فایل باید کمتر از ۵ مگابایت باشد",
-  "لطفاً حداقل یک عکس انتخاب کنید": "⚠️ برای ارسال، حداقل یک عکس انتخاب کنید",
-  "کد تایید به شماره": "📱 کد تایید برای شما ارسال شد",
-  "زمان باقی‌مانده": "⏱️ زمان باقی‌مانده برای ارسال مجدد",
+  // ===== خطاهای عکس =====
+  image: "فرمت عکس ارسالی نامعتبر است. لطفاً عکس را با فرمت JPG ارسال کنید.",
+  "image size": "حجم عکس ارسالی باید کمتر از ۵ مگابایت باشد.",
+  "image format":
+    "فرمت عکس ارسالی نامعتبر است. لطفاً از فرمت JPG استفاده کنید.",
+  "image dimension": "ابعاد عکس ارسالی باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد.",
+  "image width": "عرض عکس ارسالی باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد.",
+  "image height": "ارتفاع عکس ارسالی باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد.",
+  عکس: "فرمت یا ابعاد عکس ارسالی نامعتبر است. لطفاً عکس را با فرمت JPG و ابعاد ۱۰۰۰ تا ۱۵۰۰ پیکسل ارسال کنید.",
+  photo:
+    "فرمت یا ابعاد عکس ارسالی نامعتبر است. لطفاً عکس را با فرمت JPG و ابعاد ۱۰۰۰ تا ۱۵۰۰ پیکسل ارسال کنید.",
+
+  // ===== خطاهای آثار =====
+  "ارسال آثار با موفقیت انجام شد": "آثار شما با موفقیت ارسال شد.",
+  "حداکثر ۵۰ اثر مجاز است": "حداکثر ۵۰ اثر مجاز است.",
+  "فرمت فایل پشتیبانی نمی‌شود":
+    "فرمت فایل پشتیبانی نمی‌شود. فقط تصاویر مجاز هستند.",
+  "حجم فایل بیشتر از حد مجاز است": "حجم فایل باید کمتر از ۵ مگابایت باشد.",
+  "لطفاً حداقل یک عکس انتخاب کنید": "لطفاً حداقل یک عکس انتخاب کنید.",
+  "No image": "هیچ عکسی انتخاب نشده است. لطفاً عکس را انتخاب کنید.",
 };
 
 // ✅ تبدیل خطا به پیام فارسی
 export const getFriendlyErrorMessage = (error) => {
-  // خطا از interceptor
+  // اگر خطا از قبل در interceptor هندل شده بود
+  if (error?.handledByInterceptor) {
+    return null;
+  }
+
+  // خطای شبکه (بدون پاسخ از سرور)
   if (error?.message && typeof error.message === "string") {
     for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
       if (error.message.includes(key) || error.message === key) {
         return value;
       }
     }
-    return error.message;
   }
 
-  // خطا از axios
+  // خطای axios (با پاسخ از سرور)
   if (error?.response?.data) {
     const data = error.response.data;
 
-    if (data.detail) {
+    // 1️⃣ بررسی detail
+    if (data.detail && typeof data.detail === "string") {
       for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
         if (data.detail.includes(key) || data.detail === key) {
           return value;
         }
       }
+      // بررسی دقیق‌تر برای خطاهای عکس
+      if (
+        data.detail.includes("image") ||
+        data.detail.includes("تصویر") ||
+        data.detail.includes("عکس")
+      ) {
+        if (data.detail.includes("size") || data.detail.includes("حجم")) {
+          return "حجم عکس ارسالی باید کمتر از ۵ مگابایت باشد.";
+        }
+        if (
+          data.detail.includes("dimension") ||
+          data.detail.includes("ابعاد") ||
+          data.detail.includes("width") ||
+          data.detail.includes("height")
+        ) {
+          return "ابعاد عکس ارسالی باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد.";
+        }
+        if (
+          data.detail.includes("format") ||
+          data.detail.includes("فرمت") ||
+          data.detail.includes("type")
+        ) {
+          return "فرمت عکس ارسالی نامعتبر است. لطفاً از فرمت JPG استفاده کنید.";
+        }
+        return "فرمت یا ابعاد عکس ارسالی نامعتبر است. لطفاً عکس را با فرمت JPG و ابعاد ۱۰۰۰ تا ۱۵۰۰ پیکسل ارسال کنید.";
+      }
       return data.detail;
     }
 
-    if (data.error) {
+    // 2️⃣ بررسی message
+    if (data.message && typeof data.message === "string") {
+      for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
+        if (data.message.includes(key) || data.message === key) {
+          return value;
+        }
+      }
+      return data.message;
+    }
+
+    // 3️⃣ بررسی error
+    if (data.error && typeof data.error === "string") {
       for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
         if (data.error.includes(key) || data.error === key) {
           return value;
@@ -79,24 +142,46 @@ export const getFriendlyErrorMessage = (error) => {
       return data.error;
     }
 
-    if (data.errors) {
-      const firstError = Object.values(data.errors)[0]?.[0];
-      if (firstError) {
-        for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
-          if (firstError.includes(key) || firstError === key) {
-            return value;
+    // 4️⃣ بررسی errors (اعتبارسنجی فیلدها)
+    if (data.errors && typeof data.errors === "object") {
+      const fieldErrors = [];
+      for (const [field, messages] of Object.entries(data.errors)) {
+        if (Array.isArray(messages) && messages.length > 0) {
+          const msg = messages[0];
+          if (!fieldErrors.includes(msg)) {
+            fieldErrors.push(msg);
+          }
+        } else if (typeof messages === "string") {
+          if (!fieldErrors.includes(messages)) {
+            fieldErrors.push(messages);
           }
         }
-        return firstError;
       }
-    }
-  }
-
-  // خطای کد
-  if (error?.code) {
-    for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
-      if (error.code === key || error.code.includes(key)) {
-        return value;
+      if (fieldErrors.length > 0) {
+        // اگر خطا مربوط به عکس بود، پیام خاص
+        const imageError = fieldErrors.find(
+          (msg) =>
+            msg.includes("image") ||
+            msg.includes("تصویر") ||
+            msg.includes("عکس") ||
+            msg.includes("photo"),
+        );
+        if (imageError) {
+          if (imageError.includes("size") || imageError.includes("حجم")) {
+            return "حجم عکس ارسالی باید کمتر از ۵ مگابایت باشد.";
+          }
+          if (
+            imageError.includes("dimension") ||
+            imageError.includes("ابعاد")
+          ) {
+            return "ابعاد عکس ارسالی باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد.";
+          }
+          if (imageError.includes("format") || imageError.includes("فرمت")) {
+            return "فرمت عکس ارسالی نامعتبر است. لطفاً از فرمت JPG استفاده کنید.";
+          }
+          return "فرمت یا ابعاد عکس ارسالی نامعتبر است. لطفاً عکس را با فرمت JPG و ابعاد ۱۰۰۰ تا ۱۵۰۰ پیکسل ارسال کنید.";
+        }
+        return fieldErrors.join(" - ");
       }
     }
   }
@@ -111,10 +196,19 @@ export const getFriendlyErrorMessage = (error) => {
     }
   }
 
-  return "❌ خطایی رخ داده است. لطفاً مجدداً تلاش کنید.";
+  // خطای کد
+  if (error?.code) {
+    for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
+      if (error.code === key || error.code.includes(key)) {
+        return value;
+      }
+    }
+  }
+
+  return "خطایی رخ داده است. لطفاً مجدداً تلاش کنید.";
 };
 
-// ✅ نمایش خطا با Toast
+// ✅ نمایش خطا با Toast (بدون ایموجی)
 export const showError = (error, fallbackMessage = "خطایی رخ داده است") => {
   const message = getFriendlyErrorMessage(error) || fallbackMessage;
   toastError(message);

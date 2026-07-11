@@ -105,13 +105,7 @@ export default function PersonalInfo() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pill-grid">
-      <FormInput placeholder="شغل*" required register={register} name="job" />
-      <FormInput
-        placeholder="نام خانوادگی*"
-        required
-        register={register}
-        name="last_name"
-      />
+      {/* ✅ 1. نام */}
       <FormInput
         placeholder="نام*"
         required
@@ -119,6 +113,36 @@ export default function PersonalInfo() {
         name="first_name"
       />
 
+      {/* ✅ 2. نام خانوادگی */}
+      <FormInput
+        placeholder="نام خانوادگی*"
+        required
+        register={register}
+        name="last_name"
+      />
+
+      {/* ✅ 3. شغل */}
+      <FormInput placeholder="شغل*" required register={register} name="job" />
+
+      {/* ✅ 4. تاریخ تولد */}
+      <FormInput
+        placeholder="تاریخ تولد*"
+        required
+        register={register}
+        name="birth_date"
+      />
+
+      {/* ✅ 5. کد ملی */}
+      <NumericInput
+        placeholder="کد ملی (۱۰ رقم)"
+        required
+        register={register}
+        name="national_code"
+        exactLength={10}
+        maxLength={10}
+      />
+
+      {/* ✅ 6. شماره موبایل */}
       <div className="pill" style={{ position: "relative" }}>
         <input
           className="register-input"
@@ -143,50 +167,31 @@ export default function PersonalInfo() {
         )}
       </div>
 
-      <NumericInput
-        placeholder="کد ملی (۱۰ رقم)"
-        required
-        register={register}
-        name="national_code"
-        exactLength={10}
-        maxLength={10}
-      />
-
-      <FormInput
-        placeholder="تاریخ تولد*"
-        required
-        register={register}
-        name="birth_date"
-      />
-      <FormInput
-        placeholder="آدرس محل سکونت*"
-        required
-        register={register}
-        name="address"
-      />
-      <FormInput
-        placeholder="شهر محل سکونت*"
-        required
-        register={register}
-        name="city"
-      />
+      {/* ✅ 7. استان */}
       <FormInput
         placeholder="استان محل سکونت*"
         required
         register={register}
         name="province"
       />
+
+      {/* ✅ 8. شهر */}
       <FormInput
-        placeholder="شناسه در پیام‌رسان تلگرام (اختیاری)"
+        placeholder="شهر محل سکونت*"
+        required
         register={register}
-        name="telegram_id"
-      />
-      <FormInput
-        placeholder="شناسه در پیام‌رسان بله (اختیاری)"
-        register={register}
-        name="bale_id"
+        name="city"
       />
 
+      {/* ✅ 9. آدرس */}
+      <FormInput
+        placeholder="آدرس محل سکونت*"
+        required
+        register={register}
+        name="address"
+      />
+
+      {/* ✅ 10. کدپستی */}
       <NumericInput
         placeholder="کدپستی (۱۰ رقم)"
         required
@@ -194,6 +199,20 @@ export default function PersonalInfo() {
         name="postal_code"
         exactLength={10}
         maxLength={10}
+      />
+
+      {/* ✅ 11. شناسه بله (اختیاری) */}
+      <FormInput
+        placeholder="شناسه در پیام‌رسان بله (اختیاری)"
+        register={register}
+        name="bale_id"
+      />
+
+      {/* ✅ 12. شناسه تلگرام (اختیاری) */}
+      <FormInput
+        placeholder="شناسه در پیام‌رسان تلگرام (اختیاری)"
+        register={register}
+        name="telegram_id"
       />
 
       {showOtpBox && (

@@ -20,6 +20,7 @@ export default function Login() {
   const [step, setStep] = useState("identifier");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // ✅ اضافه شد
 
   const handleIdentifierChange = (e) => {
     const value = e.target.value;
@@ -43,12 +44,17 @@ export default function Login() {
   const handleRequestOtp = async (e) => {
     e.preventDefault();
 
+    // ✅ جلوگیری از ارسال دوبار
+    if (isSubmitting || loading) return;
+    setIsSubmitting(true);
+
     const cleanIdentifier = identifier.replace(/[^0-9]/g, "");
     if (
       !cleanIdentifier ||
       (cleanIdentifier.length !== 11 && cleanIdentifier.length !== 10)
     ) {
       toastError("شماره موبایل (۱۱ رقم) یا کدملی (۱۰ رقم) را وارد کنید");
+      setIsSubmitting(false);
       return;
     }
 
@@ -61,15 +67,21 @@ export default function Login() {
       showError(err);
     } finally {
       setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
 
+    // ✅ جلوگیری از ارسال دوبار
+    if (isSubmitting || loading) return;
+    setIsSubmitting(true);
+
     const cleanOtp = otpCode.replace(/[^0-9]/g, "");
     if (cleanOtp.length !== 4) {
       toastError("کد ۴ رقمی را کامل وارد کنید");
+      setIsSubmitting(false);
       return;
     }
 
@@ -92,6 +104,7 @@ export default function Login() {
       toastError(msg);
     } finally {
       setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -155,13 +168,15 @@ export default function Login() {
                 <motion.button
                   type="submit"
                   className="lg-submit-btn"
-                  disabled={loading}
-                  whileHover={{ scale: loading ? 1 : 1.02 }}
-                  whileTap={{ scale: loading ? 1 : 0.97 }}
-                  style={{ opacity: loading ? 0.75 : 1 }}
+                  disabled={loading || isSubmitting}
+                  whileHover={{ scale: loading || isSubmitting ? 1 : 1.02 }}
+                  whileTap={{ scale: loading || isSubmitting ? 1 : 0.97 }}
+                  style={{ opacity: loading || isSubmitting ? 0.75 : 1 }}
                 >
                   <span className="lg-btn-text">
-                    {loading ? "در حال ارسال..." : "دریافت کد ورود"}
+                    {loading || isSubmitting
+                      ? "در حال ارسال..."
+                      : "دریافت کد ورود"}
                   </span>
                   <span className="lg-btn-shine" aria-hidden="true" />
                 </motion.button>
@@ -223,13 +238,15 @@ export default function Login() {
                 <motion.button
                   type="submit"
                   className="lg-submit-btn"
-                  disabled={loading}
-                  whileHover={{ scale: loading ? 1 : 1.02 }}
-                  whileTap={{ scale: loading ? 1 : 0.97 }}
-                  style={{ opacity: loading ? 0.75 : 1 }}
+                  disabled={loading || isSubmitting}
+                  whileHover={{ scale: loading || isSubmitting ? 1 : 1.02 }}
+                  whileTap={{ scale: loading || isSubmitting ? 1 : 0.97 }}
+                  style={{ opacity: loading || isSubmitting ? 0.75 : 1 }}
                 >
                   <span className="lg-btn-text">
-                    {loading ? "در حال بررسی..." : "تایید و ورود"}
+                    {loading || isSubmitting
+                      ? "در حال بررسی..."
+                      : "تایید و ورود"}
                   </span>
                   <span className="lg-btn-shine" aria-hidden="true" />
                 </motion.button>

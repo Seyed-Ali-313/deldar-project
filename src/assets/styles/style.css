@@ -704,7 +704,6 @@ button {
   border-radius: 20px;
   background: var(--page-bg);
   flex-shrink: 0;
-  margin-top: -5px;
 }
 
 .step {
