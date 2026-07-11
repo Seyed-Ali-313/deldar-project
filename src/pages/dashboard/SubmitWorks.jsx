@@ -1,7 +1,7 @@
 // src/pages/dashboard/SubmitWorks.jsx
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { addWork } from "../../services/dashboardService";
+import { addWork, deleteWork } from "../../services/dashboardService";
 import { showError } from "../../utils/errorHandler";
 import toPersianDigits from "../../utils/toPersianNumber";
 import {
@@ -10,10 +10,9 @@ import {
   warn as toastWarn,
 } from "../../utils/toast";
 
-const MAX_WORKS = 50;
 const MAX_DESCRIPTION_LENGTH = 200;
 
-export default function SubmitWorks() {
+export default function SubmitWorks({ totalCount, maxWorks, onWorksChange, existingWorks }) {
   const [currentWork, setCurrentWork] = useState({
     file: null,
     description: "",
@@ -24,6 +23,8 @@ export default function SubmitWorks() {
   const [uploadProgress, setUploadProgress] = useState({});
   const [previewWork, setPreviewWork] = useState(null);
   const containerRef = useRef(null);
+
+  const combinedCount = totalCount + uploadedWorks.length;
 
   useEffect(() => {
     if (containerRef.current && uploadedWorks.length > 0) {
@@ -66,8 +67,8 @@ export default function SubmitWorks() {
       return;
     }
 
-    if (uploadedWorks.length >= MAX_WORKS) {
-      toastWarn(`حداکثر ${toPersianDigits(MAX_WORKS)} اثر مجاز است`);
+    if (combinedCount >= maxWorks) {
+      toastWarn(`حداکثر ${toPersianDigits(maxWorks)} اثر مجاز است`);
       return;
     }
 
@@ -114,21 +115,34 @@ export default function SubmitWorks() {
 
     setUploading(true);
     try {
+      const newWorks = [];
       for (const work of uploadedWorks) {
         const formData = new FormData();
         formData.append("image", work.file);
         formData.append("description", work.description);
-        await addWork(formData);
+        const res = await addWork(formData);
+        newWorks.push(res.data);
       }
 
       toastSuccess(
         `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت اضافه شد`,
       );
       setUploadedWorks([]);
+      onWorksChange((prev) => [...prev, ...newWorks]);
     } catch (err) {
       showError(err);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleDeleteExisting = async (id) => {
+    try {
+      await deleteWork(id);
+      onWorksChange((prev) => prev.filter((w) => w.id !== id));
+      toastSuccess("اثر با موفقیت حذف شد");
+    } catch (err) {
+      toastError(err?.response?.data?.detail || "خطا در حذف اثر");
     }
   };
 
@@ -182,7 +196,7 @@ export default function SubmitWorks() {
           <span style={{ color: "rgba(255,255,255,0.7)" }}>
             • هر عکاس می‌تواند حداکثر{" "}
             <span style={{ color: "#C9A84C", fontWeight: 600 }}>
-              {toPersianDigits(MAX_WORKS)}
+              {toPersianDigits(maxWorks)}
             </span>{" "}
             تک عکس ارسال کند.
           </span>
@@ -235,7 +249,7 @@ export default function SubmitWorks() {
             textAlign: "center",
           }}
         >
-          {toPersianDigits(uploadedWorks.length)}
+          {toPersianDigits(combinedCount)}
         </span>
         <span
           style={{
@@ -245,7 +259,7 @@ export default function SubmitWorks() {
             fontWeight: 300,
           }}
         >
-          / {toPersianDigits(MAX_WORKS)}
+          / {toPersianDigits(maxWorks)}
         </span>
       </div>
 
@@ -254,9 +268,9 @@ export default function SubmitWorks() {
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr auto",
-          gap: "8px",
+          gap: "10px",
           alignItems: "center",
-          padding: "6px 10px",
+          padding: "8px 12px",
           background:
             "linear-gradient(135deg, rgba(164, 135, 77, 0.06), rgba(164, 135, 77, 0.02))",
           borderRadius: "12px",
@@ -265,7 +279,7 @@ export default function SubmitWorks() {
           flexShrink: 0,
         }}
       >
-        <div className="pill" style={{ height: "38px", maxWidth: "100%" }}>
+        <div className="pill" style={{ height: "42px", maxWidth: "100%" }}>
           <input
             type="text"
             className="register-input"
@@ -275,9 +289,9 @@ export default function SubmitWorks() {
               setCurrentWork({ ...currentWork, description: e.target.value })
             }
             style={{
-              fontSize: "13px",
+              fontSize: "16px",
               height: "100%",
-              fontWeight: 500,
+              fontWeight: 600,
               color: "#000000",
             }}
           />
@@ -289,7 +303,7 @@ export default function SubmitWorks() {
             position: "relative",
             overflow: "hidden",
             cursor: "pointer",
-            height: "38px",
+            height: "42px",
             maxWidth: "100%",
           }}
         >
@@ -314,7 +328,7 @@ export default function SubmitWorks() {
               justifyContent: "space-between",
               padding: "0 12px",
               cursor: "pointer",
-              fontSize: "12px",
+              fontSize: "15px",
               color: currentWork.preview ? "#000000" : "rgba(0,0,0,0.4)",
               fontFamily: "w_Lotus, sans-serif",
               fontWeight: 500,
@@ -328,7 +342,7 @@ export default function SubmitWorks() {
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
-                maxWidth: "90px",
+                maxWidth: "100px",
               }}
             >
               {currentWork.preview ? (
@@ -337,20 +351,20 @@ export default function SubmitWorks() {
                     src={currentWork.preview}
                     alt="پیش‌نمایش"
                     style={{
-                      width: "24px",
-                      height: "24px",
-                      borderRadius: "4px",
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "6px",
                       objectFit: "cover",
                       border: "1px solid rgba(164,135,77,0.15)",
                     }}
                   />
-                  <span style={{ fontSize: "10px", color: "#000" }}>
-                    {currentWork.file?.name?.slice(0, 8)}...
+                  <span style={{ fontSize: "12px", color: "#000" }}>
+                    {currentWork.file?.name?.slice(0, 10)}...
                   </span>
                 </>
               ) : (
                 <>
-                  <span style={{ fontSize: "11px", color: "rgba(0,0,0,0.5)" }}>
+                  <span style={{ fontSize: "18px", color: "rgba(0,0,0,0.5)" }}>
                     انتخاب عکس
                   </span>
                 </>
@@ -365,23 +379,23 @@ export default function SubmitWorks() {
           onClick={addWorkHandler}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          disabled={uploadedWorks.length >= MAX_WORKS}
+          disabled={combinedCount >= maxWorks}
           style={{
-            minWidth: "42px",
-            height: "38px",
+            minWidth: "46px",
+            height: "42px",
             background:
-              uploadedWorks.length >= MAX_WORKS
+              combinedCount >= maxWorks
                 ? "rgba(255,255,255,0.05)"
                 : "linear-gradient(135deg, #A4874D, #C9A84C)",
             color:
-              uploadedWorks.length >= MAX_WORKS
+              combinedCount >= maxWorks
                 ? "rgba(255,255,255,0.2)"
                 : "#ffffff",
             borderRadius: "10px",
             border: "none",
             cursor:
-              uploadedWorks.length >= MAX_WORKS ? "not-allowed" : "pointer",
-            opacity: uploadedWorks.length >= MAX_WORKS ? 0.4 : 1,
+              combinedCount >= maxWorks ? "not-allowed" : "pointer",
+            opacity: combinedCount >= maxWorks ? 0.4 : 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -389,7 +403,7 @@ export default function SubmitWorks() {
             fontWeight: 300,
             transition: "all 0.2s ease",
             boxShadow:
-              uploadedWorks.length >= MAX_WORKS
+              combinedCount >= maxWorks
                 ? "none"
                 : "0 3px 10px rgba(164,135,77,0.25)",
           }}
@@ -401,7 +415,7 @@ export default function SubmitWorks() {
       <div
         ref={containerRef}
         style={{
-          height: "115px",
+          height: "140px",
           overflowY: "auto",
           paddingRight: "2px",
           marginBottom: "8px",
@@ -411,23 +425,23 @@ export default function SubmitWorks() {
         className="submit-works-scroll"
       >
         <AnimatePresence>
-          {uploadedWorks.map((work, index) => (
+          {existingWorks.map((work, index) => (
             <motion.div
               className="submit-work-item"
-              key={work.id}
-              onClick={() => setPreviewWork(work)}
+              key={`existing-${work.id}`}
+              onClick={() => setPreviewWork({ image: work.image || work.thumbnail, description: work.description })}
               initial={{ opacity: 0, y: -10, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.97 }}
               transition={{ duration: 0.2 }}
               style={{
                 display: "grid",
-                gridTemplateColumns: "36px 1fr 1fr 28px",
-                gap: "6px",
+                gridTemplateColumns: "40px 1fr 50px 30px",
+                gap: "8px",
                 alignItems: "center",
                 background: "rgba(164, 135, 77, 0.03)",
-                padding: "5px 10px",
-                borderRadius: "10px",
+                padding: "6px 12px",
+                borderRadius: "12px",
                 border: "1px solid rgba(164, 135, 77, 0.06)",
                 marginBottom: "4px",
                 cursor: "pointer",
@@ -447,7 +461,7 @@ export default function SubmitWorks() {
               >
                 <span
                   style={{
-                    fontSize: "11px",
+                    fontSize: "15px",
                     fontWeight: 700,
                     color: "#C9A84C",
                     fontFamily: "w_Lotus, sans-serif",
@@ -455,50 +469,149 @@ export default function SubmitWorks() {
                 >
                   #{toPersianDigits(index + 1)}
                 </span>
-                <span style={{ color: "#4CAF50", fontSize: "9px" }}></span>
               </div>
 
               <span
                 style={{
-                  fontSize: "12px",
-                  color: "rgba(255,255,255,0.85)",
+                  fontSize: "15px",
+                  color: "#ffffff",
                   fontFamily: "w_Lotus, sans-serif",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
-                  fontWeight: 500,
+                  fontWeight: 600,
                 }}
               >
                 {work.description}
               </span>
 
               <div
+                style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              >
+                <img
+                  src={work.image || work.thumbnail || "/src/assets/images/logo-bg.png"}
+                  alt="عکس"
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "6px",
+                    objectFit: "cover",
+                    border: "1px solid rgba(164,135,77,0.12)",
+                  }}
+                  onError={(e) => {
+                    e.target.src = "/src/assets/images/logo-bg.png";
+                  }}
+                />
+              </div>
+
+              <motion.button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteExisting(work.id);
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 style={{
+                  background: "rgba(176, 1, 1, 0.06)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "28px",
+                  height: "28px",
+                  cursor: "pointer",
+                  color: "#B00101",
+                  fontSize: "12px",
                   display: "flex",
                   alignItems: "center",
-                  gap: "6px",
+                  justifyContent: "center",
+                  transition: "all 0.2s ease",
+                  flexShrink: 0,
                 }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.15)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.06)";
+                }}
+              >
+                ✕
+              </motion.button>
+            </motion.div>
+          ))}
+          {uploadedWorks.map((work, index) => (
+            <motion.div
+              className="submit-work-item"
+              key={work.id}
+              onClick={() => setPreviewWork(work)}
+              initial={{ opacity: 0, y: -10, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.97 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "40px 1fr 50px 30px",
+                gap: "8px",
+                alignItems: "center",
+                background: "rgba(164, 135, 77, 0.03)",
+                padding: "6px 12px",
+                borderRadius: "12px",
+                border: "1px solid rgba(164, 135, 77, 0.06)",
+                marginBottom: "4px",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+              whileHover={{
+                borderColor: "rgba(164, 135, 77, 0.15)",
+                background: "rgba(164, 135, 77, 0.05)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: 700,
+                    color: "#C9A84C",
+                    fontFamily: "w_Lotus, sans-serif",
+                  }}
+                >
+                  #{toPersianDigits(index + 1 + existingWorks.length)}
+                </span>
+              </div>
+
+              <span
+                style={{
+                  fontSize: "15px",
+                  color: "#ffffff",
+                  fontFamily: "w_Lotus, sans-serif",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  fontWeight: 600,
+                }}
+              >
+                {work.description}
+              </span>
+
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "6px" }}
               >
                 <img
                   src={work.preview}
                   alt="عکس"
                   style={{
-                    width: "24px",
-                    height: "24px",
-                    borderRadius: "4px",
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "6px",
                     objectFit: "cover",
-                    border: "1px solid rgba(164,135,77,0.08)",
+                    border: "1px solid rgba(164,135,77,0.12)",
                   }}
                 />
-                <span
-                  style={{
-                    fontSize: "9px",
-                    color: "rgba(255,255,255,0.3)",
-                    fontFamily: "w_Lotus, sans-serif",
-                  }}
-                >
-                  {work.file?.name?.slice(0, 8)}...
-                </span>
               </div>
 
               <motion.button
@@ -513,11 +626,11 @@ export default function SubmitWorks() {
                   background: "rgba(176, 1, 1, 0.06)",
                   border: "none",
                   borderRadius: "50%",
-                  width: "24px",
-                  height: "24px",
+                  width: "28px",
+                  height: "28px",
                   cursor: "pointer",
                   color: "#B00101",
-                  fontSize: "10px",
+                  fontSize: "12px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -537,7 +650,7 @@ export default function SubmitWorks() {
           ))}
         </AnimatePresence>
 
-        {uploadedWorks.length === 0 && (
+        {existingWorks.length === 0 && uploadedWorks.length === 0 && (
           <div
             style={{
               display: "flex",
@@ -545,7 +658,7 @@ export default function SubmitWorks() {
               alignItems: "center",
               justifyContent: "center",
               height: "100%",
-              color: "rgba(255,255,255,0.15)",
+              color: "rgba(255,255,255,0.1)",
               fontSize: "12px",
               fontFamily: "w_Lotus, sans-serif",
               gap: "2px",
@@ -650,9 +763,12 @@ export default function SubmitWorks() {
                 ✕
               </button>
               <img
-                src={previewWork.preview}
+                src={previewWork.preview || previewWork.image || "/src/assets/images/logo-bg.png"}
                 alt="پیش‌نمایش عکس"
                 className="work-preview-img"
+                onError={(e) => {
+                  e.target.src = "/src/assets/images/logo-bg.png";
+                }}
               />
               <p className="work-preview-desc">{previewWork.description}</p>
             </motion.div>
@@ -760,14 +876,14 @@ export default function SubmitWorks() {
       grid-column: 1 / -1 !important;
       width: 100% !important;
       min-width: unset !important;
-      height: 40px !important;
+      height: 42px !important;
     }
     .submit-works-scroll {
-      height: 160px !important;
+      height: 140px !important;
     }
     .submit-work-item {
-      grid-template-columns: 32px 1fr 1fr 26px !important;
-      gap: 8px !important;
+      grid-template-columns: 34px 1fr 44px 28px !important;
+      gap: 6px !important;
     }
   }
 
@@ -784,21 +900,24 @@ export default function SubmitWorks() {
       height: 42px !important;
     }
     .submit-works-add-row .register-input {
-      font-size: 14px !important;
+      font-size: 16px !important;
     }
     .submit-work-item {
-      grid-template-columns: 28px 1fr 26px !important;
+      grid-template-columns: 30px 1fr 28px !important;
       grid-template-areas: "num desc close" "num file close" !important;
+      padding: 4px 8px !important;
+      gap: 5px !important;
     }
     .submit-work-item > span:nth-child(2) {
       grid-area: desc !important;
-      font-size: 11px !important;
+      font-size: 13px !important;
     }
     .submit-work-item > div:nth-child(3) {
       grid-area: file !important;
     }
-    .submit-work-item > div:nth-child(3) span:last-child {
-      display: none !important;
+    .submit-work-item > div:nth-child(3) img {
+      width: 28px !important;
+      height: 28px !important;
     }
   }
 `}</style>

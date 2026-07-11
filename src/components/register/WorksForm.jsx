@@ -300,9 +300,9 @@ export default function WorksForm({
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr auto",
-          gap: "8px",
+          gap: "10px",
           alignItems: "center",
-          padding: "6px 10px",
+          padding: "8px 12px",
           background:
             "linear-gradient(135deg, rgba(164, 135, 77, 0.06), rgba(164, 135, 77, 0.02))",
           borderRadius: "12px",
@@ -311,7 +311,7 @@ export default function WorksForm({
           flexShrink: 0,
         }}
       >
-        <div className="pill" style={{ height: "38px", maxWidth: "100%" }}>
+        <div className="pill" style={{ height: "42px", maxWidth: "100%" }}>
           <input
             type="text"
             className="register-input"
@@ -321,9 +321,9 @@ export default function WorksForm({
               setCurrentWork({ ...currentWork, description: e.target.value })
             }
             style={{
-              fontSize: "13px",
+              fontSize: "16px",
               height: "100%",
-              fontWeight: 500,
+              fontWeight: 600,
               color: "#000000",
             }}
           />
@@ -335,7 +335,7 @@ export default function WorksForm({
             position: "relative",
             overflow: "hidden",
             cursor: "pointer",
-            height: "38px",
+            height: "42px",
             maxWidth: "100%",
           }}
         >
@@ -358,7 +358,7 @@ export default function WorksForm({
               justifyContent: "space-between",
               padding: "0 12px",
               cursor: "pointer",
-              fontSize: "12px",
+              fontSize: "15px",
               color: currentWork.preview ? "#000000" : "rgba(0,0,0,0.4)",
               fontFamily: "w_Lotus, sans-serif",
               fontWeight: 500,
@@ -372,7 +372,7 @@ export default function WorksForm({
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
-                maxWidth: "90px",
+                maxWidth: "100px",
               }}
             >
               {currentWork.preview ? (
@@ -381,21 +381,20 @@ export default function WorksForm({
                     src={currentWork.preview}
                     alt="پیش‌نمایش"
                     style={{
-                      width: "24px",
-                      height: "24px",
-                      borderRadius: "4px",
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "6px",
                       objectFit: "cover",
                       border: "1px solid rgba(164,135,77,0.15)",
                     }}
                   />
-                  <span style={{ fontSize: "10px", color: "#000" }}>
-                    {currentWork.file?.name?.slice(0, 8)}...
+                  <span style={{ fontSize: "12px", color: "#000" }}>
+                    {currentWork.file?.name?.slice(0, 10)}...
                   </span>
                 </>
               ) : (
                 <>
-                  <span style={{ fontSize: "14px" }}>🖼</span>
-                  <span style={{ fontSize: "11px", color: "rgba(0,0,0,0.5)" }}>
+                  <span style={{ fontSize: "18px", color: "rgba(0,0,0,0.5)" }}>
                     انتخاب عکس
                   </span>
                 </>
@@ -412,8 +411,8 @@ export default function WorksForm({
           whileTap={{ scale: 0.95 }}
           disabled={uploadedWorks.length >= MAX_WORKS}
           style={{
-            minWidth: "42px",
-            height: "38px",
+            minWidth: "46px",
+            height: "42px",
             background:
               uploadedWorks.length >= MAX_WORKS
                 ? "rgba(255,255,255,0.05)"
@@ -446,7 +445,7 @@ export default function WorksForm({
       <div
         ref={containerRef}
         style={{
-          height: "115px",
+          height: "140px",
           overflowY: "auto",
           paddingRight: "2px",
           marginBottom: "8px",
@@ -467,12 +466,12 @@ export default function WorksForm({
               transition={{ duration: 0.2 }}
               style={{
                 display: "grid",
-                gridTemplateColumns: "36px 1fr 1fr 28px",
-                gap: "6px",
+                gridTemplateColumns: "40px 1fr 50px 30px",
+                gap: "8px",
                 alignItems: "center",
                 background: "rgba(164, 135, 77, 0.03)",
-                padding: "5px 10px",
-                borderRadius: "10px",
+                padding: "6px 12px",
+                borderRadius: "12px",
                 border: "1px solid rgba(164, 135, 77, 0.06)",
                 marginBottom: "4px",
                 cursor: "pointer",
@@ -492,7 +491,7 @@ export default function WorksForm({
               >
                 <span
                   style={{
-                    fontSize: "11px",
+                    fontSize: "15px",
                     fontWeight: 700,
                     color: "#C9A84C",
                     fontFamily: "w_Lotus, sans-serif",
@@ -500,18 +499,17 @@ export default function WorksForm({
                 >
                   #{toPersianDigits(index + 1)}
                 </span>
-                <span style={{ color: "#4CAF50", fontSize: "9px" }}></span>
               </div>
 
               <span
                 style={{
-                  fontSize: "12px",
-                  color: "rgba(255,255,255,0.85)",
+                  fontSize: "15px",
+                  color: "#ffffff",
                   fontFamily: "w_Lotus, sans-serif",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
-                  fontWeight: 500,
+                  fontWeight: 600,
                 }}
               >
                 {work.description}
@@ -524,22 +522,13 @@ export default function WorksForm({
                   src={work.preview}
                   alt="عکس"
                   style={{
-                    width: "24px",
-                    height: "24px",
-                    borderRadius: "4px",
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "6px",
                     objectFit: "cover",
-                    border: "1px solid rgba(164,135,77,0.08)",
+                    border: "1px solid rgba(164,135,77,0.12)",
                   }}
                 />
-                <span
-                  style={{
-                    fontSize: "9px",
-                    color: "rgba(255,255,255,0.3)",
-                    fontFamily: "w_Lotus, sans-serif",
-                  }}
-                >
-                  {work.fileName?.slice(0, 8)}...
-                </span>
               </div>
 
               <motion.button
@@ -554,11 +543,11 @@ export default function WorksForm({
                   background: "rgba(176, 1, 1, 0.06)",
                   border: "none",
                   borderRadius: "50%",
-                  width: "24px",
-                  height: "24px",
+                  width: "28px",
+                  height: "28px",
                   cursor: "pointer",
                   color: "#B00101",
-                  fontSize: "10px",
+                  fontSize: "12px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -783,14 +772,14 @@ export default function WorksForm({
       grid-column: 1 / -1 !important;
       width: 100% !important;
       min-width: unset !important;
-      height: 40px !important;
+      height: 42px !important;
     }
     .submit-works-scroll {
-      height: 160px !important;
+      height: 140px !important;
     }
     .submit-work-item {
-      grid-template-columns: 32px 1fr 1fr 26px !important;
-      gap: 8px !important;
+      grid-template-columns: 34px 1fr 44px 28px !important;
+      gap: 6px !important;
     }
   }
 
@@ -807,21 +796,24 @@ export default function WorksForm({
       height: 42px !important;
     }
     .submit-works-add-row .register-input {
-      font-size: 14px !important;
+      font-size: 16px !important;
     }
     .submit-work-item {
-      grid-template-columns: 28px 1fr 26px !important;
+      grid-template-columns: 30px 1fr 28px !important;
       grid-template-areas: "num desc close" "num file close" !important;
+      padding: 4px 8px !important;
+      gap: 5px !important;
     }
     .submit-work-item > span:nth-child(2) {
       grid-area: desc !important;
-      font-size: 11px !important;
+      font-size: 13px !important;
     }
     .submit-work-item > div:nth-child(3) {
       grid-area: file !important;
     }
-    .submit-work-item > div:nth-child(3) span:last-child {
-      display: none !important;
+    .submit-work-item > div:nth-child(3) img {
+      width: 28px !important;
+      height: 28px !important;
     }
   }
 `}</style>

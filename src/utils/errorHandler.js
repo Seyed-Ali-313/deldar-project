@@ -210,6 +210,7 @@ export const getFriendlyErrorMessage = (error) => {
 
 // ✅ نمایش خطا با Toast (بدون ایموجی)
 export const showError = (error, fallbackMessage = "خطایی رخ داده است") => {
+  if (error?.handledByInterceptor) return null;
   const message = getFriendlyErrorMessage(error) || fallbackMessage;
   toastError(message);
   return message;

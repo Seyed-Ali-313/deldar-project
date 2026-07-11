@@ -11,6 +11,7 @@ import {
   error as toastError,
 } from "../../utils/toast";
 import { useAuth } from "../../hooks/useAuth";
+import toPersianDigits from "../../utils/toPersianNumber";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ export default function Login() {
       toastSuccess("کد تایید به شماره شما ارسال شد");
       setStep("otp");
     } catch (err) {
-      showError(err);
+      if (!err.handledByInterceptor) showError(err);
     } finally {
       setLoading(false);
       setIsSubmitting(false);
@@ -100,8 +101,10 @@ export default function Login() {
       }
     } catch (err) {
       console.error("❌ خطا:", err);
-      const msg = err.response?.data?.message || "خطا در تایید کد";
-      toastError(msg);
+      if (!err.handledByInterceptor) {
+        const msg = err.response?.data?.message || "خطا در تایید کد";
+        toastError(msg);
+      }
     } finally {
       setLoading(false);
       setIsSubmitting(false);
@@ -202,7 +205,7 @@ export default function Login() {
                 <h1 className="lg-title">کد تایید</h1>
                 <p className="lg-subtitle">
                   کد ۴ رقمی ارسال‌شده به{" "}
-                  <bdi className="lg-subtitle-strong">{identifier}</bdi> را وارد
+                  <bdi className="lg-subtitle-strong">{toPersianDigits(identifier)}</bdi> را وارد
                   کنید
                 </p>
 

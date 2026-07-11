@@ -155,7 +155,7 @@ export default function Header() {
                 transition={{ duration: 0.2 }}
               >
                 <span className="profile-icon-badge">
-                  <UserIcon size={20} />
+                  <UserIcon size={24} />
                 </span>
               </motion.button>
 
@@ -406,21 +406,24 @@ export default function Header() {
           flex-shrink: 0;
         }
 
-        /* ===== دکمه ورود (بدون آیکون) ===== */
+        /* ===== دکمه ورود (حرفه‌ای و خوانا) ===== */
         .header-premium .login-btn {
           position: relative;
           background: linear-gradient(135deg, #034120, #0a5a2e);
           color: #ffffff;
-          border: 1.5px solid rgba(201, 168, 76, 0.35);
+          border: 2px solid rgba(201, 168, 76, 0.45);
           border-radius: 30px;
-          padding: 12px 22px;
-          min-height: 44px;
-          font-weight: 700;
-          font-size: clamp(14px, 1vw, 15px);
+          padding: 12px 28px;
+          min-height: 46px;
+          font-weight: 800;
+          font-size: clamp(15px, 1.1vw, 16px);
+          letter-spacing: 0.3px;
           cursor: pointer;
           transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
           overflow: hidden;
-          box-shadow: 0 4px 20px rgba(3, 65, 32, 0.25);
+          box-shadow:
+            0 4px 20px rgba(3, 65, 32, 0.25),
+            0 0 0 1px rgba(201, 168, 76, 0.15);
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -438,7 +441,7 @@ export default function Header() {
           left: -100%;
           width: 100%;
           height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+          background: linear-gradient(90deg, transparent, rgba(201,168,76,0.2), transparent);
           transition: left 0.7s ease;
           z-index: 1;
         }
@@ -446,17 +449,20 @@ export default function Header() {
         .header-premium .login-btn:hover {
           background: linear-gradient(135deg, #0a5a2e, #034120);
           transform: translateY(-2px);
-          box-shadow: 0 8px 28px rgba(3, 65, 32, 0.35);
-          border-color: rgba(201, 168, 76, 0.6);
+          box-shadow:
+            0 8px 30px rgba(3, 65, 32, 0.4),
+            0 0 0 2px rgba(201, 168, 76, 0.25);
+          border-color: rgba(201, 168, 76, 0.7);
         }
 
         .header-premium .login-btn:hover .login-btn-shine {
           left: 100%;
         }
 
-        /* ===== پروفایل (فقط آیکون گرد) ===== */
+        /* ===== پروفایل (آیکون کاربر) ===== */
         .header-premium .profile-wrapper {
           position: relative;
+          margin-right: 8px;
         }
 
         .header-premium .profile-btn {
@@ -474,23 +480,29 @@ export default function Header() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 38px;
-          height: 38px;
+          width: 48px;
+          height: 48px;
           border-radius: 50%;
           flex-shrink: 0;
-          background: linear-gradient(135deg, #034120, #0a5a2e);
-          color: #ffffff;
+          background: linear-gradient(145deg, #034120 0%, #0a5a2e 50%, #0f7038 100%);
+          color: #F5E0A0;
           box-shadow:
-            0 0 0 2px rgba(255, 255, 255, 0.9),
-            0 4px 12px rgba(3, 65, 32, 0.35);
-          transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+            0 0 0 2px rgba(201, 168, 76, 0.3),
+            0 0 18px rgba(201, 168, 76, 0.15),
+            0 3px 12px rgba(3, 65, 32, 0.3);
+          transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
         }
 
         .header-premium .profile-btn:hover .profile-icon-badge {
           transform: scale(1.08);
           box-shadow:
-            0 0 0 2.5px rgba(255, 255, 255, 0.95),
-            0 6px 20px rgba(3, 65, 32, 0.5);
+            0 0 0 2.5px rgba(201, 168, 76, 0.5),
+            0 0 28px rgba(201, 168, 76, 0.25),
+            0 5px 18px rgba(3, 65, 32, 0.4);
+        }
+
+        .header-premium .profile-btn:active .profile-icon-badge {
+          transform: scale(0.98);
         }
 
         /* ===== Dropdown ===== */
@@ -521,14 +533,16 @@ export default function Header() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 50px;
-          height: 50px;
+          width: 48px;
+          height: 48px;
           border-radius: 50%;
           flex-shrink: 0;
-          background: linear-gradient(135deg, #034120, #0a5a2e);
-          color: #E0BE6B;
-          box-shadow: 0 6px 18px rgba(3, 65, 32, 0.28);
-          border: 2px solid rgba(201, 168, 76, 0.35);
+          background: linear-gradient(145deg, #034120 0%, #0a5a2e 50%, #0f7038 100%);
+          color: #F5E0A0;
+          box-shadow:
+            0 0 0 1.5px rgba(201, 168, 76, 0.2),
+            0 0 16px rgba(201, 168, 76, 0.1),
+            0 4px 14px rgba(3, 65, 32, 0.25);
         }
 
         .header-premium .dropdown-info {
@@ -698,14 +712,24 @@ export default function Header() {
         .header-premium .mobile-login-link {
           display: block;
           width: 100%;
-          padding: 12px;
-          background: linear-gradient(135deg, #C9A84C, #A4874D);
+          padding: 14px;
+          background: linear-gradient(135deg, #034120, #0a5a2e);
           color: #fff;
           text-align: center;
-          border-radius: 10px;
+          border-radius: 14px;
           text-decoration: none;
-          font-size: 15px;
-          font-weight: 600;
+          font-size: 16px;
+          font-weight: 800;
+          letter-spacing: 0.3px;
+          border: 2px solid rgba(201, 168, 76, 0.4);
+          box-shadow: 0 4px 16px rgba(3, 65, 32, 0.3);
+          transition: all 0.3s ease;
+        }
+
+        .header-premium .mobile-login-link:hover {
+          background: linear-gradient(135deg, #0a5a2e, #034120);
+          box-shadow: 0 6px 22px rgba(3, 65, 32, 0.45);
+          border-color: rgba(201, 168, 76, 0.7);
         }
 
         /* ===== اوورلی ===== */

@@ -1,5 +1,6 @@
 // src/components/common/NumericInput.jsx
 import { useState, useEffect } from "react";
+import toPersianNumber from "../../utils/toPersianNumber";
 
 export default function NumericInput({
   placeholder,
@@ -59,7 +60,7 @@ export default function NumericInput({
       cleanValue.length > 0 &&
       cleanValue.length !== exactLength
     ) {
-      setError(`باید دقیقاً ${exactLength} رقم باشد`);
+      setError(`باید دقیقاً ${toPersianNumber(exactLength)} رقم باشد`);
     }
   };
 
@@ -109,13 +110,13 @@ export default function NumericInput({
           maxLength || exactLength
             ? {
                 value: maxLength || exactLength,
-                message: `حداکثر ${maxLength || exactLength} رقم`,
+                message: `حداکثر ${toPersianNumber(maxLength || exactLength)} رقم`,
               }
             : undefined,
         minLength: minLength
           ? {
               value: minLength,
-              message: `حداقل ${minLength} رقم`,
+                message: `حداقل ${toPersianNumber(minLength)} رقم`,
             }
           : undefined,
         validate: exactLength
@@ -124,7 +125,7 @@ export default function NumericInput({
               if (cleanValue.length === 0) return true;
               return (
                 cleanValue.length === exactLength ||
-                `باید دقیقاً ${exactLength} رقم باشد`
+                `باید دقیقاً ${toPersianNumber(exactLength)} رقم باشد`
               );
             }
           : undefined,

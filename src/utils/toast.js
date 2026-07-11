@@ -1,9 +1,12 @@
 // src/utils/toast.js
 import { toast as toastify } from "react-toastify";
+import toPersianNumber from "./toPersianNumber";
+
+const toPersian = (msg) => (typeof msg === "string" ? toPersianNumber(msg) : msg);
 
 // ✅ Toast موفقیت - با رنگ‌های سایت (سبز تیره + طلایی)
 export const success = (message, options = {}) => {
-  toastify.success(message, {
+  toastify.success(toPersian(message), {
     position: "top-center",
     autoClose: 1500,
     hideProgressBar: false,
@@ -34,7 +37,7 @@ export const success = (message, options = {}) => {
 
 // ✅ Toast خطا - با رنگ‌های سایت (قرمز + سفید)
 export const error = (message, options = {}) => {
-  toastify.error(message, {
+  toastify.error(toPersian(message), {
     position: "top-center",
     autoClose: 2000,
     hideProgressBar: false,
@@ -65,7 +68,7 @@ export const error = (message, options = {}) => {
 
 // ✅ Toast اطلاع‌رسانی - با رنگ‌های سایت
 export const info = (message, options = {}) => {
-  toastify.info(message, {
+  toastify.info(toPersian(message), {
     position: "top-center",
     autoClose: 1500,
     hideProgressBar: false,
@@ -96,7 +99,7 @@ export const info = (message, options = {}) => {
 
 // ✅ Toast هشدار
 export const warning = (message, options = {}) => {
-  toastify.warning(message, {
+  toastify.warning(toPersian(message), {
     position: "top-center",
     autoClose: 1500,
     hideProgressBar: false,
@@ -134,8 +137,8 @@ export const showErrors = (errors) => {
     return;
   }
 
-  const errorList = errors.map((e, i) => `${i + 1}. ${e}`).join(" • ");
-  error(`⚠️ ${errors.length} خطا: ${errorList}`);
+  const errorList = errors.map((e, i) => `${toPersianNumber(i + 1)}. ${e}`).join(" • ");
+  error(`⚠️ ${toPersianNumber(errors.length)} خطا: ${errorList}`);
 };
 
 // ✅ حذف همه toast ها
@@ -147,7 +150,7 @@ export const dismissAll = () => {
 export const show = (message, type = "info", options = {}) => {
   const types = { success, error, info, warning };
   const fn = types[type] || info;
-  fn(message, options);
+  fn(toPersian(message), options);
 };
 
 // ✅ Alias برای سازگاری با کدهای قبلی

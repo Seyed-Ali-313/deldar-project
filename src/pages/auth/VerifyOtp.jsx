@@ -10,6 +10,7 @@ import {
   info as toastInfo,
 } from "../../utils/toast";
 import useRegisterData from "../../hooks/useRegisterData";
+import toPersianNumber from "../../utils/toPersianNumber";
 
 const RESEND_SECONDS = 124;
 const OTP_LENGTH = 4;
@@ -17,7 +18,7 @@ const OTP_LENGTH = 4;
 function formatTime(sec) {
   const m = Math.floor(sec / 60);
   const s = sec % 60;
-  return `${m}:${s.toString().padStart(2, "0")}`;
+  return `${toPersianNumber(m)}:${toPersianNumber(s.toString().padStart(2, "0"))}`;
 }
 
 export default function VerifyOtp() {
@@ -272,7 +273,7 @@ export default function VerifyOtp() {
 
         <p className="otp-subtitle">
           کد تایید به شماره
-          <span className="otp-mobile">{mobile}</span>
+          <span className="otp-mobile">{toPersianNumber(mobile)}</span>
           ارسال شد
           <button
             type="button"

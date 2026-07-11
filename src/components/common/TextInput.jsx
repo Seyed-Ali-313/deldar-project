@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toPersianNumber from "../../utils/toPersianNumber";
 
 export default function TextInput({
   placeholder,
@@ -78,13 +79,13 @@ export default function TextInput({
         maxLength: maxLength
           ? {
               value: maxLength,
-              message: `حداکثر ${maxLength} کاراکتر`,
+              message: `حداکثر ${toPersianNumber(maxLength)} کاراکتر`,
             }
           : undefined,
         minLength: minLength
           ? {
               value: minLength,
-              message: `حداقل ${minLength} کاراکتر`,
+              message: `حداقل ${toPersianNumber(minLength)} کاراکتر`,
             }
           : undefined,
       })

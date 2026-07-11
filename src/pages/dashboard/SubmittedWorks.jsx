@@ -1,8 +1,7 @@
 // src/pages/dashboard/SubmittedWorks.jsx
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  getWorks,
   deleteWork,
   updateWork,
 } from "../../services/dashboardService";
@@ -14,9 +13,14 @@ import {
 import ConfirmModal from "../../components/common/ConfirmModal";
 import SkeletonWorks from "../../components/common/SkeletonWorks";
 import toPersianDigits from "../../utils/toPersianNumber";
-export default function SubmittedWorks() {
-  const [works, setWorks] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+export default function SubmittedWorks({
+  works,
+  loading,
+  totalCount,
+  maxWorks,
+  onWorksChange,
+}) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [previewWork, setPreviewWork] = useState(null);
@@ -29,25 +33,6 @@ export default function SubmittedWorks() {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    getWorks()
-      .then((res) => {
-        setWorks(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        const errorMsg = err.response?.data?.detail || "خطا در دریافت اطلاعات";
-        toastError(errorMsg);
-        setLoading(false);
-      });
-  }, []);
-
   const handleDelete = (id) => {
     setDeleteTargetId(id);
     setShowDeleteModal(true);
@@ -56,7 +41,7 @@ export default function SubmittedWorks() {
   const confirmDelete = async () => {
     try {
       await deleteWork(deleteTargetId);
-      setWorks((prev) => prev.filter((w) => w.id !== deleteTargetId));
+      onWorksChange((prev) => prev.filter((w) => w.id !== deleteTargetId));
       toastSuccess("اثر با موفقیت حذف شد");
       setShowDeleteModal(false);
       setDeleteTargetId(null);
@@ -170,16 +155,17 @@ export default function SubmittedWorks() {
 
       await updateWork(editingWork.id, formData);
 
-      const updatedWorks = works.map((w) =>
-        w.id === editingWork.id
-          ? {
-              ...w,
-              description: editDescription.trim(),
-              image: editImagePreview || w.image,
-            }
-          : w,
+      onWorksChange((prev) =>
+        prev.map((w) =>
+          w.id === editingWork.id
+            ? {
+                ...w,
+                description: editDescription.trim(),
+                image: editImagePreview || w.image,
+              }
+            : w,
+        ),
       );
-      setWorks(updatedWorks);
 
       toastSuccess("اطلاعات با موفقیت ویرایش شد");
       setIsEditing(false);
@@ -335,7 +321,17 @@ export default function SubmittedWorks() {
                 border: "1px solid rgba(201, 168, 76, 0.1)",
               }}
             >
-              {toPersianDigits(works.length)}
+              {toPersianDigits(totalCount)}
+            </span>
+            <span
+              style={{
+                fontSize: "15px",
+                color: "rgba(255,255,255,0.25)",
+                fontFamily: "w_Lotus, sans-serif",
+                fontWeight: 300,
+              }}
+            >
+              / {toPersianDigits(maxWorks)}
             </span>
           </div>
         </div>
