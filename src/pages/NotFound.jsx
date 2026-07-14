@@ -27,7 +27,7 @@ export default function NotFound() {
         {/* عدد ۴۰۴ */}
         <div
           style={{
-            fontSize: "120px",
+            fontSize: "clamp(60px, 25vw, 120px)",
             fontWeight: 800,
             color: "rgba(201,168,76,0.15)",
             fontFamily: "w_Nian, sans-serif",
@@ -51,7 +51,7 @@ export default function NotFound() {
         {/* عنوان */}
         <h1
           style={{
-            fontSize: "28px",
+            fontSize: "clamp(22px, 5vw, 28px)",
             fontWeight: 700,
             color: "#ffffff",
             fontFamily: "w_Nian, sans-serif",
@@ -68,7 +68,7 @@ export default function NotFound() {
             color: "rgba(255,255,255,0.5)",
             fontFamily: "w_Lotus, sans-serif",
             lineHeight: "1.8",
-            maxWidth: "400px",
+            maxWidth: "min(90%, 400px)",
             margin: "0 auto 32px",
           }}
         >

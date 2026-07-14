@@ -55,6 +55,7 @@ export default function Rules() {
 
   return (
     <div className="page">
+      <div className="rules-wrap">
       <div className="page-content">
         <div className="info-column">
           <div className="info-section">
@@ -138,18 +139,24 @@ export default function Rules() {
           پذیرش و ادامه ثبت‌ نام
         </button>
       </div>
+      </div>
 
       <style>{`
+        .rules-wrap {
+          display: flex;
+          flex-direction: column;
+          margin: auto 0;
+        }
+
         .page-content {
           max-width: 1440px;
           margin: 0 auto;
-          padding: clamp(16px, 3vw, 40px) clamp(16px, 4vw, 50px);
+          padding: clamp(16px, 3vw, 31px) clamp(16px, 4vw, 50px);
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: clamp(30px, 5vw, 80px);
           align-items: start;
           direction: rtl;
-          margin-top: -18px;
         }
 
         /* ===== قوانین ===== */
@@ -204,7 +211,6 @@ export default function Rules() {
           display: flex;
           flex-direction: column;
           gap: 8px;
-          margin-top: -11px;
         }
 
         .info-section h2 {
@@ -263,16 +269,20 @@ export default function Rules() {
         /* ===== بخش پایین ===== */
         .cta-section {
           max-width: 1440px;
+          width: 100%;
           margin: 0 auto;
           padding: 10px clamp(16px, 4vw, 50px) clamp(16px, 2.5vw, 30px);
           display: flex;
           align-items: center;
-          justify-content: end;
           gap: 16px;
           direction: rtl;
           border-top: 1px solid rgba(255, 255, 255, 0.04);
-          flex-wrap: nowrap;
-          margin-right: -88px;
+        }
+
+        .cta-section::before {
+          content: '';
+          width: 50%;
+          flex-shrink: 0;
         }
 
         /* ===== چک‌باکس ===== */
@@ -440,15 +450,19 @@ export default function Rules() {
 
   .cta-section {
     flex-direction: column;
-    align-items: stretch;
+    align-items: end;
     gap: 12px;
     padding: 12px 16px 18px;
     flex-wrap: wrap;
     margin-right: 0;
   }
 
+  .cta-section::before {
+    display: none;
+  }
+
   .agreement-check {
-    justify-content: center;
+    justify-content: end;
     padding: 4px 0;
   }
 
@@ -465,8 +479,6 @@ export default function Rules() {
     min-height: 46px;
     font-size: clamp(13px, 3.6vw, 15px);
   }
-}
-        }
       `}</style>
     </div>
   );

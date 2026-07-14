@@ -42,7 +42,9 @@ export const validateNationalCode = (value) => {
 // ============================================
 export const validatePostalCode = (value) => {
   if (!value) return "کدپستی الزامی است";
-  const clean = String(value).replace(/\s/g, "");
+  const clean = String(value)
+    .replace(/\s/g, "")
+    .replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
   if (!/^\d{10}$/.test(clean)) {
     return "کدپستی باید ۱۰ رقم باشد";
   }

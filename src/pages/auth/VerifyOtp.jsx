@@ -33,6 +33,27 @@ export default function VerifyOtp() {
   const [activeIndex, setActiveIndex] = useState(null);
   const [shake, setShake] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    if (!("OTPCredential" in window)) return;
+    const ac = new AbortController();
+    navigator.credentials
+      .get({ otp: { transport: ["sms"] }, signal: ac.signal })
+      .then((otp) => {
+        const code = otp.code.replace(/\D/g, "").slice(0, OTP_LENGTH);
+        if (code.length === OTP_LENGTH) {
+          const updated = code.split("");
+          setOtp(updated);
+        }
+      })
+      .catch(() => {});
+    return () => ac.abort();
+  }, []);
+
   const [banner, setBanner] = useState(null); // { type: 'success' | 'error' | 'info', message: string }
   const inputsRef = useRef([]);
   const hasAutoSubmitted = useRef(false);

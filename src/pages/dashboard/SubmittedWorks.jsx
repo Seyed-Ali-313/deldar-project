@@ -46,8 +46,7 @@ export default function SubmittedWorks({
       setShowDeleteModal(false);
       setDeleteTargetId(null);
     } catch (err) {
-      const errorMsg = err.response?.data?.detail || "خطا در حذف اثر";
-      toastError(errorMsg);
+      showError(err, "خطا در حذف اثر");
       setShowDeleteModal(false);
     }
   };
@@ -176,48 +175,7 @@ export default function SubmittedWorks({
     } catch (err) {
       console.log("❌ خطای کامل:", err);
       console.log("❌ پاسخ سرور:", err.response?.data);
-
-      // دریافت پیام دقیق از سرور
-      const errorData = err.response?.data;
-      let errorMsg = "خطا در ویرایش اطلاعات";
-
-      if (errorData?.detail) {
-        errorMsg = errorData.detail;
-      } else if (errorData?.message) {
-        errorMsg = errorData.message;
-      } else if (errorData?.errors) {
-        const firstError = Object.values(errorData.errors)[0]?.[0];
-        if (firstError) errorMsg = firstError;
-      }
-
-      // خطاهای مربوط به عکس
-      if (
-        errorMsg.includes("image") ||
-        errorMsg.includes("عکس") ||
-        errorMsg.includes("photo")
-      ) {
-        if (errorMsg.includes("size") || errorMsg.includes("حجم")) {
-          errorMsg = "حجم عکس باید کمتر از ۵ مگابایت باشد";
-        } else if (
-          errorMsg.includes("dimension") ||
-          errorMsg.includes("ابعاد") ||
-          errorMsg.includes("width") ||
-          errorMsg.includes("height")
-        ) {
-          errorMsg = "ابعاد عکس باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد";
-        } else if (
-          errorMsg.includes("format") ||
-          errorMsg.includes("فرمت") ||
-          errorMsg.includes("type")
-        ) {
-          errorMsg = "فرمت عکس نامعتبر است. لطفاً از فرمت JPG استفاده کنید";
-        } else {
-          errorMsg =
-            "فرمت یا ابعاد عکس نامعتبر است. لطفاً عکس را با فرمت JPG و ابعاد ۱۰۰۰ تا ۱۵۰۰ پیکسل ارسال کنید";
-        }
-      }
-
-      toastError(errorMsg);
+      showError(err, "خطا در ویرایش اطلاعات");
     } finally {
       setIsUploading(false);
     }
@@ -660,9 +618,71 @@ export default function SubmittedWorks({
             }
           }
 
+          @media (max-width: 900px) {
+            .edit-modal-card {
+              padding: 10px 12px 8px !important;
+              max-width: 440px !important;
+            }
+            .edit-modal-card > * {
+              margin-bottom: 6px !important;
+            }
+            .edit-modal-card > .edit-modal-actions {
+              margin-bottom: 0 !important;
+            }
+            .edit-modal-card h3 {
+              font-size: 15px !important;
+              margin-bottom: 0 !important;
+            }
+            .edit-modal-card p {
+              font-size: 11px !important;
+              margin-bottom: 8px !important;
+              line-height: 1.4 !important;
+            }
+            .edit-modal-card > div:first-of-type {
+              width: 36px !important;
+              height: 36px !important;
+              margin-bottom: 6px !important;
+            }
+            .edit-modal-card > div:first-of-type svg {
+              width: 18px !important;
+              height: 18px !important;
+            }
+            .edit-modal-card > div:nth-of-type(2) {
+              padding: 8px 10px !important;
+              gap: 8px !important;
+            }
+            .edit-modal-card > div:nth-of-type(2) > div:first-child {
+              width: 40px !important;
+              height: 40px !important;
+            }
+            .edit-modal-card button:not(.edit-modal-actions button) {
+              padding: 8px !important;
+              font-size: 12px !important;
+              margin-bottom: 4px !important;
+            }
+            .edit-modal-card > div:nth-of-type(3) {
+              padding: 2px !important;
+              margin-bottom: 4px !important;
+            }
+            .edit-modal-card > div:nth-of-type(3) input {
+              padding: 10px 12px !important;
+              font-size: 13px !important;
+            }
+            .edit-modal-card > div:nth-of-type(4) {
+              margin-bottom: 2px !important;
+            }
+            .edit-modal-actions {
+              gap: 6px !important;
+            }
+            .edit-modal-actions button {
+              min-height: 36px !important;
+              font-size: 12px !important;
+            }
+          }
+
           @media (max-width: 420px) {
             .edit-modal-card {
-              padding: 28px 18px 22px !important;
+              padding: 8px 10px 6px !important;
             }
             .edit-modal-actions {
               flex-direction: column-reverse !important;

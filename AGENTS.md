@@ -13,7 +13,7 @@ No tests or typecheck exist — JSX only despite `@types/react` in deps.
 
 ## Stack
 - **React 19 + Vite 8** — JSX only, no TypeScript
-- **Tailwind CSS ^4.3.2** — but uses v3-style `tailwind.config.js`; no postcss.config.js
+- **Tailwind CSS ^4.3.2** — Installed (`@tailwindcss/vite` plugin in `vite.config.js`, `@import "tailwindcss"` in `style.css` with `@theme`) but **NOT actively used** by components — all JSX relies on plain CSS via `<style>` blocks (not Tailwind utilities). Tailwind conversion attempted but not persisted.
 - **react-router-dom v7** — `createBrowserRouter` + `PrivateRoute` guard
 - **framer-motion** — `AnimatePresence` page transitions
 - **Axios** — base URL `/api`, JWT + draft token auth interceptors, auto 401 refresh

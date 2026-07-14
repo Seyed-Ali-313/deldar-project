@@ -11,7 +11,8 @@ import {
   requestMobileChange,
   verifyMobileChange,
 } from "../../services/dashboardService";
-import { success, error, info } from "../../utils/toast";
+import { success, error, info, showErrors } from "../../utils/toast";
+import { showError } from "../../utils/errorHandler";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function PersonalInfo() {
@@ -37,8 +38,8 @@ export default function PersonalInfo() {
         setOriginalMobile(res.data.mobile);
         setLoading(false);
       })
-      .catch(() => {
-        error("خطا در دریافت اطلاعات");
+      .catch((err) => {
+        showError(err);
         setLoading(false);
       });
   }, [reset]);
@@ -61,8 +62,7 @@ export default function PersonalInfo() {
       info("کد تایید به شماره جدید ارسال شد");
       setShowOtpBox(true);
     } catch (err) {
-      const msg = err.response?.data?.detail || "خطا در ارسال کد";
-      error(msg);
+      showError(err, "خطا در ارسال کد");
     }
   };
 
@@ -78,8 +78,7 @@ export default function PersonalInfo() {
       setOtpCode("");
       success("شماره موبایل تایید شد");
     } catch (err) {
-      const msg = err.response?.data?.detail || "کد وارد شده صحیح نیست";
-      error(msg);
+      showError(err, "کد وارد شده صحیح نیست");
     }
   };
 
@@ -94,8 +93,7 @@ export default function PersonalInfo() {
       setOriginalMobile(data.mobile);
       success("اطلاعات با موفقیت بروزرسانی شد");
     } catch (err) {
-      const msg = err.response?.data?.detail || "خطا در بروزرسانی اطلاعات";
-      error(msg);
+      showError(err, "خطا در بروزرسانی اطلاعات");
     }
   };
 
@@ -104,7 +102,13 @@ export default function PersonalInfo() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="pill-grid">
+    <form onSubmit={handleSubmit(onSubmit, (formErrors) => {
+      const msgs = [];
+      for (const [, err] of Object.entries(formErrors)) {
+        if (err?.message) msgs.push(err.message);
+      }
+      if (msgs.length > 0) showErrors(msgs);
+    })} className="pill-grid">
       {/* ✅ 1. نام */}
       <FormInput
         placeholder="نام*"

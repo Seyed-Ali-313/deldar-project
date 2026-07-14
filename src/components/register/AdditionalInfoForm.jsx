@@ -61,6 +61,14 @@ export default function AdditionalInfoForm({ onSuccess }) {
   const getFieldError = (fieldName) =>
     errors[fieldName]?.message || serverErrors[fieldName] || null;
 
+  const onInvalid = (formErrors) => {
+    const msgs = [];
+    for (const [, err] of Object.entries(formErrors)) {
+      if (err?.message) msgs.push(err.message);
+    }
+    if (msgs.length > 0) showErrors(msgs);
+  };
+
   const onSubmit = async (formData) => {
     if (isSubmitting.current || formSubmitting) return;
 
@@ -119,7 +127,7 @@ export default function AdditionalInfoForm({ onSuccess }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="pill-grid">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="pill-grid">
       <FormInput
         placeholder="استان محل سکونت*"
         required

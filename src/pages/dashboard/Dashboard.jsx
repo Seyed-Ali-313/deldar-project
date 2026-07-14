@@ -5,6 +5,7 @@ import PersonalInfo from "./PersonalInfo";
 import SubmittedWorks from "./SubmittedWorks";
 import SubmitWorks from "./SubmitWorks";
 import { getWorks } from "../../services/dashboardService";
+import { showError } from "../../utils/errorHandler";
 
 const TABS = [
   { key: "edit", label: "ویرایش اطلاعات" },
@@ -28,7 +29,10 @@ export default function Dashboard() {
         setWorks(res.data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        if (err.response?.status !== 401) showError(err);
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {

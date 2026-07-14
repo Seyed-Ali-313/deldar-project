@@ -142,7 +142,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange, exist
       onWorksChange((prev) => prev.filter((w) => w.id !== id));
       toastSuccess("اثر با موفقیت حذف شد");
     } catch (err) {
-      toastError(err?.response?.data?.detail || "خطا در حذف اثر");
+      showError(err, "خطا در حذف اثر");
     }
   };
 
@@ -283,7 +283,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange, exist
           <input
             type="text"
             className="register-input"
-            placeholder="شرح عکس جدید..."
+            placeholder="توضیح عکس"
             value={currentWork.description}
             onChange={(e) =>
               setCurrentWork({ ...currentWork, description: e.target.value })

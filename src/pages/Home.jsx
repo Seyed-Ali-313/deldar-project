@@ -11,12 +11,12 @@ import Countdown from "../components/common/Countdown";
 export default function Home() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
-  // ✅ دکمه ثبت نام و ارسال عکس
+  // ✅ دکمه ثبت نام و ارسال عکس - کاربر جدید به قوانین هدایت بشه
   const handleRegisterClick = () => {
     if (isLoggedIn) {
       navigate("/dashboard");
     } else {
-      navigate("/login");
+      navigate("/rules");
     }
   };
 
@@ -150,7 +150,7 @@ export default function Home() {
           max-width: 1400px;
           width: 100%;
           display: flex;
-          align-items: center;
+          align-items: stretch;
           justify-content: center;
           padding: 20px clamp(16px, 2vw, 32px);
           gap: 188px;
@@ -747,15 +747,17 @@ export default function Home() {
 /* ============================================================ */
 @media (min-width: 901px) {
   .hm-hero {
-    max-width: 1800px !important;
-    justify-content: space-between !important;
-    padding: 20px clamp(38px, 7vw, 74px) !important;
-    gap: clamp(60px, 8vw, 160px) !important;
-    margin-top: -80px !important;
-  }
+        max-width: 1800px !important;
+        justify-content: space-around !important;
+        padding: 20px clamp(38px, 7vw, 74px) !important;
+        gap: clamp(60px, 8vw, 160px) !important;
+        margin-top: -80px !important;
+    }
 
   .hm-hero-left, .hm-hero-right {
-        align-self: center !important;
+        align-self: stretch !important;
+    }
+    .hm-hero-right {
         margin-left: 80px;
     }
 

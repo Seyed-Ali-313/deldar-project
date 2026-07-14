@@ -315,7 +315,7 @@ export default function WorksForm({
           <input
             type="text"
             className="register-input"
-            placeholder="شرح عکس جدید..."
+            placeholder="توضیح عکس"
             value={currentWork.description}
             onChange={(e) =>
               setCurrentWork({ ...currentWork, description: e.target.value })
@@ -788,32 +788,20 @@ export default function WorksForm({
       padding-top: 0 !important;
     }
     .submit-works-add-row {
-      grid-template-columns: 1fr !important;
-      grid-template-rows: auto auto auto !important;
-      gap: 6px !important;
+      grid-template-columns: 1fr 1fr !important;
+      grid-template-rows: auto auto !important;
+    }
+    .submit-works-add-row > button {
+      grid-column: 1 / -1 !important;
+      width: 100% !important;
+      min-width: unset !important;
+      height: 42px !important;
     }
     .submit-works-add-row .pill {
       height: 42px !important;
     }
     .submit-works-add-row .register-input {
       font-size: 16px !important;
-    }
-    .submit-work-item {
-      grid-template-columns: 30px 1fr 28px !important;
-      grid-template-areas: "num desc close" "num file close" !important;
-      padding: 4px 8px !important;
-      gap: 5px !important;
-    }
-    .submit-work-item > span:nth-child(2) {
-      grid-area: desc !important;
-      font-size: 13px !important;
-    }
-    .submit-work-item > div:nth-child(3) {
-      grid-area: file !important;
-    }
-    .submit-work-item > div:nth-child(3) img {
-      width: 28px !important;
-      height: 28px !important;
     }
   }
 `}</style>

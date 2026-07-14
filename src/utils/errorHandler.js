@@ -93,32 +93,6 @@ export const getFriendlyErrorMessage = (error) => {
           return value;
         }
       }
-      // بررسی دقیق‌تر برای خطاهای عکس
-      if (
-        data.detail.includes("image") ||
-        data.detail.includes("تصویر") ||
-        data.detail.includes("عکس")
-      ) {
-        if (data.detail.includes("size") || data.detail.includes("حجم")) {
-          return "حجم عکس ارسالی باید کمتر از ۵ مگابایت باشد.";
-        }
-        if (
-          data.detail.includes("dimension") ||
-          data.detail.includes("ابعاد") ||
-          data.detail.includes("width") ||
-          data.detail.includes("height")
-        ) {
-          return "ابعاد عکس ارسالی باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد.";
-        }
-        if (
-          data.detail.includes("format") ||
-          data.detail.includes("فرمت") ||
-          data.detail.includes("type")
-        ) {
-          return "فرمت عکس ارسالی نامعتبر است. لطفاً از فرمت JPG استفاده کنید.";
-        }
-        return "فرمت یا ابعاد عکس ارسالی نامعتبر است. لطفاً عکس را با فرمت JPG و ابعاد ۱۰۰۰ تا ۱۵۰۰ پیکسل ارسال کنید.";
-      }
       return data.detail;
     }
 
@@ -158,29 +132,6 @@ export const getFriendlyErrorMessage = (error) => {
         }
       }
       if (fieldErrors.length > 0) {
-        // اگر خطا مربوط به عکس بود، پیام خاص
-        const imageError = fieldErrors.find(
-          (msg) =>
-            msg.includes("image") ||
-            msg.includes("تصویر") ||
-            msg.includes("عکس") ||
-            msg.includes("photo"),
-        );
-        if (imageError) {
-          if (imageError.includes("size") || imageError.includes("حجم")) {
-            return "حجم عکس ارسالی باید کمتر از ۵ مگابایت باشد.";
-          }
-          if (
-            imageError.includes("dimension") ||
-            imageError.includes("ابعاد")
-          ) {
-            return "ابعاد عکس ارسالی باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد.";
-          }
-          if (imageError.includes("format") || imageError.includes("فرمت")) {
-            return "فرمت عکس ارسالی نامعتبر است. لطفاً از فرمت JPG استفاده کنید.";
-          }
-          return "فرمت یا ابعاد عکس ارسالی نامعتبر است. لطفاً عکس را با فرمت JPG و ابعاد ۱۰۰۰ تا ۱۵۰۰ پیکسل ارسال کنید.";
-        }
         return fieldErrors.join(" - ");
       }
     }

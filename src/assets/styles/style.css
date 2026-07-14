@@ -393,7 +393,7 @@ button {
   position: relative;
   width: clamp(304px, 15vw, 146px);
   aspect-ratio: 785 / 928;
-  margin: 5px auto -165px;
+  margin: -30px auto -165px;
 }
 .logo-pm {
   position: absolute;
@@ -431,7 +431,7 @@ button {
   margin: 0 auto;
   flex: 1;
   min-height: 0;
-  padding: clamp(16px, 2.5vh, 32px) clamp(16px, 4vw, 60px);
+  padding: clamp(14px, 2.3vh, 26px) clamp(16px, 4vw, 60px);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(24px, 4vw, 70px);
@@ -1273,5 +1273,18 @@ button {
     width: 44px !important;
     height: 50px !important;
     font-size: 20px !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .page--scrollable {
+    position: relative;
+    overflow: visible !important;
+  }
+
+  .page--scrollable .page-scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
   }
 }

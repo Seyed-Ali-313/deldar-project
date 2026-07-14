@@ -20,12 +20,13 @@ export default function About() {
       </h1>
       <p
         style={{
-          maxWidth: 700,
+          maxWidth: "min(90vw, 700px)",
           margin: "0 auto",
           lineHeight: 2,
           fontSize: "clamp(13px, 3.6vw, 16px)",
           color: "rgba(255,255,255,0.8)",
           padding: "0 4px",
+          overflowWrap: "break-word",
         }}
       >
         متن درباره ما اینجا قرار می‌گیرد.

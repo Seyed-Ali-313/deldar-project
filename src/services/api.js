@@ -108,61 +108,6 @@ api.interceptors.response.use(
     }
 
     // ✅ مدیریت خطای 400 (با پیام دقیق)
-    if (error.response?.status === 400) {
-      const data = error.response.data;
-      let message = "اطلاعات ارسالی معتبر نیست. لطفاً داده‌ها را بررسی کنید.";
-
-      console.log("📋 داده‌های خطای 400:", data);
-
-      if (data?.detail) {
-        message = data.detail;
-      } else if (data?.message) {
-        message = data.message;
-      } else if (data?.errors) {
-        const errorMessages = [];
-        for (const [field, msgs] of Object.entries(data.errors)) {
-          if (Array.isArray(msgs) && msgs.length > 0) {
-            errorMessages.push(`${field}: ${msgs[0]}`);
-          } else if (typeof msgs === "string") {
-            errorMessages.push(`${field}: ${msgs}`);
-          }
-        }
-        if (errorMessages.length > 0) {
-          message = errorMessages.join(" | ");
-        }
-      }
-
-      // ✅ خطاهای مربوط به عکس
-      if (
-        message.includes("image") ||
-        message.includes("عکس") ||
-        message.includes("photo")
-      ) {
-        if (message.includes("size") || message.includes("حجم")) {
-          message = "حجم عکس ارسالی باید کمتر از ۵ مگابایت باشد.";
-        } else if (
-          message.includes("dimension") ||
-          message.includes("ابعاد") ||
-          message.includes("width") ||
-          message.includes("height")
-        ) {
-          message = "ابعاد عکس ارسالی باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد.";
-        } else if (
-          message.includes("format") ||
-          message.includes("فرمت") ||
-          message.includes("type")
-        ) {
-          message =
-            "فرمت عکس ارسالی نامعتبر است. لطفاً از فرمت JPG استفاده کنید.";
-        } else {
-          message =
-            "فرمت یا ابعاد عکس ارسالی نامعتبر است. لطفاً عکس را با فرمت JPG و ابعاد ۱۰۰۰ تا ۱۵۰۰ پیکسل ارسال کنید.";
-        }
-      }
-
-      showError(error, message);
-      error.handledByInterceptor = true;
-    }
 
     // ✅ مدیریت سایر خطاها
     if (error.response?.status === 403) {
@@ -182,19 +127,6 @@ api.interceptors.response.use(
 
     if (error.response?.status === 409) {
       showError(error, "این اطلاعات قبلاً ثبت شده است.");
-      error.handledByInterceptor = true;
-    }
-
-    if (error.response?.status === 422) {
-      const data = error.response.data;
-      let message = "اطلاعات ارسالی معتبر نیست. لطفاً داده‌ها را بررسی کنید.";
-      if (data?.detail) message = data.detail;
-      else if (data?.message) message = data.message;
-      else if (data?.errors) {
-        const firstError = Object.values(data.errors)[0]?.[0];
-        if (firstError) message = firstError;
-      }
-      showError(error, message);
       error.handledByInterceptor = true;
     }
 

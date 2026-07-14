@@ -133,8 +133,16 @@ export default function PersonalInfoForm({ onSuccess }) {
   const getFieldError = (fieldName) =>
     errors[fieldName]?.message || serverErrors[fieldName] || null;
 
+  const onInvalid = (formErrors) => {
+    const msgs = [];
+    for (const [, err] of Object.entries(formErrors)) {
+      if (err?.message) msgs.push(err.message);
+    }
+    if (msgs.length > 0) showErrors(msgs);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="pill-grid">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="pill-grid">
       <FormInput
         placeholder="نام"
         required
