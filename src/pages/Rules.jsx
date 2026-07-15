@@ -1,6 +1,6 @@
 // src/pages/Rules.jsx
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import emtiaz from "../assets/images/emtiaz.svg";
 
 const RULES = [
@@ -56,89 +56,86 @@ export default function Rules() {
   return (
     <div className="page">
       <div className="rules-wrap">
-      <div className="page-content">
-        <div className="info-column">
-          <div className="info-section">
-            <h2>
-              <img src={emtiaz} alt="" className="icon" style={{ width: 18 }} />
-              امتیازات
-            </h2>
-            <ul>
-              {AMTIAZ.map((item, i) => (
-                <li key={i}>{item}</li>
+        <div className="page-content">
+          <div className="info-column">
+            <div className="info-section">
+              <h2>
+                <img
+                  src={emtiaz}
+                  alt=""
+                  className="icon"
+                  style={{ width: 18 }}
+                />
+                امتیازات
+              </h2>
+              <ul>
+                {AMTIAZ.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            <hr className="section-divider" />
+
+            <div className="info-section">
+              <h2>شرایط عمومی فراخوان</h2>
+              <ul>
+                {CONDITIONS.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="rules-column">
+            <ul className="rules-list">
+              {RULES.map((rule, i) => (
+                <li key={i}>{rule}</li>
               ))}
             </ul>
           </div>
+        </div>
 
-          <hr className="section-divider" />
-
-          <div className="info-section">
-            <h2>شرایط عمومی فراخوان</h2>
-            <ul>
-              {CONDITIONS.map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul>
+        {/* ✅ بخش پایین - اصلاح شده */}
+        <div className="cta-section">
+          {/* ✅ چک‌باکس + متن - کل دکمه قابل کلیک */}
+          <div className="agreement-check" onClick={handleToggleAgree}>
+            <span className={`checkbox ${agreed ? "checked" : ""}`} />
+            <span>
+              قوانین و &emsp;
+              <span
+                onClick={handleAnnouncementClick}
+                style={{
+                  color: "#2563eb",
+                  fontWeight: "700",
+                  textDecoration: "none",
+                  fontSize: "1.1rem",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.color = "#1d4ed8";
+                  e.target.style.textDecoration = "underline";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = "#2563eb";
+                  e.target.style.textDecoration = "none";
+                }}
+              >
+                فراخوان
+              </span>{" "}
+              &emsp;را مطالعه کرده و می‌پذیرم
+            </span>
           </div>
-        </div>
 
-        <div className="rules-column">
-          <ul className="rules-list">
-            {RULES.map((rule, i) => (
-              <li key={i}>{rule}</li>
-            ))}
-          </ul>
+          {/* ✅ دکمه ادامه - فقط وقتی تیک خورده باشه فعال میشه */}
+          <button
+            className="btn-accept"
+            onClick={handleContinue}
+            disabled={!agreed}
+          >
+            پذیرش و ادامه ثبت‌ نام
+          </button>
         </div>
-      </div>
-
-      {/* ✅ بخش پایین - اصلاح شده */}
-      <div className="cta-section">
-        {/* ✅ چک‌باکس + متن - کل دکمه قابل کلیک */}
-        <div
-          className="agreement-check"
-          onClick={handleToggleAgree}
-          style={{ cursor: "pointer" }}
-        >
-          <span className={`checkbox ${agreed ? "checked" : ""}`} />
-          <span>
-            قوانین و &emsp;
-            <span
-              onClick={handleAnnouncementClick}
-              style={{
-                color: "#2563eb",
-                fontWeight: "700",
-                textDecoration: "none",
-                fontSize: "1.1rem",
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.color = "#1d4ed8";
-                e.target.style.textDecoration = "underline";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.color = "#2563eb";
-                e.target.style.textDecoration = "none";
-              }}
-            >
-              فراخوان
-            </span>{" "}
-            &emsp;را مطالعه کرده و می‌پذیرم
-          </span>
-        </div>
-
-        {/* ✅ دکمه ادامه - فقط وقتی تیک خورده باشه فعال میشه */}
-        <button
-          className="btn-accept"
-          onClick={handleContinue}
-          disabled={!agreed}
-          style={{
-            opacity: agreed ? 1 : 0.4,
-            cursor: agreed ? "pointer" : "not-allowed",
-          }}
-        >
-          پذیرش و ادامه ثبت‌ نام
-        </button>
-      </div>
       </div>
 
       <style>{`
@@ -195,10 +192,10 @@ export default function Rules() {
           content: "•";
           position: absolute;
           right: 0;
-          top: 1px;
+          top: 0;
           color: #C9A84C;
-          font-size: 16px;
-          line-height: 1.8;
+          font-size: 14px;
+          line-height: 1;
           transition: none;
         }
 
@@ -249,10 +246,10 @@ export default function Rules() {
           content: "•";
           position: absolute;
           right: 0;
-          top: 1px;
+          top: 0;
           color: #C9A84C;
           font-size: 14px;
-          line-height: 1.7;
+          line-height: 1;
           transition: none;
         }
 
@@ -274,6 +271,7 @@ export default function Rules() {
           padding: 10px clamp(16px, 4vw, 50px) clamp(16px, 2.5vw, 30px);
           display: flex;
           align-items: center;
+          justify-content: flex-start;
           gap: 16px;
           direction: rtl;
           border-top: 1px solid rgba(255, 255, 255, 0.04);
@@ -281,8 +279,7 @@ export default function Rules() {
 
         .cta-section::before {
           content: '';
-          width: 50%;
-          flex-shrink: 0;
+          flex: 1;
         }
 
         /* ===== چک‌باکس ===== */
@@ -292,6 +289,17 @@ export default function Rules() {
           gap: 10px;
           user-select: none;
           flex-shrink: 0;
+          cursor: pointer;
+          padding: 8px 16px;
+          border-radius: 24px;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          transition: all 0.3s ease;
+        }
+
+        .agreement-check:hover {
+          background: rgba(255, 255, 255, 0.07);
+          border-color: rgba(164, 135, 77, 0.2);
         }
 
         .agreement-check .checkbox {
@@ -302,7 +310,6 @@ export default function Rules() {
           background: transparent;
           flex-shrink: 0;
           transition: all 0.25s ease;
-          cursor: pointer;
           position: relative;
         }
 
@@ -324,68 +331,25 @@ export default function Rules() {
         }
 
         .agreement-check span:last-child {
-          font-size: clamp(12px, 1vw, 14px);
-          font-weight: 400;
-          color: rgba(255, 255, 255, 0.85);
+          font-size: clamp(13px, 1.1vw, 15px);
+          font-weight: 500;
+          color: #ffffff;
           font-family: "w_Lotus", sans-serif;
           white-space: nowrap;
         }
-          @media (max-width: 480px) {
-  .page-content {
-    padding: 14px 12px;
-    gap: 18px;
-  }
 
-  .rules-list li {
-    font-size: 12px;
-    padding-bottom: 9px;
-    padding-right: 16px;
-    line-height: 1.7;
-  }
+        .announcement-link {
+          color: #3b82f6;
+          font-weight: 800;
+          cursor: pointer;
+          transition: all 0.25s ease;
+          padding: 0 4px;
+        }
 
-  .rules-list li::before {
-    font-size: 13px;
-  }
-
-  .info-section ul li {
-    font-size: 12px;
-    padding-right: 16px;
-    line-height: 1.7;
-  }
-
-  .info-section ul li::before {
-    font-size: 13px;
-  }
-
-  .info-section h2 {
-    font-size: 14.5px;
-  }
-
-  .info-section h2 img {
-    width: 15px !important;
-  }
-
-  .agreement-check span:last-child {
-    font-size: 12px;
-  }
-
-  .agreement-check .checkbox {
-    width: 18px;
-    height: 18px;
-  }
-
-  .btn-accept {
-    font-size: 13px;
-    min-height: 44px;
-    padding: 8px 16px;
-  }
-
-  .cta-section {
-    padding: 10px 12px 16px;
-    gap: 10px;
-  }
-}
-        /* ===== دکمه طلایی ===== */
+        .announcement-link:hover {
+          color: #60a5fa;
+          text-decoration: underline;
+        }
         .btn-accept {
           background: linear-gradient(135deg, #A4874D, #C9A84C);
           color: #ffffff;
@@ -393,7 +357,7 @@ export default function Rules() {
           align-items: center;
           justify-content: center;
           min-width: 180px;
-          min-height: 44px;
+          min-height: 48px;
           padding: 8px 24px;
           border-radius: 24px;
           border: none;
@@ -401,7 +365,7 @@ export default function Rules() {
           font-weight: 700;
           font-family: "w_Lotus", sans-serif;
           cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+          transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
           box-shadow: 0 4px 20px rgba(164, 135, 77, 0.3);
           letter-spacing: 0.3px;
           flex-shrink: 0;
@@ -424,61 +388,103 @@ export default function Rules() {
         }
 
         /* ===== ریسپانسیو ===== */
-       @media (max-width: 900px) {
-  .page-content {
-    grid-template-columns: 1fr;
-    gap: 24px;
-    padding: 16px clamp(14px, 4vw, 20px);
-    margin-top: 0;
-  }
+        @media (max-width: 900px) {
+          .page-content {
+            grid-template-columns: 1fr;
+            gap: 24px;
+            padding: 16px clamp(14px, 4vw, 20px);
+            margin-top: 0;
+          }
 
-  .info-column {
-    margin-top: 0;
-    gap: 20px;
-  }
+          .info-column {
+            margin-top: 0;
+            gap: 20px;
+          }
 
-  .info-section h2 {
-    font-size: clamp(15px, 4vw, 18px);
-    margin-bottom: 10px;
-  }
+          .info-section h2 {
+            font-size: clamp(15px, 4vw, 18px);
+            margin-bottom: 10px;
+          }
 
-  .rules-list li,
-  .info-section ul li {
-    font-size: clamp(12px, 3.2vw, 13.5px);
-    line-height: 1.75;
-  }
+          .rules-list li,
+          .info-section ul li {
+            font-size: clamp(12px, 3.2vw, 13.5px);
+            line-height: 1.75;
+          }
 
-  .cta-section {
-    flex-direction: column;
-    align-items: end;
-    gap: 12px;
-    padding: 12px 16px 18px;
-    flex-wrap: wrap;
-    margin-right: 0;
-  }
+          .cta-section {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+            padding: 12px 16px 18px;
+          }
 
-  .cta-section::before {
-    display: none;
-  }
+          .cta-section::before {
+            display: none;
+          }
 
-  .agreement-check {
-    justify-content: end;
-    padding: 4px 0;
-  }
+          .agreement-check {
+            justify-content: center;
+            padding: 10px 16px;
+            width: 100%;
+          }
 
-  .agreement-check span:last-child {
-    white-space: normal;
-    text-align: center;
-    font-size: clamp(12px, 3.4vw, 14px);
-    line-height: 1.7;
-  }
+          .agreement-check span:last-child {
+            white-space: normal;
+            text-align: center;
+            font-size: clamp(12px, 3.4vw, 14px);
+            line-height: 1.7;
+          }
 
-  .btn-accept {
-    width: 100%;
-    min-width: unset;
-    min-height: 46px;
-    font-size: clamp(13px, 3.6vw, 15px);
-  }
+          .btn-accept {
+            width: 100%;
+            min-width: unset;
+            min-height: 48px;
+            font-size: clamp(13px, 3.6vw, 15px);
+          }
+        }
+
+        @media (max-width: 480px) {
+          .page-content {
+            padding: 12px 10px;
+            gap: 16px;
+          }
+
+          .rules-list li {
+            font-size: 11.5px;
+            padding-bottom: 8px;
+            padding-right: 14px;
+            line-height: 1.6;
+          }
+
+          .info-section ul li {
+            font-size: 11.5px;
+            padding-right: 14px;
+            line-height: 1.6;
+          }
+
+          .info-section h2 {
+            font-size: 14px;
+          }
+
+          .cta-section {
+            padding: 10px 12px 16px;
+            gap: 10px;
+          }
+
+          .agreement-check {
+            padding: 8px 12px;
+          }
+
+          .agreement-check span:last-child {
+            font-size: 11px;
+          }
+
+          .btn-accept {
+            min-height: 44px;
+            font-size: 13px;
+          }
+        }
       `}</style>
     </div>
   );
