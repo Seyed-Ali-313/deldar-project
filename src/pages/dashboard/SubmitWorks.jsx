@@ -12,7 +12,12 @@ import {
 
 const MAX_DESCRIPTION_LENGTH = 200;
 
-export default function SubmitWorks({ totalCount, maxWorks, onWorksChange, existingWorks }) {
+export default function SubmitWorks({
+  totalCount,
+  maxWorks,
+  onWorksChange,
+  existingWorks,
+}) {
   const [currentWork, setCurrentWork] = useState({
     file: null,
     description: "",
@@ -282,16 +287,14 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange, exist
         <div className="pill" style={{ height: "42px", maxWidth: "100%" }}>
           <input
             type="text"
-            className="register-input"
+            className="register-input submit-works-input"
             placeholder="توضیح عکس"
             value={currentWork.description}
             onChange={(e) =>
               setCurrentWork({ ...currentWork, description: e.target.value })
             }
             style={{
-              fontSize: "16px",
               height: "100%",
-              fontWeight: 600,
               color: "#000000",
             }}
           />
@@ -325,52 +328,48 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange, exist
               height: "100%",
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0 12px",
+              justifyContent: "flex-start",
+              padding: "0 28px",
               cursor: "pointer",
-              fontSize: "15px",
-              color: currentWork.preview ? "#000000" : "rgba(0,0,0,0.4)",
+              fontSize: "17px",
+              color: currentWork.preview ? "#000000" : "rgba(0,0,0,0)",
               fontFamily: "w_Lotus, sans-serif",
               fontWeight: 500,
+              direction: "rtl",
             }}
           >
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                maxWidth: "100px",
-              }}
-            >
-              {currentWork.preview ? (
-                <>
-                  <img
-                    src={currentWork.preview}
-                    alt="پیش‌نمایش"
-                    style={{
-                      width: "28px",
-                      height: "28px",
-                      borderRadius: "6px",
-                      objectFit: "cover",
-                      border: "1px solid rgba(164,135,77,0.15)",
-                    }}
-                  />
-                  <span style={{ fontSize: "12px", color: "#000" }}>
-                    {currentWork.file?.name?.slice(0, 10)}...
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span style={{ fontSize: "18px", color: "rgba(0,0,0,0.5)" }}>
-                    انتخاب عکس
-                  </span>
-                </>
-              )}
-            </span>
-            <span style={{ color: "#C9A84C", fontSize: "14px" }}></span>
+            {currentWork.preview ? (
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxWidth: "100px",
+                }}
+              >
+                <img
+                  src={currentWork.preview}
+                  alt="پیش‌نمایش"
+                  style={{
+                    width: "28px",
+                    height: "28px",
+                    borderRadius: "6px",
+                    objectFit: "cover",
+                    border: "1px solid rgba(164,135,77,0.15)",
+                  }}
+                />
+                <span style={{ fontSize: "12px", color: "#000" }}>
+                  {currentWork.file?.name?.slice(0, 10)}...
+                </span>
+              </span>
+            ) : (
+              <span style={{ color: "rgba(0,0,0,0.5)", fontWeight: 500 }}>
+                انتخاب عکس
+              </span>
+            )}
           </label>
         </div>
 
@@ -388,13 +387,10 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange, exist
                 ? "rgba(255,255,255,0.05)"
                 : "linear-gradient(135deg, #A4874D, #C9A84C)",
             color:
-              combinedCount >= maxWorks
-                ? "rgba(255,255,255,0.2)"
-                : "#ffffff",
+              combinedCount >= maxWorks ? "rgba(255,255,255,0.2)" : "#ffffff",
             borderRadius: "10px",
             border: "none",
-            cursor:
-              combinedCount >= maxWorks ? "not-allowed" : "pointer",
+            cursor: combinedCount >= maxWorks ? "not-allowed" : "pointer",
             opacity: combinedCount >= maxWorks ? 0.4 : 1,
             display: "flex",
             alignItems: "center",
@@ -429,7 +425,12 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange, exist
             <motion.div
               className="submit-work-item"
               key={`existing-${work.id}`}
-              onClick={() => setPreviewWork({ image: work.image || work.thumbnail, description: work.description })}
+              onClick={() =>
+                setPreviewWork({
+                  image: work.image || work.thumbnail,
+                  description: work.description,
+                })
+              }
               initial={{ opacity: 0, y: -10, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.97 }}
@@ -489,7 +490,11 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange, exist
                 style={{ display: "flex", alignItems: "center", gap: "6px" }}
               >
                 <img
-                  src={work.image || work.thumbnail || "/src/assets/images/logo-bg.png"}
+                  src={
+                    work.image ||
+                    work.thumbnail ||
+                    "/src/assets/images/logo-bg.png"
+                  }
                   alt="عکس"
                   style={{
                     width: "36px",
@@ -763,7 +768,11 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange, exist
                 ✕
               </button>
               <img
-                src={previewWork.preview || previewWork.image || "/src/assets/images/logo-bg.png"}
+                src={
+                  previewWork.preview ||
+                  previewWork.image ||
+                  "/src/assets/images/logo-bg.png"
+                }
                 alt="پیش‌نمایش عکس"
                 className="work-preview-img"
                 onError={(e) => {
@@ -790,6 +799,15 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange, exist
   }
   .submit-works-scroll::-webkit-scrollbar-thumb:hover {
     background: #C9A84C;
+  }
+
+  .submit-works-input {
+    font-size: 17px !important;
+    font-weight: 500 !important;
+  }
+  .submit-works-input::placeholder {
+    font-size: 17px !important;
+    font-weight: 500 !important;
   }
   @keyframes spin {
     from { transform: rotate(0deg); }
