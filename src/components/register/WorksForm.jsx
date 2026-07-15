@@ -1,17 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { success, error, showErrors } from "../../utils/toast";
 import { uploadWork, submitAllWorks } from "../../services/onboardingService";
+import { showError } from "../../utils/errorHandler";
+import toPersianDigits from "../../utils/toPersianNumber";
+import {
+  success as toastSuccess,
+  error as toastError,
+  warn as toastWarn,
+} from "../../utils/toast";
 import { getErrorMessage } from "../../utils/validators";
 import useRegisterData from "../../hooks/useRegisterData";
-import toPersianDigits from "../../utils/toPersianNumber";
 
 const MAX_WORKS = 50;
 const MAX_DESCRIPTION_LENGTH = 200;
 const MAX_FILE_SIZE_MB = 5;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-// تبدیل base64 ذخیره‌شده در sessionStorage به File واقعی برای آپلود
 async function dataURLtoFile(dataUrl, fileName, fileType) {
   const res = await fetch(dataUrl);
   const blob = await res.blob();
@@ -20,11 +24,7 @@ async function dataURLtoFile(dataUrl, fileName, fileType) {
   });
 }
 
-export default function WorksForm({
-  onSuccess,
-  uploadFn,
-  showFinalSubmit = true,
-}) {
+export default function WorksForm({ onSuccess, uploadFn, showFinalSubmit = true }) {
   const { data, setWorks: persistWorks } = useRegisterData();
 
   const [currentWork, setCurrentWork] = useState({
@@ -32,25 +32,27 @@ export default function WorksForm({
     description: "",
     preview: null,
   });
-  const [uploadedWorks, setUploadedWorksState] = useState(data.works || []);
+  const [uploadedWorks, setUploadedWorks] = useState(data.works || []);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
   const [previewWork, setPreviewWork] = useState(null);
   const containerRef = useRef(null);
 
-  const setUploadedWorks = (updater) => {
-    setUploadedWorksState((prev) => {
-      const next = typeof updater === "function" ? updater(prev) : updater;
-      persistWorks(next);
-      return next;
-    });
-  };
+  const combinedCount = uploadedWorks.length;
 
   useEffect(() => {
     if (containerRef.current && uploadedWorks.length > 0) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [uploadedWorks]);
+
+  const setUploadedWorksPersisted = (updater) => {
+    setUploadedWorks((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      persistWorks(next);
+      return next;
+    });
+  };
 
   const validateFile = (file) => {
     const errs = [];
@@ -69,13 +71,13 @@ export default function WorksForm({
     if (!file) return;
     const errs = validateFile(file);
     if (errs.length > 0) {
-      showErrors(errs);
+      errs.forEach((msg) => toastError(msg));
       return;
     }
     const reader = new FileReader();
     reader.onload = (e) => {
       setCurrentWork({
-        file,
+        file: file,
         description: currentWork.description,
         preview: e.target.result,
       });
@@ -83,31 +85,33 @@ export default function WorksForm({
     reader.readAsDataURL(file);
   };
 
-  const addWork = () => {
-    const errs = [];
-    if (!currentWork.file) errs.push("لطفاً ابتدا یک عکس انتخاب کنید");
-    if (!currentWork.description.trim()) {
-      errs.push("لطفاً شرح عکس را وارد کنید");
-    } else if (currentWork.description.length > MAX_DESCRIPTION_LENGTH) {
-      errs.push(`شرح عکس باید کمتر از ${MAX_DESCRIPTION_LENGTH} کاراکتر باشد`);
-    }
-    if (uploadedWorks.length >= MAX_WORKS)
-      errs.push(`حداکثر ${toPersianDigits(MAX_WORKS)} اثر مجاز است`);
-
-    if (errs.length > 0) {
-      showErrors(errs);
+  const addWorkHandler = () => {
+    if (!currentWork.file) {
+      toastError("لطفاً ابتدا یک عکس انتخاب کنید");
       return;
     }
 
-    const newWork = {
-      id: Date.now(),
-      description: currentWork.description.trim(),
-      preview: currentWork.preview,
-      fileName: currentWork.file.name,
-      fileType: currentWork.file.type,
-    };
+    if (!currentWork.description.trim()) {
+      toastError("لطفاً شرح عکس را وارد کنید");
+      return;
+    }
 
-    setUploadedWorks((prev) => [...prev, newWork]);
+    if (combinedCount >= MAX_WORKS) {
+      toastWarn(`حداکثر ${toPersianDigits(MAX_WORKS)} اثر مجاز است`);
+      return;
+    }
+
+    setUploadedWorksPersisted((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        file: currentWork.file,
+        description: currentWork.description,
+        preview: currentWork.preview,
+        fileName: currentWork.file.name,
+        fileType: currentWork.file.type,
+      },
+    ]);
 
     const newIndex = uploadedWorks.length;
     setUploadProgress({ [newIndex]: 0 });
@@ -123,11 +127,11 @@ export default function WorksForm({
     }, 150);
 
     setCurrentWork({ file: null, description: "", preview: null });
-    success("عکس با موفقیت اضافه شد");
+    toastSuccess("عکس با موفقیت اضافه شد");
   };
 
   const removeWork = (index) => {
-    setUploadedWorks((prev) => prev.filter((_, i) => i !== index));
+    setUploadedWorksPersisted((prev) => prev.filter((_, i) => i !== index));
     const newProgress = { ...uploadProgress };
     delete newProgress[index];
     setUploadProgress(newProgress);
@@ -135,7 +139,7 @@ export default function WorksForm({
 
   const handleSubmitAll = async () => {
     if (uploadedWorks.length === 0) {
-      error("لطفاً حداقل یک عکس آپلود کنید");
+      toastError("لطفاً حداقل یک عکس آپلود کنید");
       return;
     }
 
@@ -144,11 +148,7 @@ export default function WorksForm({
       const uploader = uploadFn || uploadWork;
 
       for (const work of uploadedWorks) {
-        const file = await dataURLtoFile(
-          work.preview,
-          work.fileName,
-          work.fileType,
-        );
+        const file = await dataURLtoFile(work.preview, work.fileName, work.fileType);
         const formData = new FormData();
         formData.append("image", file);
         formData.append("description", work.description);
@@ -159,9 +159,8 @@ export default function WorksForm({
         await submitAllWorks();
       }
 
-      success(
-        `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ارسال شد`,
-      );
+      toastSuccess(`${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ارسال شد`);
+      setUploadedWorksPersisted([]);
 
       setTimeout(() => {
         onSuccess();
@@ -175,9 +174,9 @@ export default function WorksForm({
         }
       }
       if (errorList.length > 0) {
-        showErrors(errorList);
+        errorList.forEach((msg) => toastError(msg));
       } else if (!err.handledByInterceptor) {
-        error(getErrorMessage(err, "خطا در ارسال آثار"));
+        toastError(getErrorMessage(err, "خطا در ارسال آثار"));
       }
     } finally {
       setUploading(false);
@@ -186,16 +185,16 @@ export default function WorksForm({
 
   return (
     <div
-      className="works-form-outer submit-works-container"
+      className="submit-works-container"
       style={{
         width: "100%",
         maxWidth: "780px",
-        margin: "-5px auto",
+        margin: " -5px auto",
         display: "flex",
         flexDirection: "column",
         height: "100%",
         maxHeight: "430px",
-        paddingTop: "18px",
+        paddingTop: "4px",
       }}
     >
       <div
@@ -221,7 +220,13 @@ export default function WorksForm({
             margin: 0,
           }}
         >
-          <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: "13px" }}>
+          <span
+            style={{
+              color: "#C9A84C",
+              fontWeight: 700,
+              fontSize: "13px",
+            }}
+          >
             توجه:
           </span>
           <br />
@@ -238,7 +243,7 @@ export default function WorksForm({
           </span>
           <br />
           <span style={{ color: "rgba(255,255,255,0.7)" }}>
-            • حجم هر فایل ارسالی کمتر از {MAX_FILE_SIZE_MB} مگابایت باشد.
+            • حجم هر فایل ارسالی کمتر از ۵ مگابایت باشد.
           </span>
         </p>
       </div>
@@ -281,7 +286,7 @@ export default function WorksForm({
             textAlign: "center",
           }}
         >
-          {toPersianDigits(uploadedWorks.length)}
+          {toPersianDigits(combinedCount)}
         </span>
         <span
           style={{
@@ -314,16 +319,14 @@ export default function WorksForm({
         <div className="pill" style={{ height: "42px", maxWidth: "100%" }}>
           <input
             type="text"
-            className="register-input"
+            className="register-input submit-works-input"
             placeholder="توضیح عکس"
             value={currentWork.description}
             onChange={(e) =>
               setCurrentWork({ ...currentWork, description: e.target.value })
             }
             style={{
-              fontSize: "16px",
               height: "100%",
-              fontWeight: 600,
               color: "#000000",
             }}
           />
@@ -345,7 +348,9 @@ export default function WorksForm({
             id="current-file"
             style={{ display: "none" }}
             onChange={(e) => {
-              if (e.target.files[0]) handleFileSelect(e.target.files[0]);
+              if (e.target.files[0]) {
+                handleFileSelect(e.target.files[0]);
+              }
             }}
           />
           <label
@@ -355,77 +360,70 @@ export default function WorksForm({
               height: "100%",
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0 12px",
+              justifyContent: "flex-start",
+              padding: "0 28px",
               cursor: "pointer",
-              fontSize: "15px",
-              color: currentWork.preview ? "#000000" : "rgba(0,0,0,0.4)",
+              fontSize: "17px",
+              color: currentWork.preview ? "#000000" : "rgba(0,0,0,0)",
               fontFamily: "w_Lotus, sans-serif",
               fontWeight: 500,
+              direction: "rtl",
             }}
           >
-            <span
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                maxWidth: "100px",
-              }}
-            >
-              {currentWork.preview ? (
-                <>
-                  <img
-                    src={currentWork.preview}
-                    alt="پیش‌نمایش"
-                    style={{
-                      width: "28px",
-                      height: "28px",
-                      borderRadius: "6px",
-                      objectFit: "cover",
-                      border: "1px solid rgba(164,135,77,0.15)",
-                    }}
-                  />
-                  <span style={{ fontSize: "12px", color: "#000" }}>
-                    {currentWork.file?.name?.slice(0, 10)}...
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span style={{ fontSize: "18px", color: "rgba(0,0,0,0.5)" }}>
-                    انتخاب عکس
-                  </span>
-                </>
-              )}
-            </span>
-            <span style={{ color: "#C9A84C", fontSize: "14px" }}></span>
+            {currentWork.preview ? (
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxWidth: "100px",
+                }}
+              >
+                <img
+                  src={currentWork.preview}
+                  alt="پیش‌نمایش"
+                  style={{
+                    width: "28px",
+                    height: "28px",
+                    borderRadius: "6px",
+                    objectFit: "cover",
+                    border: "1px solid rgba(164,135,77,0.15)",
+                  }}
+                />
+                <span style={{ fontSize: "12px", color: "#000" }}>
+                  {currentWork.file?.name?.slice(0, 10)}...
+                </span>
+              </span>
+            ) : (
+              <span style={{ color: "rgba(0,0,0,0.5)", fontWeight: 500 }}>
+                انتخاب عکس
+              </span>
+            )}
           </label>
         </div>
 
         <motion.button
           type="button"
-          onClick={addWork}
+          onClick={addWorkHandler}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          disabled={uploadedWorks.length >= MAX_WORKS}
+          disabled={combinedCount >= MAX_WORKS}
           style={{
             minWidth: "46px",
             height: "42px",
             background:
-              uploadedWorks.length >= MAX_WORKS
+              combinedCount >= MAX_WORKS
                 ? "rgba(255,255,255,0.05)"
                 : "linear-gradient(135deg, #A4874D, #C9A84C)",
             color:
-              uploadedWorks.length >= MAX_WORKS
-                ? "rgba(255,255,255,0.2)"
-                : "#ffffff",
+              combinedCount >= MAX_WORKS ? "rgba(255,255,255,0.2)" : "#ffffff",
             borderRadius: "10px",
             border: "none",
-            cursor:
-              uploadedWorks.length >= MAX_WORKS ? "not-allowed" : "pointer",
-            opacity: uploadedWorks.length >= MAX_WORKS ? 0.4 : 1,
+            cursor: combinedCount >= MAX_WORKS ? "not-allowed" : "pointer",
+            opacity: combinedCount >= MAX_WORKS ? 0.4 : 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -433,7 +431,7 @@ export default function WorksForm({
             fontWeight: 300,
             transition: "all 0.2s ease",
             boxShadow:
-              uploadedWorks.length >= MAX_WORKS
+              combinedCount >= MAX_WORKS
                 ? "none"
                 : "0 3px 10px rgba(164,135,77,0.25)",
           }}
@@ -519,14 +517,16 @@ export default function WorksForm({
                 style={{ display: "flex", alignItems: "center", gap: "6px" }}
               >
                 <img
-                  src={work.preview}
+                  src={work.preview || "/src/assets/images/logo-bg.png"}
                   alt="عکس"
                   style={{
                     width: "36px",
                     height: "36px",
                     borderRadius: "6px",
                     objectFit: "cover",
-                    border: "1px solid rgba(164,135,77,0.12)",
+                  }}
+                  onError={(e) => {
+                    e.target.src = "/src/assets/images/logo-bg.png";
                   }}
                 />
               </div>
@@ -554,6 +554,12 @@ export default function WorksForm({
                   transition: "all 0.2s ease",
                   flexShrink: 0,
                 }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.15)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.06)";
+                }}
               >
                 ✕
               </motion.button>
@@ -575,7 +581,15 @@ export default function WorksForm({
               gap: "2px",
             }}
           >
-            <span>هیچ عکسی انتخاب نشده است</span>
+            <span
+              style={{
+                fontSize: "13px",
+                fontWeight: 500,
+                color: "rgba(255,255,255,0.2)",
+              }}
+            >
+              هیچ عکسی انتخاب نشده است
+            </span>
           </div>
         )}
       </div>
@@ -666,9 +680,12 @@ export default function WorksForm({
                 ✕
               </button>
               <img
-                src={previewWork.preview}
+                src={previewWork.preview || "/src/assets/images/logo-bg.png"}
                 alt="پیش‌نمایش عکس"
                 className="work-preview-img"
+                onError={(e) => {
+                  e.target.src = "/src/assets/images/logo-bg.png";
+                }}
               />
               <p className="work-preview-desc">{previewWork.description}</p>
             </motion.div>
@@ -677,20 +694,33 @@ export default function WorksForm({
       </AnimatePresence>
 
       <style>{`
-  .works-form-outer.submit-works-container {
-    max-width: 1050px !important;
+  .submit-works-scroll::-webkit-scrollbar {
+    width: 3px;
   }
-  @media (min-width: 901px) {
-    .page .works-form-outer.submit-works-container {
-      max-width: 1050px !important;
-    }
+  .submit-works-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 4px;
+  }
+  .submit-works-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #A4874D, #C9A84C);
+    border-radius: 4px;
+  }
+  .submit-works-scroll::-webkit-scrollbar-thumb:hover {
+    background: #C9A84C;
   }
 
-  .submit-works-scroll::-webkit-scrollbar { width: 3px; }
-  .submit-works-scroll::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 4px; }
-  .submit-works-scroll::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #A4874D, #C9A84C); border-radius: 4px; }
-  .submit-works-scroll::-webkit-scrollbar-thumb:hover { background: #C9A84C; }
-  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .submit-works-input {
+    font-size: 17px !important;
+    font-weight: 500 !important;
+  }
+  .submit-works-input::placeholder {
+    font-size: 17px !important;
+    font-weight: 500 !important;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
 
   .work-preview-overlay {
     position: fixed;
@@ -788,20 +818,32 @@ export default function WorksForm({
       padding-top: 0 !important;
     }
     .submit-works-add-row {
-      grid-template-columns: 1fr 1fr !important;
-      grid-template-rows: auto auto !important;
-    }
-    .submit-works-add-row > button {
-      grid-column: 1 / -1 !important;
-      width: 100% !important;
-      min-width: unset !important;
-      height: 42px !important;
+      grid-template-columns: 1fr !important;
+      grid-template-rows: auto auto auto !important;
+      gap: 6px !important;
     }
     .submit-works-add-row .pill {
       height: 42px !important;
     }
     .submit-works-add-row .register-input {
       font-size: 16px !important;
+    }
+    .submit-work-item {
+      grid-template-columns: 30px 1fr 28px !important;
+      grid-template-areas: "num desc close" "num file close" !important;
+      padding: 4px 8px !important;
+      gap: 5px !important;
+    }
+    .submit-work-item > span:nth-child(2) {
+      grid-area: desc !important;
+      font-size: 13px !important;
+    }
+    .submit-work-item > div:nth-child(3) {
+      grid-area: file !important;
+    }
+    .submit-work-item > div:nth-child(3) img {
+      width: 28px !important;
+      height: 28px !important;
     }
   }
 `}</style>

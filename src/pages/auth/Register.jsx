@@ -165,7 +165,6 @@ export default function Register() {
           }
 
           .pill {
-            max-width: 85% !important;
             margin: 0 auto !important;
             height: 44px !important;
             border-radius: 20px !important;
@@ -288,7 +287,6 @@ export default function Register() {
             margin-top: 1px !important;
           }
           .pill {
-            max-width: 88% !important;
             height: 38px !important;
           }
           .pill-grid {
@@ -367,7 +365,7 @@ export default function Register() {
           }
           .register-input {
             font-size: 10px !important;
-            padding: 0 12px !important;
+            padding: 0 28px !important;
           }
           .submit-btn {
             max-width: 220px !important;
