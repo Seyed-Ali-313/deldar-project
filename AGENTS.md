@@ -8,17 +8,17 @@ npm run build      # production build to dist/
 npm run lint       # ESLint (flat config, eslint.config.js)
 npm run preview    # Vite preview of built output
 ```
-
 No tests or typecheck exist — JSX only despite `@types/react` in deps.
 
 ## Stack
 - **React 19 + Vite 8** — JSX only, no TypeScript
-- **Tailwind CSS ^4.3.2** — Installed (`@tailwindcss/vite` plugin in `vite.config.js`, `@import "tailwindcss"` in `style.css` with `@theme`) but **NOT actively used** by components — all JSX relies on plain CSS via `<style>` blocks (not Tailwind utilities). Tailwind conversion attempted but not persisted.
+- **Tailwind CSS ^4.3.2** — installed in devDependencies but **NOT configured** (no `@tailwindcss/vite` plugin, no `@import "tailwindcss"` in CSS). The legacy `tailwind.config.js` is unused by v4. All styling is plain CSS via `src/assets/styles/style.css`.
 - **react-router-dom v7** — `createBrowserRouter` + `PrivateRoute` guard
 - **framer-motion** — `AnimatePresence` page transitions
 - **Axios** — base URL `/api`, JWT + draft token auth interceptors, auto 401 refresh
 - **react-hook-form** — form validation with custom validators in `src/utils/validators.js`
-- **react-toastify** — Persian-styled toasts
+- **react-toastify** — Persian-styled toasts via `src/utils/toast.js`
+- **react-icons** — available in deps
 
 ## Auth model
 - **JWT**: `access_token` + `refresh_token` in localStorage for logged-in users
