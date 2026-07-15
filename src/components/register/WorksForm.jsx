@@ -24,7 +24,11 @@ async function dataURLtoFile(dataUrl, fileName, fileType) {
   });
 }
 
-export default function WorksForm({ onSuccess, uploadFn, showFinalSubmit = true }) {
+export default function WorksForm({
+  onSuccess,
+  uploadFn,
+  showFinalSubmit = true,
+}) {
   const { data, setWorks: persistWorks } = useRegisterData();
 
   const [currentWork, setCurrentWork] = useState({
@@ -148,7 +152,11 @@ export default function WorksForm({ onSuccess, uploadFn, showFinalSubmit = true 
       const uploader = uploadFn || uploadWork;
 
       for (const work of uploadedWorks) {
-        const file = await dataURLtoFile(work.preview, work.fileName, work.fileType);
+        const file = await dataURLtoFile(
+          work.preview,
+          work.fileName,
+          work.fileType,
+        );
         const formData = new FormData();
         formData.append("image", file);
         formData.append("description", work.description);
@@ -159,7 +167,9 @@ export default function WorksForm({ onSuccess, uploadFn, showFinalSubmit = true 
         await submitAllWorks();
       }
 
-      toastSuccess(`${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ارسال شد`);
+      toastSuccess(
+        `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ارسال شد`,
+      );
       setUploadedWorksPersisted([]);
 
       setTimeout(() => {
@@ -630,6 +640,7 @@ export default function WorksForm({ onSuccess, uploadFn, showFinalSubmit = true 
           fontFamily: "w_Lotus, sans-serif",
           flexShrink: 0,
           letterSpacing: "0.3px",
+          // marginBottom: "20px",
         }}
       >
         {uploading ? (

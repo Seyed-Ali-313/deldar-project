@@ -1,7 +1,7 @@
 // src/pages/dashboard/SubmitWorks.jsx
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { addWork, deleteWork } from "../../services/dashboardService";
+import { addWork } from "../../services/dashboardService";
 import { showError } from "../../utils/errorHandler";
 import toPersianDigits from "../../utils/toPersianNumber";
 import {
@@ -138,16 +138,6 @@ export default function SubmitWorks({
       showError(err);
     } finally {
       setUploading(false);
-    }
-  };
-
-  const handleDeleteExisting = async (id) => {
-    try {
-      await deleteWork(id);
-      onWorksChange((prev) => prev.filter((w) => w.id !== id));
-      toastSuccess("اثر با موفقیت حذف شد");
-    } catch (err) {
-      showError(err, "خطا در حذف اثر");
     }
   };
 
@@ -421,128 +411,6 @@ export default function SubmitWorks({
         className="submit-works-scroll"
       >
         <AnimatePresence>
-          {existingWorks.map((work, index) => (
-            <motion.div
-              className="submit-work-item"
-              key={`existing-${work.id}`}
-              onClick={() =>
-                setPreviewWork({
-                  image: work.image || work.thumbnail,
-                  description: work.description,
-                })
-              }
-              initial={{ opacity: 0, y: -10, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.97 }}
-              transition={{ duration: 0.2 }}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "40px 1fr 50px 30px",
-                gap: "8px",
-                alignItems: "center",
-                background: "rgba(164, 135, 77, 0.03)",
-                padding: "6px 12px",
-                borderRadius: "12px",
-                border: "1px solid rgba(164, 135, 77, 0.06)",
-                marginBottom: "4px",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-              }}
-              whileHover={{
-                borderColor: "rgba(164, 135, 77, 0.15)",
-                background: "rgba(164, 135, 77, 0.05)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "15px",
-                    fontWeight: 700,
-                    color: "#C9A84C",
-                    fontFamily: "w_Lotus, sans-serif",
-                  }}
-                >
-                  #{toPersianDigits(index + 1)}
-                </span>
-              </div>
-
-              <span
-                style={{
-                  fontSize: "15px",
-                  color: "#ffffff",
-                  fontFamily: "w_Lotus, sans-serif",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  fontWeight: 600,
-                }}
-              >
-                {work.description}
-              </span>
-
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "6px" }}
-              >
-                <img
-                  src={
-                    work.image ||
-                    work.thumbnail ||
-                    "/src/assets/images/logo-bg.png"
-                  }
-                  alt="عکس"
-                  style={{
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "6px",
-                    objectFit: "cover",
-                    border: "1px solid rgba(164,135,77,0.12)",
-                  }}
-                  onError={(e) => {
-                    e.target.src = "/src/assets/images/logo-bg.png";
-                  }}
-                />
-              </div>
-
-              <motion.button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteExisting(work.id);
-                }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                style={{
-                  background: "rgba(176, 1, 1, 0.06)",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: "28px",
-                  height: "28px",
-                  cursor: "pointer",
-                  color: "#B00101",
-                  fontSize: "12px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.2s ease",
-                  flexShrink: 0,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.15)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.06)";
-                }}
-              >
-                ✕
-              </motion.button>
-            </motion.div>
-          ))}
           {uploadedWorks.map((work, index) => (
             <motion.div
               className="submit-work-item"
@@ -655,7 +523,7 @@ export default function SubmitWorks({
           ))}
         </AnimatePresence>
 
-        {existingWorks.length === 0 && uploadedWorks.length === 0 && (
+        {uploadedWorks.length === 0 && (
           <div
             style={{
               display: "flex",
@@ -718,6 +586,7 @@ export default function SubmitWorks({
           fontFamily: "w_Lotus, sans-serif",
           flexShrink: 0,
           letterSpacing: "0.3px",
+          marginBottom: "20px",
         }}
       >
         {uploading ? (
