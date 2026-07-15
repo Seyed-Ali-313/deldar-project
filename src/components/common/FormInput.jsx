@@ -83,7 +83,11 @@ export default function FormInput({
           }}
           inputMode={inputMode}
           pattern={pattern}
-          {...(register ? register(name, { required }) : {})}
+          {...(register
+            ? register(name, {
+                required: required ? "این فیلد الزامی است" : false,
+              })
+            : {})}
           {...props}
         />
         {required && <span className="req">*</span>}
@@ -95,7 +99,7 @@ export default function FormInput({
             color: "#c0392b",
             fontSize: "12px",
             fontWeight: 600,
-            marginTop: "6px",
+            marginTop: "-1px",
             paddingRight: "14px",
             textAlign: "right",
             fontFamily: "w_Nian, sans-serif",
