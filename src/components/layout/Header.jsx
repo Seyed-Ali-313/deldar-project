@@ -58,7 +58,7 @@ export default function Header() {
   const navLinks = [
     { label: "صفحه اصلی", to: "/" },
     { label: "فراخوان", to: "/announcement" },
-    { label: "قوانین", to: "/rules" },
+    { label: "امتیازات و شرایط عمومی", to: "/rules" },
     { label: "تماس با ما", to: "/contact" },
     { label: "درباره ما", to: "/about" },
   ];

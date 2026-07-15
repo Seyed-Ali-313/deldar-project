@@ -1,6 +1,6 @@
 // src/pages/Rules.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import emtiaz from "../assets/images/emtiaz.svg";
 
 const RULES = [
@@ -35,6 +35,8 @@ const CONDITIONS = [
 export default function Rules() {
   const [agreed, setAgreed] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const showActions = Boolean(location.state?.fromRegisterFlow);
 
   // ✅ فقط وقتی تیک زده شده باشه، به ثبت‌نام بره
   const handleContinue = () => {
@@ -96,7 +98,8 @@ export default function Rules() {
           </div>
         </div>
 
-        {/* ✅ بخش پایین - اصلاح شده */}
+        {/* ✅ بخش پایین - فقط وقتی از فلوی ثبت‌نام اومده باشیم */}
+        {showActions && (
         <div className="cta-section">
           {/* ✅ چک‌باکس + متن - کل دکمه قابل کلیک */}
           <div className="agreement-check" onClick={handleToggleAgree}>
@@ -136,6 +139,7 @@ export default function Rules() {
             پذیرش و ادامه ثبت‌ نام
           </button>
         </div>
+        )}
       </div>
 
       <style>{`

@@ -186,7 +186,7 @@ export default function Login() {
 
                 <p className="lg-register-hint">
                   حساب کاربری ندارید؟{" "}
-                  <Link to="/rules" className="lg-link-register">
+                  <Link to="/rules" state={{ fromRegisterFlow: true }} className="lg-link-register">
                     ثبت‌نام کنید
                   </Link>
                 </p>

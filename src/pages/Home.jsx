@@ -16,7 +16,7 @@ export default function Home() {
     if (isLoggedIn) {
       navigate("/dashboard");
     } else {
-      navigate("/rules");
+      navigate("/rules", { state: { fromRegisterFlow: true } });
     }
   };
 
