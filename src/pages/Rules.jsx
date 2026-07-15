@@ -54,7 +54,7 @@ export default function Rules() {
   };
 
   return (
-    <div className="page">
+    <div className="page" style={{ height: "90vh", overflowY: "auto" }}>
       <div className="rules-wrap">
         <div className="page-content">
           <div className="info-column">
@@ -286,7 +286,7 @@ export default function Rules() {
         .agreement-check {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           user-select: none;
           flex-shrink: 0;
           cursor: pointer;

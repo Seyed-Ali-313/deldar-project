@@ -73,7 +73,7 @@ button {
 @media (min-width: 901px) {
   html,
   body {
-    overflow: hidden;
+    /* overflow: hidden; */
     height: 100vh;
   }
 
@@ -89,7 +89,7 @@ button {
     min-height: 0;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    /* overflow: hidden; */
   }
 
   .page {
@@ -97,7 +97,7 @@ button {
     min-height: 0;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    /* overflow: hidden; */
   }
 }
 
