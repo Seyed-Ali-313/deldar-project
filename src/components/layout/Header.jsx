@@ -290,7 +290,7 @@ export default function Header() {
           align-items: center;
           justify-content: flex-start;
           padding: 10px clamp(20px, 3vw, 50px);
-          gap: 18px;
+          gap: 30px;
         }
 
         .header-premium .brand {
