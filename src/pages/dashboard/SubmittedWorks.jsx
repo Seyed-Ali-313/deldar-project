@@ -13,6 +13,7 @@ import {
 import ConfirmModal from "../../components/common/ConfirmModal";
 import SkeletonWorks from "../../components/common/SkeletonWorks";
 import toPersianDigits from "../../utils/toPersianNumber";
+import toPersianDate from "../../utils/toPersianDate";
 
 export default function SubmittedWorks({
   works,
@@ -386,12 +387,13 @@ export default function SubmittedWorks({
                   </span>
                   <span
                     style={{
-                      fontSize: "10px",
-                      color: "rgba(255,255,255,0.2)",
+                      fontSize: "12px",
+                      color: "#C9A84C",
                       fontFamily: "w_Lotus, sans-serif",
+                      opacity: 0.85,
                     }}
                   >
-                    شناسه: {toPersianDigits(String(work.id).padStart(3, "0"))}
+                    {toPersianDate(work.created_at)}
                   </span>
                 </div>
 
