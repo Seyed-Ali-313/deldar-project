@@ -418,8 +418,8 @@ export default function WorksForm({
         <motion.button
           type="button"
           onClick={addWorkHandler}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+           whileHover={{ scale: 1.02 }}
+           whileTap={{ scale: 0.97 }}
           disabled={combinedCount >= MAX_WORKS}
           style={{
             minWidth: "46px",

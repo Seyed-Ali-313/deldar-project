@@ -366,9 +366,9 @@ export default function SubmitWorks({
         <motion.button
           type="button"
           onClick={addWorkHandler}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          disabled={combinedCount >= maxWorks}
+           whileHover={{ scale: 1.02 }}
+           whileTap={{ scale: 0.97 }}
+           disabled={combinedCount >= maxWorks}
           style={{
             minWidth: "46px",
             height: "42px",
