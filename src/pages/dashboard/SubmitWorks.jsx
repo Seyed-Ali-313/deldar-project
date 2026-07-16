@@ -422,12 +422,12 @@ export default function SubmitWorks({
               transition={{ duration: 0.2 }}
               style={{
                 display: "grid",
-                gridTemplateColumns: "40px 1fr 50px 30px",
-                gap: "8px",
+                gridTemplateColumns: "36px 1fr 28px",
+                gap: "10px",
                 alignItems: "center",
                 background: "rgba(164, 135, 77, 0.03)",
-                padding: "6px 12px",
-                borderRadius: "12px",
+                padding: "6px 8px",
+                borderRadius: "10px",
                 border: "1px solid rgba(164, 135, 77, 0.06)",
                 marginBottom: "4px",
                 cursor: "pointer",
@@ -440,52 +440,39 @@ export default function SubmitWorks({
             >
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "15px",
-                    fontWeight: 700,
-                    color: "#C9A84C",
-                    fontFamily: "w_Lotus, sans-serif",
-                  }}
-                >
-                  #{toPersianDigits(index + 1 + existingWorks.length)}
-                </span>
-              </div>
-
-              <span
-                style={{
-                  fontSize: "15px",
-                  color: "#ffffff",
-                  fontFamily: "w_Lotus, sans-serif",
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "8px",
                   overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  fontWeight: 600,
+                  border: "1px solid rgba(164,135,77,0.12)",
+                  flexShrink: 0,
                 }}
-              >
-                {work.description}
-              </span>
-
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "6px" }}
               >
                 <img
                   src={work.preview}
                   alt="عکس"
                   style={{
-                    width: "36px",
-                    height: "36px",
-                    borderRadius: "6px",
+                    width: "100%",
+                    height: "100%",
                     objectFit: "cover",
-                    border: "1px solid rgba(164,135,77,0.12)",
+                    display: "block",
                   }}
                 />
               </div>
+
+              <span
+                style={{
+                  fontSize: "clamp(12px, 2.6vw, 14px)",
+                  color: "#ffffff",
+                  fontFamily: "w_Lotus, sans-serif",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  fontWeight: 500,
+                }}
+              >
+                {work.description}
+              </span>
 
               <motion.button
                 type="button"
@@ -790,21 +777,25 @@ export default function SubmitWorks({
       font-size: 16px !important;
     }
     .submit-work-item {
-      grid-template-columns: 30px 1fr 28px !important;
-      grid-template-areas: "num desc close" "num file close" !important;
-      padding: 4px 8px !important;
-      gap: 5px !important;
+      grid-template-columns: 28px 1fr 22px !important;
+      gap: 8px !important;
+      padding: 4px 6px !important;
     }
-    .submit-work-item > span:nth-child(2) {
-      grid-area: desc !important;
-      font-size: 13px !important;
-    }
-    .submit-work-item > div:nth-child(3) {
-      grid-area: file !important;
-    }
-    .submit-work-item > div:nth-child(3) img {
+    .submit-work-item > div:first-child {
       width: 28px !important;
       height: 28px !important;
+    }
+    .submit-work-item > div:first-child img {
+      width: 28px !important;
+      height: 28px !important;
+    }
+    .submit-work-item > span {
+      font-size: 11.5px !important;
+    }
+    .submit-work-item > button {
+      width: 22px !important;
+      height: 22px !important;
+      font-size: 10px !important;
     }
   }
 `}</style>
