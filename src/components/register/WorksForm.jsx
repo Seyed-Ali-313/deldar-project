@@ -19,14 +19,17 @@ function SkeletonImage({ src, alt, style, className, onError }) {
   return (
     <div style={{ ...style, position: "relative", background: "transparent" }}>
       {!loaded && !error && (
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          background: "linear-gradient(90deg, rgba(164,135,77,0.06) 25%, rgba(164,135,77,0.12) 50%, rgba(164,135,77,0.06) 75%)",
-          backgroundSize: "200% 100%",
-          animation: "shimmer 1.5s infinite",
-          borderRadius: style?.borderRadius || "8px",
-        }} />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(90deg, rgba(164,135,77,0.06) 25%, rgba(164,135,77,0.12) 50%, rgba(164,135,77,0.06) 75%)",
+            backgroundSize: "200% 100%",
+            animation: "shimmer 1.5s infinite",
+            borderRadius: style?.borderRadius || "8px",
+          }}
+        />
       )}
       {src && (
         <img
@@ -63,10 +66,7 @@ async function dataURLtoFile(dataUrl, fileName, fileType) {
   });
 }
 
-export default function WorksForm({
-  onSuccess,
-  showFinalSubmit = true,
-}) {
+export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
   const { data, setWorks: persistWorks } = useRegisterData();
 
   const [currentWork, setCurrentWork] = useState({
@@ -192,7 +192,9 @@ export default function WorksForm({
         await submitAllWorks();
       }
 
-      toastSuccess(`${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ثبت شد`);
+      toastSuccess(
+        `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ثبت شد`,
+      );
       setUploadedWorksPersisted([]);
 
       setTimeout(() => {
@@ -435,8 +437,8 @@ export default function WorksForm({
         <motion.button
           type="button"
           onClick={addWorkHandler}
-           whileHover={{ scale: 1.02 }}
-           whileTap={{ scale: 0.97 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
           disabled={combinedCount >= MAX_WORKS || addingWork}
           style={{
             minWidth: "46px",
@@ -446,10 +448,15 @@ export default function WorksForm({
                 ? "rgba(255,255,255,0.05)"
                 : "linear-gradient(135deg, #A4874D, #C9A84C)",
             color:
-              combinedCount >= MAX_WORKS || addingWork ? "rgba(255,255,255,0.2)" : "#ffffff",
+              combinedCount >= MAX_WORKS || addingWork
+                ? "rgba(255,255,255,0.2)"
+                : "#ffffff",
             borderRadius: "10px",
             border: "none",
-            cursor: combinedCount >= MAX_WORKS || addingWork ? "not-allowed" : "pointer",
+            cursor:
+              combinedCount >= MAX_WORKS || addingWork
+                ? "not-allowed"
+                : "pointer",
             opacity: combinedCount >= MAX_WORKS || addingWork ? 0.4 : 1,
             display: "flex",
             alignItems: "center",
@@ -700,7 +707,12 @@ export default function WorksForm({
                 src={previewWork.preview || "/src/assets/images/logo-bg.png"}
                 alt="پیش‌نمایش عکس"
                 className="work-preview-img"
-                style={{ width: "100%", maxHeight: "60vh", objectFit: "contain", borderRadius: "8px" }}
+                style={{
+                  width: "100%",
+                  maxHeight: "60vh",
+                  objectFit: "contain",
+                  borderRadius: "8px",
+                }}
                 onError={(e) => {
                   e.target.src = "/src/assets/images/logo-bg.png";
                 }}
@@ -826,8 +838,7 @@ export default function WorksForm({
       height: 140px !important;
     }
     .submit-work-item {
-      grid-template-columns: 34px 1fr 44px 28px !important;
-      gap: 6px !important;
+     
     }
   }
 
