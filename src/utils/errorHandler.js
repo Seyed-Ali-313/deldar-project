@@ -177,3 +177,73 @@ export const getFieldError = (error, fieldName) => {
   }
   return null;
 };
+
+// ✅ استخراج دقیق پیام خطای بک‌اند از هر فرمت پاسخ
+// فرمت بک‌اند: { success: false, error: { message: "...", details: { image: ["..."] } } }
+export const extractBackendError = (err, fallback = "خطا در ارتباط با سرور") => {
+  if (!err) return fallback;
+
+  // اگر اینترسپتور قبلاً هندل کرده
+  if (err.handledByInterceptor) return null;
+
+  const data = err.response?.data;
+
+  if (!data) return fallback;
+
+  // 1) پیام رشته‌ای ساده
+  if (typeof data === "string") return data;
+
+  // 2) فرمت اختصاصی این پروژه: { error: { message: "...", details: { field: ["..."] } } }
+  if (data.error && typeof data.error === "object") {
+    // اول details فیلدها رو بگیر (دقیق‌تر)
+    if (data.error.details && typeof data.error.details === "object") {
+      for (const val of Object.values(data.error.details)) {
+        const m = Array.isArray(val) ? val[0] : val;
+        if (m && typeof m === "string") return m;
+      }
+    }
+    // بعد message کلی
+    if (data.error.message && typeof data.error.message === "string") {
+      return data.error.message;
+    }
+  }
+
+  // 3) خطا در سطح بالای ریسپانس (DRF style: { image: ["..."] })
+  const skipKeys = new Set([
+    "detail", "message", "error", "errors", "non_field_errors",
+    "success", "status", "code", "work", "works", "id", "url",
+  ]);
+  for (const [key, val] of Object.entries(data)) {
+    if (skipKeys.has(key)) continue;
+    if (Array.isArray(val) && val.length > 0 && typeof val[0] === "string") {
+      return val[0];
+    }
+    if (typeof val === "string" && val.length > 0) {
+      return val;
+    }
+  }
+
+  // 4) errors wrapper
+  if (data.errors && typeof data.errors === "object") {
+    for (const val of Object.values(data.errors)) {
+      const m = Array.isArray(val) ? val[0] : val;
+      if (m) return m;
+    }
+  }
+
+  // 5) non_field_errors
+  if (data.non_field_errors) {
+    const val = data.non_field_errors;
+    const m = Array.isArray(val) ? val[0] : val;
+    if (m) return m;
+  }
+
+  // 6) detail
+  if (data.detail && typeof data.detail === "string") return data.detail;
+
+  // 7) message / error (اگر رشته باشند)
+  if (data.message && typeof data.message === "string") return data.message;
+  if (data.error && typeof data.error === "string") return data.error;
+
+  return fallback;
+};

@@ -1,18 +1,57 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { uploadWork, submitAllWorks } from "../../services/onboardingService";
-import { showError } from "../../utils/errorHandler";
 import toPersianDigits from "../../utils/toPersianNumber";
 import {
   success as toastSuccess,
   error as toastError,
   warn as toastWarn,
+  info as toastInfo,
 } from "../../utils/toast";
-import { getErrorMessage } from "../../utils/validators";
+import { extractBackendError } from "../../utils/errorHandler";
 import useRegisterData from "../../hooks/useRegisterData";
+import getImageUrl from "../../utils/getImageUrl";
+
+function SkeletonImage({ src, alt, style, className, onError }) {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  return (
+    <div style={{ ...style, position: "relative", background: "transparent" }}>
+      {!loaded && !error && (
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          background: "linear-gradient(90deg, rgba(164,135,77,0.06) 25%, rgba(164,135,77,0.12) 50%, rgba(164,135,77,0.06) 75%)",
+          backgroundSize: "200% 100%",
+          animation: "shimmer 1.5s infinite",
+          borderRadius: style?.borderRadius || "8px",
+        }} />
+      )}
+      {src && (
+        <img
+          src={src}
+          alt={alt || ""}
+          className={className}
+          onLoad={() => setLoaded(true)}
+          onError={(e) => {
+            setError(true);
+            if (onError) onError(e);
+          }}
+          style={{
+            ...style,
+            opacity: loaded ? 1 : 0,
+            transition: "opacity 0.3s ease",
+            width: "100%",
+            height: "100%",
+          }}
+        />
+      )}
+    </div>
+  );
+}
 
 const MAX_WORKS = 50;
-const MAX_DESCRIPTION_LENGTH = 200;
 const MAX_FILE_SIZE_MB = 5;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
@@ -26,7 +65,6 @@ async function dataURLtoFile(dataUrl, fileName, fileType) {
 
 export default function WorksForm({
   onSuccess,
-  uploadFn,
   showFinalSubmit = true,
 }) {
   const { data, setWorks: persistWorks } = useRegisterData();
@@ -38,6 +76,7 @@ export default function WorksForm({
   });
   const [uploadedWorks, setUploadedWorks] = useState(data.works || []);
   const [uploading, setUploading] = useState(false);
+  const [addingWork, setAddingWork] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
   const [previewWork, setPreviewWork] = useState(null);
   const containerRef = useRef(null);
@@ -50,12 +89,12 @@ export default function WorksForm({
     }
   }, [uploadedWorks]);
 
+  useEffect(() => {
+    persistWorks(uploadedWorks);
+  }, [uploadedWorks]);
+
   const setUploadedWorksPersisted = (updater) => {
-    setUploadedWorks((prev) => {
-      const next = typeof updater === "function" ? updater(prev) : updater;
-      persistWorks(next);
-      return next;
-    });
+    setUploadedWorks(updater);
   };
 
   const validateFile = (file) => {
@@ -89,7 +128,7 @@ export default function WorksForm({
     reader.readAsDataURL(file);
   };
 
-  const addWorkHandler = () => {
+  const addWorkHandler = async () => {
     if (!currentWork.file) {
       toastError("لطفاً ابتدا یک عکس انتخاب کنید");
       return;
@@ -105,33 +144,33 @@ export default function WorksForm({
       return;
     }
 
-    setUploadedWorksPersisted((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        file: currentWork.file,
-        description: currentWork.description,
-        preview: currentWork.preview,
-        fileName: currentWork.file.name,
-        fileType: currentWork.file.type,
-      },
-    ]);
+    setAddingWork(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", currentWork.file);
+      formData.append("description", currentWork.description.trim());
 
-    const newIndex = uploadedWorks.length;
-    setUploadProgress({ [newIndex]: 0 });
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        const current = prev[newIndex] || 0;
-        if (current >= 100) {
-          clearInterval(interval);
-          return { ...prev, [newIndex]: 100 };
-        }
-        return { ...prev, [newIndex]: Math.min(current + 10, 100) };
-      });
-    }, 150);
+      const res = await uploadWork(formData);
+      const serverWork = res.data.work || res.data;
 
-    setCurrentWork({ file: null, description: "", preview: null });
-    toastSuccess("عکس با موفقیت اضافه شد");
+      setUploadedWorksPersisted((prev) => [
+        ...prev,
+        {
+          id: serverWork.id || Date.now(),
+          description: serverWork.description || currentWork.description,
+          preview: getImageUrl(serverWork.image) || currentWork.preview,
+          image: serverWork.image,
+        },
+      ]);
+
+      setCurrentWork({ file: null, description: "", preview: null });
+      toastSuccess("عکس با موفقیت اضافه شد");
+    } catch (err) {
+      const msg = extractBackendError(err, "خطا در افزودن عکس");
+      if (msg) toastError(msg);
+    } finally {
+      setAddingWork(false);
+    }
   };
 
   const removeWork = (index) => {
@@ -149,45 +188,23 @@ export default function WorksForm({
 
     setUploading(true);
     try {
-      const uploader = uploadFn || uploadWork;
-
-      for (const work of uploadedWorks) {
-        const file = await dataURLtoFile(
-          work.preview,
-          work.fileName,
-          work.fileType,
-        );
-        const formData = new FormData();
-        formData.append("image", file);
-        formData.append("description", work.description);
-        await uploader(formData);
-      }
-
       if (showFinalSubmit) {
         await submitAllWorks();
       }
 
-      toastSuccess(
-        `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ارسال شد`,
-      );
+      toastSuccess(`${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ثبت شد`);
       setUploadedWorksPersisted([]);
 
       setTimeout(() => {
+        toastInfo("در حال انتقال به صفحه دریافت کد تأیید پیامکی");
+      }, 300);
+
+      setTimeout(() => {
         onSuccess();
-      }, 1500);
+      }, 1800);
     } catch (err) {
-      const errorData = err.response?.data;
-      const errorList = [];
-      if (errorData?.errors) {
-        for (const [field, msgs] of Object.entries(errorData.errors)) {
-          if (msgs && msgs.length > 0) errorList.push(msgs[0]);
-        }
-      }
-      if (errorList.length > 0) {
-        errorList.forEach((msg) => toastError(msg));
-      } else if (!err.handledByInterceptor) {
-        toastError(getErrorMessage(err, "خطا در ارسال آثار"));
-      }
+      const msg = extractBackendError(err, "خطا در ارسال آثار");
+      if (msg) toastError(msg);
     } finally {
       setUploading(false);
     }
@@ -392,7 +409,7 @@ export default function WorksForm({
                   maxWidth: "100px",
                 }}
               >
-                <img
+                <SkeletonImage
                   src={currentWork.preview}
                   alt="پیش‌نمایش"
                   style={{
@@ -420,20 +437,20 @@ export default function WorksForm({
           onClick={addWorkHandler}
            whileHover={{ scale: 1.02 }}
            whileTap={{ scale: 0.97 }}
-          disabled={combinedCount >= MAX_WORKS}
+          disabled={combinedCount >= MAX_WORKS || addingWork}
           style={{
             minWidth: "46px",
             height: "42px",
             background:
-              combinedCount >= MAX_WORKS
+              combinedCount >= MAX_WORKS || addingWork
                 ? "rgba(255,255,255,0.05)"
                 : "linear-gradient(135deg, #A4874D, #C9A84C)",
             color:
-              combinedCount >= MAX_WORKS ? "rgba(255,255,255,0.2)" : "#ffffff",
+              combinedCount >= MAX_WORKS || addingWork ? "rgba(255,255,255,0.2)" : "#ffffff",
             borderRadius: "10px",
             border: "none",
-            cursor: combinedCount >= MAX_WORKS ? "not-allowed" : "pointer",
-            opacity: combinedCount >= MAX_WORKS ? 0.4 : 1,
+            cursor: combinedCount >= MAX_WORKS || addingWork ? "not-allowed" : "pointer",
+            opacity: combinedCount >= MAX_WORKS || addingWork ? 0.4 : 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -441,7 +458,7 @@ export default function WorksForm({
             fontWeight: 300,
             transition: "all 0.2s ease",
             boxShadow:
-              combinedCount >= MAX_WORKS
+              combinedCount >= MAX_WORKS || addingWork
                 ? "none"
                 : "0 3px 10px rgba(164,135,77,0.25)",
           }}
@@ -500,7 +517,7 @@ export default function WorksForm({
                   flexShrink: 0,
                 }}
               >
-                <img
+                <SkeletonImage
                   src={work.preview || "/src/assets/images/logo-bg.png"}
                   alt="عکس"
                   style={{
@@ -508,6 +525,7 @@ export default function WorksForm({
                     height: "100%",
                     objectFit: "cover",
                     display: "block",
+                    borderRadius: "8px",
                   }}
                   onError={(e) => {
                     e.target.src = "/src/assets/images/logo-bg.png";
@@ -678,10 +696,11 @@ export default function WorksForm({
               >
                 ✕
               </button>
-              <img
+              <SkeletonImage
                 src={previewWork.preview || "/src/assets/images/logo-bg.png"}
                 alt="پیش‌نمایش عکس"
                 className="work-preview-img"
+                style={{ width: "100%", maxHeight: "60vh", objectFit: "contain", borderRadius: "8px" }}
                 onError={(e) => {
                   e.target.src = "/src/assets/images/logo-bg.png";
                 }}

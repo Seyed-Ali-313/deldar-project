@@ -37,8 +37,8 @@ No tests or typecheck exist — JSX only despite `@types/react` in deps.
 
 ## Non-obvious constraints
 - **Image rules** (hardcoded in `src/utils/constants.js`): JPG only, ≤5MB, 1000–1500px, max 50 works
-- **Campaign end date** hardcoded at `src/utils/constants.js:8` — `"2026-07-08T23:59:59"`
-- Dev API at `https://ipcphotos.com` proxied via `/api` (see `vite.config.js`)
+- **Campaign end date** hardcoded at `src/utils/constants.js:8` — `"2026-07-08T23:59:59"` (already expired as of 2026-07-17)
+- Dev API at `https://ipcphotos.com` proxied via `/api` and `/media` (see `vite.config.js`)
 - Custom Persian fonts: `w_Lotus` (body), `w_Nian` (headings) — `@font-face` in `src/assets/styles/style.css`
 - RTL layout (`dir="rtl"`), Persian UI text throughout
 - No `.env.example` exists despite `.env` being gitignored

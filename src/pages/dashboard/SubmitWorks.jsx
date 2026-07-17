@@ -2,21 +2,58 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { addWork } from "../../services/dashboardService";
-import { showError } from "../../utils/errorHandler";
+import { extractBackendError } from "../../utils/errorHandler";
 import toPersianDigits from "../../utils/toPersianNumber";
 import {
   success as toastSuccess,
   error as toastError,
   warn as toastWarn,
 } from "../../utils/toast";
+import getImageUrl from "../../utils/getImageUrl";
 
-const MAX_DESCRIPTION_LENGTH = 200;
+function SkeletonImage({ src, alt, style, className, onError }) {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  return (
+    <div style={{ ...style, position: "relative", background: "transparent" }}>
+      {!loaded && !error && (
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          background: "linear-gradient(90deg, rgba(164,135,77,0.06) 25%, rgba(164,135,77,0.12) 50%, rgba(164,135,77,0.06) 75%)",
+          backgroundSize: "200% 100%",
+          animation: "shimmer 1.5s infinite",
+          borderRadius: style?.borderRadius || "8px",
+        }} />
+      )}
+      {src && (
+        <img
+          src={src}
+          alt={alt || ""}
+          className={className}
+          onLoad={() => setLoaded(true)}
+          onError={(e) => {
+            setError(true);
+            if (onError) onError(e);
+          }}
+          style={{
+            ...style,
+            opacity: loaded ? 1 : 0,
+            transition: "opacity 0.3s ease",
+            width: "100%",
+            height: "100%",
+          }}
+        />
+      )}
+    </div>
+  );
+}
 
 export default function SubmitWorks({
   totalCount,
   maxWorks,
   onWorksChange,
-  existingWorks,
 }) {
   const [currentWork, setCurrentWork] = useState({
     file: null,
@@ -25,7 +62,7 @@ export default function SubmitWorks({
   });
   const [uploadedWorks, setUploadedWorks] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState({});
+  const [addingWork, setAddingWork] = useState(false);
   const [previewWork, setPreviewWork] = useState(null);
   const containerRef = useRef(null);
 
@@ -61,7 +98,7 @@ export default function SubmitWorks({
     reader.readAsDataURL(file);
   };
 
-  const addWorkHandler = () => {
+  const addWorkHandler = async () => {
     if (!currentWork.file) {
       toastError("لطفاً ابتدا یک عکس انتخاب کنید");
       return;
@@ -77,68 +114,47 @@ export default function SubmitWorks({
       return;
     }
 
-    setUploadedWorks([
-      ...uploadedWorks,
-      {
-        id: Date.now(),
-        file: currentWork.file,
-        description: currentWork.description,
-        preview: currentWork.preview,
-      },
-    ]);
+    setAddingWork(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", currentWork.file);
+      formData.append("description", currentWork.description.trim());
 
-    const newIndex = uploadedWorks.length;
-    setUploadProgress({ [newIndex]: 0 });
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        const current = prev[newIndex] || 0;
-        if (current >= 100) {
-          clearInterval(interval);
-          return { ...prev, [newIndex]: 100 };
-        }
-        return { ...prev, [newIndex]: Math.min(current + 10, 100) };
-      });
-    }, 150);
+      const res = await addWork(formData);
+      const serverWork = res.data.work || res.data;
 
-    setCurrentWork({ file: null, description: "", preview: null });
-    toastSuccess("عکس با موفقیت اضافه شد");
+      setUploadedWorks((prev) => [
+        ...prev,
+        {
+          id: serverWork.id,
+          description: serverWork.description,
+          preview: getImageUrl(serverWork.image),
+          image: serverWork.image,
+        },
+      ]);
+
+      setCurrentWork({ file: null, description: "", preview: null });
+      toastSuccess("عکس با موفقیت اضافه شد");
+    } catch (err) {
+      const msg = extractBackendError(err, "خطا در افزودن عکس");
+      if (msg) toastError(msg);
+    } finally {
+      setAddingWork(false);
+    }
+  };
+
+  const handleSubmitAll = () => {
+    if (uploadedWorks.length === 0) {
+      toastError("لطفاً حداقل یک عکس اضافه کنید");
+      return;
+    }
+    onWorksChange((prev) => [...prev, ...uploadedWorks]);
+    toastSuccess(`${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ثبت شد`);
+    setUploadedWorks([]);
   };
 
   const removeWork = (index) => {
-    const updated = uploadedWorks.filter((_, i) => i !== index);
-    setUploadedWorks(updated);
-    const newProgress = { ...uploadProgress };
-    delete newProgress[index];
-    setUploadProgress(newProgress);
-  };
-
-  const handleSubmitAll = async () => {
-    if (uploadedWorks.length === 0) {
-      toastError("لطفاً حداقل یک عکس آپلود کنید");
-      return;
-    }
-
-    setUploading(true);
-    try {
-      const newWorks = [];
-      for (const work of uploadedWorks) {
-        const formData = new FormData();
-        formData.append("image", work.file);
-        formData.append("description", work.description);
-        const res = await addWork(formData);
-        newWorks.push(res.data);
-      }
-
-      toastSuccess(
-        `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت اضافه شد`,
-      );
-      setUploadedWorks([]);
-      onWorksChange((prev) => [...prev, ...newWorks]);
-    } catch (err) {
-      showError(err);
-    } finally {
-      setUploading(false);
-    }
+    setUploadedWorks((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -368,20 +384,20 @@ export default function SubmitWorks({
           onClick={addWorkHandler}
            whileHover={{ scale: 1.02 }}
            whileTap={{ scale: 0.97 }}
-           disabled={combinedCount >= maxWorks}
+           disabled={combinedCount >= maxWorks || addingWork}
           style={{
             minWidth: "46px",
             height: "42px",
             background:
-              combinedCount >= maxWorks
+              combinedCount >= maxWorks || addingWork
                 ? "rgba(255,255,255,0.05)"
                 : "linear-gradient(135deg, #A4874D, #C9A84C)",
             color:
-              combinedCount >= maxWorks ? "rgba(255,255,255,0.2)" : "#ffffff",
+              combinedCount >= maxWorks || addingWork ? "rgba(255,255,255,0.2)" : "#ffffff",
             borderRadius: "10px",
             border: "none",
-            cursor: combinedCount >= maxWorks ? "not-allowed" : "pointer",
-            opacity: combinedCount >= maxWorks ? 0.4 : 1,
+            cursor: combinedCount >= maxWorks || addingWork ? "not-allowed" : "pointer",
+            opacity: combinedCount >= maxWorks || addingWork ? 0.4 : 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -389,7 +405,7 @@ export default function SubmitWorks({
             fontWeight: 300,
             transition: "all 0.2s ease",
             boxShadow:
-              combinedCount >= maxWorks
+              combinedCount >= maxWorks || addingWork
                 ? "none"
                 : "0 3px 10px rgba(164,135,77,0.25)",
           }}
@@ -448,7 +464,7 @@ export default function SubmitWorks({
                   flexShrink: 0,
                 }}
               >
-                <img
+                <SkeletonImage
                   src={work.preview}
                   alt="عکس"
                   style={{
@@ -456,6 +472,7 @@ export default function SubmitWorks({
                     height: "100%",
                     objectFit: "cover",
                     display: "block",
+                    borderRadius: "8px",
                   }}
                 />
               </div>
@@ -623,7 +640,7 @@ export default function SubmitWorks({
               >
                 ✕
               </button>
-              <img
+              <SkeletonImage
                 src={
                   previewWork.preview ||
                   previewWork.image ||
@@ -631,6 +648,7 @@ export default function SubmitWorks({
                 }
                 alt="پیش‌نمایش عکس"
                 className="work-preview-img"
+                style={{ width: "100%", maxHeight: "60vh", objectFit: "contain", borderRadius: "8px" }}
                 onError={(e) => {
                   e.target.src = "/src/assets/images/logo-bg.png";
                 }}

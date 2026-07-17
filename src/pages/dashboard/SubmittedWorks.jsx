@@ -1,10 +1,7 @@
 // src/pages/dashboard/SubmittedWorks.jsx
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  deleteWork,
-  updateWork,
-} from "../../services/dashboardService";
+import { deleteWork, updateWork } from "../../services/dashboardService";
 import { showError } from "../../utils/errorHandler";
 import {
   success as toastSuccess,
@@ -14,6 +11,59 @@ import ConfirmModal from "../../components/common/ConfirmModal";
 import SkeletonWorks from "../../components/common/SkeletonWorks";
 import toPersianDigits from "../../utils/toPersianNumber";
 import toPersianDate from "../../utils/toPersianDate";
+import getImageUrl from "../../utils/getImageUrl";
+
+function getWorkImage(work) {
+  if (!work) return null;
+  const raw = work.image || work.photo || work.image_url || work.file || work.img || work.picture || work.thumbnail || null;
+  if (!raw) return null;
+  if (typeof raw === "object") return raw.url || raw.src || raw.path || null;
+  return raw;
+}
+
+function getWorkDate(work) {
+  if (!work) return null;
+  return work.created_at || work.createdAt || work.date_created || work.uploaded_at || work.created || work.date || work.timestamp || null;
+}
+
+function SkeletonImage({ src, alt, style, className, onError }) {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  return (
+    <div style={{ ...style, position: "relative", background: "transparent" }}>
+      {!loaded && !error && (
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          background: "linear-gradient(90deg, rgba(164,135,77,0.06) 25%, rgba(164,135,77,0.12) 50%, rgba(164,135,77,0.06) 75%)",
+          backgroundSize: "200% 100%",
+          animation: "shimmer 1.5s infinite",
+          borderRadius: style?.borderRadius || "8px",
+        }} />
+      )}
+      {src && (
+        <img
+          src={src}
+          alt={alt || ""}
+          className={className}
+          onLoad={() => setLoaded(true)}
+          onError={(e) => {
+            setError(true);
+            if (onError) onError(e);
+          }}
+          style={{
+            ...style,
+            opacity: loaded ? 1 : 0,
+            transition: "opacity 0.3s ease",
+            width: "100%",
+            height: "100%",
+          }}
+        />
+      )}
+    </div>
+  );
+}
 
 export default function SubmittedWorks({
   works,
@@ -345,19 +395,13 @@ export default function SubmittedWorks({
                     flexShrink: 0,
                   }}
                 >
-                  <img
-                    src={work.image || "/src/assets/images/logo-bg.png"}
+                  <SkeletonImage
+                    src={
+                      getImageUrl(getWorkImage(work)) ||
+                      "/src/assets/images/logo-bg.png"
+                    }
                     alt=""
-                    loading="lazy"
-                    decoding="async"
-                    width="44"
-                    height="44"
-                    referrerPolicy="no-referrer"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     onError={(e) => {
                       e.target.src = "/src/assets/images/logo-bg.png";
                     }}
@@ -393,7 +437,7 @@ export default function SubmittedWorks({
                       opacity: 0.85,
                     }}
                   >
-                    {toPersianDate(work.created_at)}
+                    {toPersianDate(getWorkDate(work))}
                   </span>
                 </div>
 
@@ -735,10 +779,14 @@ export default function SubmittedWorks({
               >
                 ✕
               </button>
-              <img
-                src={previewWork.image || "/src/assets/images/logo-bg.png"}
+              <SkeletonImage
+                src={
+                  getImageUrl(getWorkImage(previewWork)) ||
+                  "/src/assets/images/logo-bg.png"
+                }
                 alt="پیش‌نمایش عکس"
                 className="work-preview-img"
+                style={{ width: "100%", maxHeight: "60vh", objectFit: "contain", borderRadius: "8px" }}
                 onError={(e) => {
                   e.target.src = "/src/assets/images/logo-bg.png";
                 }}
@@ -899,8 +947,8 @@ export default function SubmittedWorks({
                 >
                   <img
                     src={
-                      editImagePreview ||
-                      editingWork.image ||
+                      getImageUrl(editImagePreview) ||
+                      getImageUrl(getWorkImage(editingWork)) ||
                       "/src/assets/images/logo-bg.png"
                     }
                     alt=""

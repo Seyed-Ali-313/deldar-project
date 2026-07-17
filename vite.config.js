@@ -10,6 +10,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
+      "/media": {
+        target: "https://ipcphotos.com",
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
 });
