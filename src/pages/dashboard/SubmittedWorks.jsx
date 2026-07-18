@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { deleteWork, updateWork } from "../../services/dashboardService";
-import { showError } from "../../utils/errorHandler";
+import { showError, getServerMessage } from "../../utils/errorHandler";
 import {
   success as toastSuccess,
   error as toastError,
@@ -91,9 +91,9 @@ export default function SubmittedWorks({
 
   const confirmDelete = async () => {
     try {
-      await deleteWork(deleteTargetId);
+      const res = await deleteWork(deleteTargetId);
       onWorksChange((prev) => prev.filter((w) => w.id !== deleteTargetId));
-      toastSuccess("اثر با موفقیت حذف شد");
+      toastSuccess(getServerMessage(res, "اثر با موفقیت حذف شد"));
       setShowDeleteModal(false);
       setDeleteTargetId(null);
     } catch (err) {
@@ -203,7 +203,7 @@ export default function SubmittedWorks({
         formData.append("image", editImage);
       }
 
-      await updateWork(editingWork.id, formData);
+      const res = await updateWork(editingWork.id, formData);
 
       onWorksChange((prev) =>
         prev.map((w) =>
@@ -217,7 +217,7 @@ export default function SubmittedWorks({
         ),
       );
 
-      toastSuccess("اطلاعات با موفقیت ویرایش شد");
+      toastSuccess(getServerMessage(res, "اطلاعات با موفقیت ویرایش شد"));
       setIsEditing(false);
       setEditingWork(null);
       setEditDescription("");

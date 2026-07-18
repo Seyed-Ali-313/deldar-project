@@ -1,9 +1,10 @@
 // src/utils/errorHandler.js
 import { error as toastError } from "./toast";
 
-// ✅ پیام‌های خطای فارسی دقیق و بدون ایموجی
-const ERROR_MESSAGES = {
-  // ===== خطاهای شبکه =====
+// ✅ این پیام‌ها فقط برای زمانی هستن که بک‌اند اصلاً متنی برنگردونده
+// (قطعی شبکه، تایم‌اوت، یا وضعیت HTTP بدون بدنه). هرگز جایگزین پیام واقعی بک‌اند نمی‌شن.
+
+const NETWORK_ERROR_MESSAGES = {
   "Network Error":
     "ارتباط با سرور برقرار نشد. لطفاً اتصال اینترنت خود را بررسی کنید.",
   ERR_NETWORK:
@@ -14,13 +15,12 @@ const ERROR_MESSAGES = {
     "درخواست شما زمان‌بر بود. لطفاً مجدداً تلاش کنید.",
   ERR_CONNECTION_REFUSED: "سرور پاسخ نمی‌دهد. لطفاً چند دقیقه دیگر تلاش کنید.",
   ERR_INTERNET_DISCONNECTED: "اتصال اینترنت خود را بررسی کنید.",
+};
 
-  // ===== خطاهای احراز هویت =====
+const STATUS_MESSAGES = {
+  400: "اطلاعات ارسالی معتبر نیست. لطفاً داده‌ها را بررسی کنید.",
   401: "نشست شما منقضی شده است. لطفاً مجدداً وارد شوید.",
   403: "شما دسترسی لازم برای این عملیات را ندارید.",
-
-  // ===== خطاهای سرور =====
-  400: "اطلاعات ارسالی معتبر نیست. لطفاً داده‌ها را بررسی کنید.",
   404: "اطلاعات مورد نظر یافت نشد.",
   405: "این عملیات در سرور پشتیبانی نمی‌شود.",
   409: "این اطلاعات قبلاً ثبت شده است.",
@@ -30,136 +30,80 @@ const ERROR_MESSAGES = {
   502: "سرور در دسترس نیست. لطفاً چند دقیقه دیگر تلاش کنید.",
   503: "سرور در دسترس نیست. لطفاً چند دقیقه دیگر تلاش کنید.",
   504: "سرور پاسخ نمی‌دهد. لطفاً چند دقیقه دیگر تلاش کنید.",
-
-  // ===== خطاهای ثبت‌نام و ورود =====
-  "کاربری با این تلفن همراه یا کد ملی ثبت نشده است":
-    "کاربری با این مشخصات یافت نشد. لطفاً ثبت‌نام کنید.",
-  "کاربری با این شماره موبایل ثبت نشده است":
-    "کاربری با این شماره یافت نشد. لطفاً ثبت‌نام کنید.",
-  "کد وارد شده صحیح نیست": "کد تأیید اشتباه است. مجدداً تلاش کنید.",
-  "کد منقضی شده است": "کد تأیید منقضی شده است. درخواست مجدد کنید.",
-  "شماره موبایل باید ۱۱ رقم باشد": "شماره موبایل باید ۱۱ رقم باشد.",
-  "کد ملی باید ۱۰ رقم باشد": "کد ملی باید ۱۰ رقم باشد.",
-  "این فیلد الزامی است": "لطفاً تمام فیلدهای الزامی را پر کنید.",
-  "کدپستی باید ۱۰ رقم باشد": "کدپستی باید ۱۰ رقم باشد.",
-  "تاریخ تولد نامعتبر است": "تاریخ تولد وارد شده معتبر نیست.",
-
-  // ===== خطاهای عکس =====
-  image: "فرمت عکس ارسالی نامعتبر است. لطفاً عکس را با فرمت JPG ارسال کنید.",
-  "image size": "حجم عکس ارسالی باید کمتر از ۵ مگابایت باشد.",
-  "image format":
-    "فرمت عکس ارسالی نامعتبر است. لطفاً از فرمت JPG استفاده کنید.",
-  "image dimension": "ابعاد عکس ارسالی باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد.",
-  "image width": "عرض عکس ارسالی باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد.",
-  "image height": "ارتفاع عکس ارسالی باید بین ۱۰۰۰ تا ۱۵۰۰ پیکسل باشد.",
-  عکس: "فرمت یا ابعاد عکس ارسالی نامعتبر است. لطفاً عکس را با فرمت JPG و ابعاد ۱۰۰۰ تا ۱۵۰۰ پیکسل ارسال کنید.",
-  photo:
-    "فرمت یا ابعاد عکس ارسالی نامعتبر است. لطفاً عکس را با فرمت JPG و ابعاد ۱۰۰۰ تا ۱۵۰۰ پیکسل ارسال کنید.",
-
-  // ===== خطاهای آثار =====
-  "ارسال آثار با موفقیت انجام شد": "آثار شما با موفقیت ارسال شد.",
-  "حداکثر ۵۰ اثر مجاز است": "حداکثر ۵۰ اثر مجاز است.",
-  "فرمت فایل پشتیبانی نمی‌شود":
-    "فرمت فایل پشتیبانی نمی‌شود. فقط تصاویر مجاز هستند.",
-  "حجم فایل بیشتر از حد مجاز است": "حجم فایل باید کمتر از ۵ مگابایت باشد.",
-  "لطفاً حداقل یک عکس انتخاب کنید": "لطفاً حداقل یک عکس انتخاب کنید.",
-  "No image": "هیچ عکسی انتخاب نشده است. لطفاً عکس را انتخاب کنید.",
 };
 
-// ✅ تبدیل خطا به پیام فارسی
+// ✅ پیام دقیق بک‌اند همیشه اولویت اول است؛ دیکشنری بالا فقط fallback آخره
 export const getFriendlyErrorMessage = (error) => {
-  // اگر خطا از قبل در interceptor هندل شده بود
-  if (error?.handledByInterceptor) {
-    return null;
-  }
+  if (error?.handledByInterceptor) return null;
 
-  // خطای شبکه (بدون پاسخ از سرور)
-  if (error?.message && typeof error.message === "string") {
-    for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
-      if (error.message.includes(key) || error.message === key) {
-        return value;
-      }
+  // ===== ۱) خطای شبکه (اصلاً پاسخی از سرور نیومده) =====
+  if (!error?.response) {
+    const msg = error?.message || error?.code || "";
+    for (const [key, value] of Object.entries(NETWORK_ERROR_MESSAGES)) {
+      if (msg.includes(key) || msg === key) return value;
     }
+    return "ارتباط با سرور برقرار نشد. لطفاً اتصال اینترنت خود را بررسی کنید.";
   }
 
-  // خطای axios (با پاسخ از سرور)
-  if (error?.response?.data) {
-    const data = error.response.data;
+  const data = error.response.data;
 
-    // 1️⃣ بررسی detail
-    if (data.detail && typeof data.detail === "string") {
-      for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
-        if (data.detail.includes(key) || data.detail === key) {
-          return value;
-        }
-      }
+  if (data) {
+    // ===== ۲) پیام مستقیم بک‌اند - بدون هیچ بازنویسی =====
+    // فرمت این بک‌اند: { success:false, error: "..." } یا { success:false, message: "..." }
+    if (typeof data.message === "string" && data.message.trim()) {
+      return data.message;
+    }
+    if (typeof data.error === "string" && data.error.trim()) {
+      return data.error;
+    }
+    if (typeof data.detail === "string" && data.detail.trim()) {
       return data.detail;
     }
 
-    // 2️⃣ بررسی message
-    if (data.message && typeof data.message === "string") {
-      for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
-        if (data.message.includes(key) || data.message === key) {
-          return value;
+    // ===== ۳) اگر error یه آبجکت باشه (فرمت‌های دیگه احتمالی) =====
+    if (data.error && typeof data.error === "object") {
+      if (data.error.details && typeof data.error.details === "object") {
+        for (const val of Object.values(data.error.details)) {
+          const m = Array.isArray(val) ? val[0] : val;
+          if (typeof m === "string" && m.trim()) return m;
         }
       }
-      return data.message;
-    }
-
-    // 3️⃣ بررسی error
-    if (data.error && typeof data.error === "string") {
-      for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
-        if (data.error.includes(key) || data.error === key) {
-          return value;
-        }
+      if (typeof data.error.message === "string" && data.error.message.trim()) {
+        return data.error.message;
       }
-      return data.error;
     }
 
-    // 4️⃣ بررسی errors (اعتبارسنجی فیلدها)
+    // ===== ۴) خطاهای اعتبارسنجی فیلد به فیلد (سبک DRF) =====
     if (data.errors && typeof data.errors === "object") {
       const fieldErrors = [];
-      for (const [field, messages] of Object.entries(data.errors)) {
+      for (const messages of Object.values(data.errors)) {
         if (Array.isArray(messages) && messages.length > 0) {
-          const msg = messages[0];
-          if (!fieldErrors.includes(msg)) {
-            fieldErrors.push(msg);
-          }
-        } else if (typeof messages === "string") {
-          if (!fieldErrors.includes(messages)) {
-            fieldErrors.push(messages);
-          }
+          if (!fieldErrors.includes(messages[0])) fieldErrors.push(messages[0]);
+        } else if (
+          typeof messages === "string" &&
+          !fieldErrors.includes(messages)
+        ) {
+          fieldErrors.push(messages);
         }
       }
-      if (fieldErrors.length > 0) {
-        return fieldErrors.join(" - ");
-      }
+      if (fieldErrors.length > 0) return fieldErrors.join(" - ");
+    }
+
+    if (data.non_field_errors) {
+      const val = data.non_field_errors;
+      const m = Array.isArray(val) ? val[0] : val;
+      if (m) return m;
     }
   }
 
-  // خطای HTTP status
-  if (error?.response?.status) {
-    const status = error.response.status;
-    for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
-      if (String(key) === String(status)) {
-        return value;
-      }
-    }
-  }
-
-  // خطای کد
-  if (error?.code) {
-    for (const [key, value] of Object.entries(ERROR_MESSAGES)) {
-      if (error.code === key || error.code.includes(key)) {
-        return value;
-      }
-    }
-  }
+  // ===== ۵) بک‌اند هیچ متنی نداد -> بر اساس کد وضعیت HTTP =====
+  const status = error.response.status;
+  if (STATUS_MESSAGES[status]) return STATUS_MESSAGES[status];
 
   return "خطایی رخ داده است. لطفاً مجدداً تلاش کنید.";
 };
 
-// ✅ نمایش خطا با Toast (بدون ایموجی)
+// ✅ نمایش خطا با Toast (پیام بک‌اند در اولویت، در غیر این صورت fallbackMessage)
 export const showError = (error, fallbackMessage = "خطایی رخ داده است") => {
   if (error?.handledByInterceptor) return null;
   const message = getFriendlyErrorMessage(error) || fallbackMessage;
@@ -178,72 +122,10 @@ export const getFieldError = (error, fieldName) => {
   return null;
 };
 
-// ✅ استخراج دقیق پیام خطای بک‌اند از هر فرمت پاسخ
-// فرمت بک‌اند: { success: false, error: { message: "...", details: { image: ["..."] } } }
-export const extractBackendError = (err, fallback = "خطا در ارتباط با سرور") => {
-  if (!err) return fallback;
-
-  // اگر اینترسپتور قبلاً هندل کرده
-  if (err.handledByInterceptor) return null;
-
-  const data = err.response?.data;
-
-  if (!data) return fallback;
-
-  // 1) پیام رشته‌ای ساده
-  if (typeof data === "string") return data;
-
-  // 2) فرمت اختصاصی این پروژه: { error: { message: "...", details: { field: ["..."] } } }
-  if (data.error && typeof data.error === "object") {
-    // اول details فیلدها رو بگیر (دقیق‌تر)
-    if (data.error.details && typeof data.error.details === "object") {
-      for (const val of Object.values(data.error.details)) {
-        const m = Array.isArray(val) ? val[0] : val;
-        if (m && typeof m === "string") return m;
-      }
-    }
-    // بعد message کلی
-    if (data.error.message && typeof data.error.message === "string") {
-      return data.error.message;
-    }
-  }
-
-  // 3) خطا در سطح بالای ریسپانس (DRF style: { image: ["..."] })
-  const skipKeys = new Set([
-    "detail", "message", "error", "errors", "non_field_errors",
-    "success", "status", "code", "work", "works", "id", "url",
-  ]);
-  for (const [key, val] of Object.entries(data)) {
-    if (skipKeys.has(key)) continue;
-    if (Array.isArray(val) && val.length > 0 && typeof val[0] === "string") {
-      return val[0];
-    }
-    if (typeof val === "string" && val.length > 0) {
-      return val;
-    }
-  }
-
-  // 4) errors wrapper
-  if (data.errors && typeof data.errors === "object") {
-    for (const val of Object.values(data.errors)) {
-      const m = Array.isArray(val) ? val[0] : val;
-      if (m) return m;
-    }
-  }
-
-  // 5) non_field_errors
-  if (data.non_field_errors) {
-    const val = data.non_field_errors;
-    const m = Array.isArray(val) ? val[0] : val;
-    if (m) return m;
-  }
-
-  // 6) detail
-  if (data.detail && typeof data.detail === "string") return data.detail;
-
-  // 7) message / error (اگر رشته باشند)
-  if (data.message && typeof data.message === "string") return data.message;
-  if (data.error && typeof data.error === "string") return data.error;
-
-  return fallback;
+// ✅ برای پیام‌های موفقیت: پیام بک‌اند (response.data.message) در اولویت اول،
+// و اگر بک‌اند چیزی نفرستاد، از fallback خودمون استفاده می‌شه.
+// مثال استفاده: success(getServerMessage(res, "اطلاعات با موفقیت ثبت شد"))
+export const getServerMessage = (response, fallback) => {
+  const msg = response?.data?.message;
+  return typeof msg === "string" && msg.trim() ? msg : fallback;
 };

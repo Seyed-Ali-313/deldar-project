@@ -5,6 +5,7 @@ import FormInput from "../common/FormInput";
 import NumericInput from "../common/NumericInput";
 import { submitStep2 } from "../../services/onboardingService";
 import { success, error, showErrors } from "../../utils/toast";
+import { getServerMessage } from "../../utils/errorHandler";
 import {
   validateRequired,
   validatePostalCode,
@@ -107,8 +108,8 @@ export default function AdditionalInfoForm({ onSuccess }) {
         telegram_id: formData.telegram_id?.trim() || "",
       };
 
-      await submitStep2(payload);
-      success("اطلاعات تکمیلی شما ثبت شد");
+      const res = await submitStep2(payload);
+      success(getServerMessage(res, "اطلاعات تکمیلی شما ثبت شد"));
 
       updateAdditional(payload);
 

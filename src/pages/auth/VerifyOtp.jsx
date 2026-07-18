@@ -9,6 +9,7 @@ import {
   error as toastError,
   info as toastInfo,
 } from "../../utils/toast";
+import { getServerMessage, getFriendlyErrorMessage } from "../../utils/errorHandler";
 import useRegisterData from "../../hooks/useRegisterData";
 import toPersianNumber from "../../utils/toPersianNumber";
 
@@ -95,7 +96,7 @@ export default function VerifyOtp() {
       const success = await login(res.data.tokens, res.data.user);
 
       if (success) {
-        const msg = "ثبت‌نام شما با موفقیت تکمیل شد";
+        const msg = getServerMessage(res, "ثبت‌نام شما با موفقیت تکمیل شد");
         showBanner("success", msg, 1800);
         toastSuccess(msg);
         setTimeout(() => navigate("/dashboard", { replace: true }), 700);
@@ -106,10 +107,9 @@ export default function VerifyOtp() {
       }
     } catch (err) {
       // پیام دقیق از سرور در اولویت است؛ در غیر این صورت یک متن کوتاه و روشن نمایش داده می‌شود
-      const serverMsg =
-        err.response?.data?.detail || err.response?.data?.message;
       const msg =
-        serverMsg || "کد وارد شده صحیح نیست. لطفاً دوباره امتحان کنید";
+        getFriendlyErrorMessage(err) ||
+        "کد وارد شده صحیح نیست. لطفاً دوباره امتحان کنید";
       showBanner("error", msg);
       // ✅ بنر داخل کارت همیشه نشون داده می‌شه؛ توست عمومی رو فقط وقتی می‌فرستیم
       // که اینترسپتور axios قبلاً پیامی برای همین خطا نشون نداده باشه

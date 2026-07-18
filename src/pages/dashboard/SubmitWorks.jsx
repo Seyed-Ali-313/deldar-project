@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { addWork } from "../../services/dashboardService";
-import { extractBackendError } from "../../utils/errorHandler";
+import { getServerMessage } from "../../utils/errorHandler";
 import toPersianDigits from "../../utils/toPersianNumber";
 import {
   success as toastSuccess,
@@ -133,10 +133,11 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
       ]);
 
       setCurrentWork({ file: null, description: "", preview: null });
-      toastSuccess("عکس با موفقیت اضافه شد");
+      toastSuccess(getServerMessage(res, "عکس با موفقیت اضافه شد"));
     } catch (err) {
-      const msg = extractBackendError(err, "خطا در افزودن عکس");
-      if (msg) toastError(msg);
+      if (!err.handledByInterceptor) {
+        toastError(err?.response?.data?.error || err?.response?.data?.message || "خطا در افزودن عکس");
+      }
     } finally {
       setAddingWork(false);
     }

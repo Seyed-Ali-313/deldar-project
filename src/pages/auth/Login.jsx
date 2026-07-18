@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import logoBg from "../../assets/images/logo-bg.png";
 import logoGold from "../../assets/images/logo-gold.png";
 import { requestLoginOtp, verifyLoginOtp } from "../../services/authService";
+import { showError, getServerMessage, getFriendlyErrorMessage } from "../../utils/errorHandler";
 import {
   success as toastSuccess,
   error as toastError,
@@ -20,7 +21,6 @@ export default function Login() {
   const [step, setStep] = useState("identifier");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); // ✅ اضافه شد
 
   const handleIdentifierChange = (e) => {
     const value = e.target.value;
@@ -44,45 +44,33 @@ export default function Login() {
   const handleRequestOtp = async (e) => {
     e.preventDefault();
 
-    // ✅ جلوگیری از ارسال دوبار
-    if (isSubmitting || loading) return;
-    setIsSubmitting(true);
-
     const cleanIdentifier = identifier.replace(/[^0-9]/g, "");
     if (
       !cleanIdentifier ||
       (cleanIdentifier.length !== 11 && cleanIdentifier.length !== 10)
     ) {
       toastError("شماره موبایل (۱۱ رقم) یا کدملی (۱۰ رقم) را وارد کنید");
-      setIsSubmitting(false);
       return;
     }
 
     setLoading(true);
     try {
-      await requestLoginOtp(identifier);
-      toastSuccess("کد تایید به شماره شما ارسال شد");
+      const res = await requestLoginOtp(identifier);
+      toastSuccess(getServerMessage(res, "کد تایید به شماره شما ارسال شد"));
       setStep("otp");
     } catch (err) {
-      const msg = err?.response?.data?.error || err?.response?.data?.message || "خطایی رخ داده است. لطفاً مجدداً تلاش کنید.";
-      toastError(msg);
+      showError(err);
     } finally {
       setLoading(false);
-      setIsSubmitting(false);
     }
   };
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
 
-    // ✅ جلوگیری از ارسال دوبار
-    if (isSubmitting || loading) return;
-    setIsSubmitting(true);
-
     const cleanOtp = otpCode.replace(/[^0-9]/g, "");
     if (cleanOtp.length !== 4) {
       toastError("کد ۴ رقمی را کامل وارد کنید");
-      setIsSubmitting(false);
       return;
     }
 
@@ -94,7 +82,7 @@ export default function Login() {
       const success = await login(res.data.tokens, res.data.user);
 
       if (success) {
-        toastSuccess("ورود با موفقیت انجام شد");
+        toastSuccess(getServerMessage(res, "ورود با موفقیت انجام شد"));
         navigate("/dashboard", { replace: true });
       } else {
         toastError("خطا در دریافت اطلاعات کاربری");
@@ -102,12 +90,10 @@ export default function Login() {
     } catch (err) {
       console.error("❌ خطا:", err);
       if (!err.handledByInterceptor) {
-        const msg = err.response?.data?.message || "خطا در تایید کد";
-        toastError(msg);
+        toastError(getFriendlyErrorMessage(err) || "خطا در تایید کد");
       }
     } finally {
       setLoading(false);
-      setIsSubmitting(false);
     }
   };
 
@@ -171,13 +157,13 @@ export default function Login() {
                 <motion.button
                   type="submit"
                   className="lg-submit-btn"
-                  disabled={loading || isSubmitting}
-                  whileHover={{ scale: loading || isSubmitting ? 1 : 1.02 }}
-                  whileTap={{ scale: loading || isSubmitting ? 1 : 0.97 }}
-                  style={{ opacity: loading || isSubmitting ? 0.75 : 1 }}
+                  disabled={loading}
+                  whileHover={{ scale: loading ? 1 : 1.02 }}
+                  whileTap={{ scale: loading ? 1 : 0.97 }}
+                  style={{ opacity: loading ? 0.75 : 1 }}
                 >
                   <span className="lg-btn-text">
-                    {loading || isSubmitting
+                    {loading
                       ? "در حال ارسال..."
                       : "دریافت کد ورود"}
                   </span>
@@ -241,13 +227,13 @@ export default function Login() {
                 <motion.button
                   type="submit"
                   className="lg-submit-btn"
-                  disabled={loading || isSubmitting}
-                  whileHover={{ scale: loading || isSubmitting ? 1 : 1.02 }}
-                  whileTap={{ scale: loading || isSubmitting ? 1 : 0.97 }}
-                  style={{ opacity: loading || isSubmitting ? 0.75 : 1 }}
+                  disabled={loading}
+                  whileHover={{ scale: loading ? 1 : 1.02 }}
+                  whileTap={{ scale: loading ? 1 : 0.97 }}
+                  style={{ opacity: loading ? 0.75 : 1 }}
                 >
                   <span className="lg-btn-text">
-                    {loading || isSubmitting
+                    {loading
                       ? "در حال بررسی..."
                       : "تایید و ورود"}
                   </span>

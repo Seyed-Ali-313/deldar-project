@@ -8,7 +8,7 @@ import {
   warn as toastWarn,
   info as toastInfo,
 } from "../../utils/toast";
-import { extractBackendError } from "../../utils/errorHandler";
+import { getServerMessage } from "../../utils/errorHandler";
 import useRegisterData from "../../hooks/useRegisterData";
 import getImageUrl from "../../utils/getImageUrl";
 
@@ -164,10 +164,11 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
       ]);
 
       setCurrentWork({ file: null, description: "", preview: null });
-      toastSuccess("عکس با موفقیت اضافه شد");
+      toastSuccess(getServerMessage(res, "عکس با موفقیت اضافه شد"));
     } catch (err) {
-      const msg = extractBackendError(err, "خطا در افزودن عکس");
-      if (msg) toastError(msg);
+      if (!err.handledByInterceptor) {
+        toastError(err?.response?.data?.error || err?.response?.data?.message || "خطا در افزودن عکس");
+      }
     } finally {
       setAddingWork(false);
     }
@@ -188,12 +189,13 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
 
     setUploading(true);
     try {
+      let res;
       if (showFinalSubmit) {
-        await submitAllWorks();
+        res = await submitAllWorks();
       }
 
       toastSuccess(
-        `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ثبت شد`,
+        getServerMessage(res, `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ثبت شد`),
       );
       setUploadedWorksPersisted([]);
 
@@ -205,8 +207,9 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
         onSuccess();
       }, 1800);
     } catch (err) {
-      const msg = extractBackendError(err, "خطا در ارسال آثار");
-      if (msg) toastError(msg);
+      if (!err.handledByInterceptor) {
+        toastError(err?.response?.data?.error || err?.response?.data?.message || "خطا در ارسال آثار");
+      }
     } finally {
       setUploading(false);
     }

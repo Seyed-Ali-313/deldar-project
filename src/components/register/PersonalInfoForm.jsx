@@ -6,6 +6,7 @@ import NumericInput from "../common/NumericInput";
 import PersianDatePicker from "../common/PersianDatePicker";
 import { submitStep1 } from "../../services/onboardingService";
 import { success, error, showErrors } from "../../utils/toast";
+import { getServerMessage } from "../../utils/errorHandler";
 import {
   validateMobile,
   validateNationalCode,
@@ -111,8 +112,8 @@ export default function PersonalInfoForm({ onSuccess }) {
         mobile: mobileClean,
       };
 
-      await submitStep1(payload);
-      success("اطلاعات شخصی شما ثبت شد");
+      const res = await submitStep1(payload);
+      success(getServerMessage(res, "اطلاعات شخصی شما ثبت شد"));
 
       updatePersonal(payload);
 

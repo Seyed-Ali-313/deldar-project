@@ -12,7 +12,7 @@ import {
   verifyMobileChange,
 } from "../../services/dashboardService";
 import { success, error, info, showErrors } from "../../utils/toast";
-import { showError } from "../../utils/errorHandler";
+import { showError, getServerMessage } from "../../utils/errorHandler";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function PersonalInfo() {
@@ -58,8 +58,8 @@ export default function PersonalInfo() {
       return;
     }
     try {
-      await requestMobileChange(currentMobile);
-      info("کد تایید به شماره جدید ارسال شد");
+      const res = await requestMobileChange(currentMobile);
+      info(getServerMessage(res, "کد تایید به شماره جدید ارسال شد"));
       setShowOtpBox(true);
     } catch (err) {
       showError(err, "خطا در ارسال کد");
@@ -72,11 +72,11 @@ export default function PersonalInfo() {
       return;
     }
     try {
-      await verifyMobileChange(currentMobile, otpCode);
+      const verifyRes = await verifyMobileChange(currentMobile, otpCode);
       setMobileVerified(true);
       setShowOtpBox(false);
       setOtpCode("");
-      success("شماره موبایل تایید شد");
+      success(getServerMessage(verifyRes, "شماره موبایل تایید شد"));
     } catch (err) {
       showError(err, "کد وارد شده صحیح نیست");
     }
@@ -88,10 +88,10 @@ export default function PersonalInfo() {
       return;
     }
     try {
-      await updateProfile(data);
+      const updateRes = await updateProfile(data);
       await refetchUser();
       setOriginalMobile(data.mobile);
-      success("اطلاعات با موفقیت بروزرسانی شد");
+      success(getServerMessage(updateRes, "اطلاعات با موفقیت بروزرسانی شد"));
     } catch (err) {
       showError(err, "خطا در بروزرسانی اطلاعات");
     }
