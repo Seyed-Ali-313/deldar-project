@@ -115,7 +115,7 @@ api.interceptors.response.use(
       error.handledByInterceptor = true;
     }
 
-    if (error.response?.status === 404) {
+    if (error.response?.status === 404 && !error.response?.data?.error) {
       showError(error, "اطلاعات مورد نظر یافت نشد.");
       error.handledByInterceptor = true;
     }

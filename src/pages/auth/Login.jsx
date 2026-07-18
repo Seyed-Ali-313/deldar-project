@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import logoBg from "../../assets/images/logo-bg.png";
 import logoGold from "../../assets/images/logo-gold.png";
 import { requestLoginOtp, verifyLoginOtp } from "../../services/authService";
-import { showError } from "../../utils/errorHandler";
 import {
   success as toastSuccess,
   error as toastError,
@@ -65,7 +64,8 @@ export default function Login() {
       toastSuccess("کد تایید به شماره شما ارسال شد");
       setStep("otp");
     } catch (err) {
-      if (!err.handledByInterceptor) showError(err);
+      const msg = err?.response?.data?.error || err?.response?.data?.message || "خطایی رخ داده است. لطفاً مجدداً تلاش کنید.";
+      toastError(msg);
     } finally {
       setLoading(false);
       setIsSubmitting(false);
