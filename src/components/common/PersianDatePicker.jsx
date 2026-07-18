@@ -146,9 +146,10 @@ export default function PersianDatePicker({
     today.getDate(),
   );
 
+  const rawDate = value ? String(value).split("T")[0].replace(/\//g, "-") : "";
   const parsedValue =
-    value && /^\d{4}-\d{2}-\d{2}$/.test(value)
-      ? value.split("-").map(Number)
+    rawDate && /^\d{4}-\d{2}-\d{2}$/.test(rawDate)
+      ? rawDate.split("-").map(Number)
       : null;
 
   const [viewYear, setViewYear] = useState(
@@ -174,14 +175,31 @@ export default function PersianDatePicker({
       const rect = wrapperRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
       const spaceAbove = rect.top;
-      if (spaceBelow < 380 && spaceAbove > spaceBelow) {
-        dropdownRef.current.style.bottom = "calc(100% + 8px)";
-        dropdownRef.current.style.top = "auto";
+      const dh = 380;
+
+      let left = Math.max(8, Math.min(rect.left, window.innerWidth - 280 - 8));
+
+      const style = dropdownRef.current.style;
+      style.position = "fixed";
+      style.left = `${left}px`;
+      style.width = "280px";
+      style.right = "auto";
+
+      if (spaceBelow < dh && spaceAbove > spaceBelow) {
+        style.top = "auto";
+        style.bottom = `${window.innerHeight - rect.top + 8}px`;
       } else {
-        dropdownRef.current.style.top = "calc(100% + 8px)";
-        dropdownRef.current.style.bottom = "auto";
+        style.top = `${rect.bottom + 8}px`;
+        style.bottom = "auto";
       }
     }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleScroll = () => setOpen(false);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [open]);
 
   const displayValue = parsedValue
@@ -375,8 +393,7 @@ export default function PersianDatePicker({
           <div
             ref={dropdownRef}
             style={{
-              position: "absolute",
-              right: 0,
+              position: "fixed",
               zIndex: 9999,
               background: THEME.bgCard,
               borderRadius: "18px",

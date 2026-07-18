@@ -1,9 +1,10 @@
 // src/pages/dashboard/PersonalInfo.jsx
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { motion } from "framer-motion";
 import FormInput from "../../components/common/FormInput";
 import NumericInput from "../../components/common/NumericInput";
+import PersianDatePicker from "../../components/common/PersianDatePicker";
 import SkeletonForm from "../../components/common/SkeletonForm";
 import {
   getProfile,
@@ -16,7 +17,7 @@ import { showError, getServerMessage } from "../../utils/errorHandler";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function PersonalInfo() {
-  const { register, handleSubmit, reset, watch } = useForm();
+  const { register, handleSubmit, reset, watch, control, setValue } = useForm();
   const [originalMobile, setOriginalMobile] = useState("");
   const [mobileVerified, setMobileVerified] = useState(true);
   const [showOtpBox, setShowOtpBox] = useState(false);
@@ -34,8 +35,11 @@ export default function PersonalInfo() {
 
     getProfile()
       .then((res) => {
-        reset(res.data);
-        setOriginalMobile(res.data.mobile);
+        const data = res.data || {};
+        reset(data);
+        const birthDate = data.birth_date || data.birthdate || data.date_of_birth || "";
+        setValue("birth_date", birthDate);
+        setOriginalMobile(data.mobile);
         setLoading(false);
       })
       .catch((err) => {
@@ -129,11 +133,20 @@ export default function PersonalInfo() {
       <FormInput placeholder="شغل*" required register={register} name="job" />
 
       {/* ✅ 4. تاریخ تولد */}
-      <FormInput
-        placeholder="تاریخ تولد*"
-        required
-        register={register}
+      <Controller
         name="birth_date"
+        control={control}
+        defaultValue=""
+        rules={{ required: "تاریخ تولد الزامی است" }}
+        render={({ field, fieldState }) => (
+          <PersianDatePicker
+            value={field.value}
+            onChange={field.onChange}
+            placeholder="تاریخ تولد"
+            required
+            error={fieldState.error?.message}
+          />
+        )}
       />
 
       {/* ✅ 5. کد ملی */}
