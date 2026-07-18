@@ -76,20 +76,14 @@ const router = createBrowserRouter([
           </PageTransition>
         ),
       },
-      // ✅ قوانین - اگر لاگین باشی به داشبورد میره
+      // ✅ قوانین - همیشه قابل دسترس
       {
         path: "rules",
-        element: <PrivateRoute requireAuth={false} redirectTo="/dashboard" />,
-        children: [
-          {
-            index: true,
-            element: (
-              <PageTransition>
-                <Rules />
-              </PageTransition>
-            ),
-          },
-        ],
+        element: (
+          <PageTransition>
+            <Rules />
+          </PageTransition>
+        ),
       },
       // ✅ ثبت‌نام - اگر لاگین باشی به داشبورد میره
       {

@@ -3,7 +3,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 // ✅ مسیرهایی که اگر کاربر لاگین بود، نباید بهش دسترسی داشته باشه
-const PUBLIC_ONLY_ROUTES = ["/login", "/register", "/rules"];
+const PUBLIC_ONLY_ROUTES = ["/login", "/register"];
 
 export default function PrivateRoute({
   requireAuth = true,
