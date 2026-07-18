@@ -508,8 +508,12 @@ export default function Home() {
           }
         }
 
-        /* ===== حالت تبلت (900px) - همون مدل موبایل (480) ولی کاستوم خودش ===== */
+        /* ===== حالت تبلت / موبایل (900px و پایین) ===== */
         @media (max-width: 900px) {
+          /* مخفی کردن عکس گل و پرنده */
+          .hm-illustration {
+            display: none !important;
+          }
           .hm-hero {
             flex-direction: column-reverse;
             gap: 40px !important;
