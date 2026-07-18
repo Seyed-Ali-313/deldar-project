@@ -8,6 +8,7 @@ import {
   error as toastError,
   warn as toastWarn,
 } from "../../utils/toast";
+import { showError } from "../../utils/errorHandler";
 import getImageUrl from "../../utils/getImageUrl";
 
 function SkeletonImage({ src, alt, style, className, onError }) {
@@ -154,9 +155,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
       setUploadedWorks([]);
       setCurrentWork({ file: null, description: "", preview: null });
     } catch (err) {
-      if (!err.handledByInterceptor) {
-        toastError(err?.response?.data?.error || "خطا در ارسال آثار");
-      }
+      showError(err, "خطا در ارسال آثار");
     } finally {
       setUploading(false);
     }

@@ -8,7 +8,7 @@ import {
   warn as toastWarn,
   info as toastInfo,
 } from "../../utils/toast";
-import { getServerMessage } from "../../utils/errorHandler";
+import { getServerMessage, showError } from "../../utils/errorHandler";
 import useRegisterData from "../../hooks/useRegisterData";
 import getImageUrl from "../../utils/getImageUrl";
 
@@ -166,9 +166,7 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
       setCurrentWork({ file: null, description: "", preview: null });
       toastSuccess(getServerMessage(res, "عکس با موفقیت اضافه شد"));
     } catch (err) {
-      if (!err.handledByInterceptor) {
-        toastError(err?.response?.data?.error || err?.response?.data?.message || "خطا در افزودن عکس");
-      }
+      showError(err, "خطا در افزودن عکس");
     } finally {
       setAddingWork(false);
     }
@@ -217,9 +215,7 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
         onSuccess();
       }, 1800);
     } catch (err) {
-      if (!err.handledByInterceptor) {
-        toastError(err?.response?.data?.error || err?.response?.data?.message || "خطا در ارسال آثار");
-      }
+      showError(err, "خطا در ارسال آثار");
     } finally {
       setUploading(false);
     }
