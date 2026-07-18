@@ -129,6 +129,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
           description: serverWork.description,
           preview: getImageUrl(serverWork.image),
           image: serverWork.image,
+          created_at: serverWork.created_at,
         },
       ]);
 
