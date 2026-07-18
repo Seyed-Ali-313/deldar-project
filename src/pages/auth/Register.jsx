@@ -320,7 +320,7 @@ export default function Register() {
             margin-top: 0px !important;
           }
           .pill {
-            max-width: 92% !important;
+            max-width: 100% !important;
             height: 36px !important;
           }
           .pill-grid {
