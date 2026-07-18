@@ -80,7 +80,15 @@ export default function Rules() {
             <hr className="section-divider" />
 
             <div className="info-section">
-              <h2>شرایط عمومی فراخوان</h2>
+              <h2>
+                <img
+                  src={emtiaz}
+                  alt=""
+                  className="icon"
+                  style={{ width: 18 }}
+                />
+                شرایط عمومی فراخوان
+              </h2>
               <ul>
                 {CONDITIONS.map((item, i) => (
                   <li key={i}>{item}</li>
@@ -100,45 +108,45 @@ export default function Rules() {
 
         {/* ✅ بخش پایین - فقط وقتی از فلوی ثبت‌نام اومده باشیم */}
         {showActions && (
-        <div className="cta-section">
-          {/* ✅ چک‌باکس + متن - کل دکمه قابل کلیک */}
-          <div className="agreement-check" onClick={handleToggleAgree}>
-            <span className={`checkbox ${agreed ? "checked" : ""}`} />
-            <span>
-              قوانین و &emsp;
-              <span
-                onClick={handleAnnouncementClick}
-                style={{
-                  color: "#2563eb",
-                  fontWeight: "700",
-                  textDecoration: "none",
-                  fontSize: "1.1rem",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.color = "#1d4ed8";
-                  e.target.style.textDecoration = "underline";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.color = "#2563eb";
-                  e.target.style.textDecoration = "none";
-                }}
-              >
-                فراخوان
-              </span>{" "}
-              &emsp;را مطالعه کرده و می‌پذیرم
-            </span>
-          </div>
+          <div className="cta-section">
+            {/* ✅ چک‌باکس + متن - کل دکمه قابل کلیک */}
+            <div className="agreement-check" onClick={handleToggleAgree}>
+              <span className={`checkbox ${agreed ? "checked" : ""}`} />
+              <span>
+                قوانین و &emsp;
+                <span
+                  onClick={handleAnnouncementClick}
+                  style={{
+                    color: "#2563eb",
+                    fontWeight: "700",
+                    textDecoration: "none",
+                    fontSize: "1.1rem",
+                    cursor: "pointer",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.color = "#1d4ed8";
+                    e.target.style.textDecoration = "underline";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.color = "#2563eb";
+                    e.target.style.textDecoration = "none";
+                  }}
+                >
+                  فراخوان
+                </span>{" "}
+                &emsp;را مطالعه کرده و می‌پذیرم
+              </span>
+            </div>
 
-          {/* ✅ دکمه ادامه - فقط وقتی تیک خورده باشه فعال میشه */}
-          <button
-            className="btn-accept"
-            onClick={handleContinue}
-            disabled={!agreed}
-          >
-            پذیرش و ادامه ثبت‌ نام
-          </button>
-        </div>
+            {/* ✅ دکمه ادامه - فقط وقتی تیک خورده باشه فعال میشه */}
+            <button
+              className="btn-accept"
+              onClick={handleContinue}
+              disabled={!agreed}
+            >
+              پذیرش و ادامه ثبت‌ نام
+            </button>
+          </div>
         )}
       </div>
 
