@@ -2,7 +2,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { addWork } from "../../services/dashboardService";
-import { getServerMessage } from "../../utils/errorHandler";
 import toPersianDigits from "../../utils/toPersianNumber";
 import {
   success as toastSuccess,
@@ -61,7 +60,6 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
   });
   const [uploadedWorks, setUploadedWorks] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [addingWork, setAddingWork] = useState(false);
   const [previewWork, setPreviewWork] = useState(null);
   const containerRef = useRef(null);
 
@@ -97,7 +95,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
     reader.readAsDataURL(file);
   };
 
-  const addWorkHandler = async () => {
+  const addWorkHandler = () => {
     if (!currentWork.file) {
       toastError("لطفاً ابتدا یک عکس انتخاب کنید");
       return;
@@ -113,47 +111,55 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
       return;
     }
 
-    setAddingWork(true);
+    setUploadedWorks((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        file: currentWork.file,
+        description: currentWork.description.trim(),
+        preview: currentWork.preview,
+      },
+    ]);
+
+    setCurrentWork({ file: null, description: "", preview: null });
+    toastSuccess("عکس به لیست اضافه شد");
+  };
+
+  const handleSubmitAll = async () => {
+    if (uploadedWorks.length === 0) {
+      toastError("لطفاً حداقل یک عکس اضافه کنید");
+      return;
+    }
+
+    setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append("image", currentWork.file);
-      formData.append("description", currentWork.description.trim());
-
-      const res = await addWork(formData);
-      const serverWork = res.data.work || res.data;
-
-      setUploadedWorks((prev) => [
-        ...prev,
-        {
+      const results = [];
+      for (const work of uploadedWorks) {
+        const formData = new FormData();
+        formData.append("image", work.file);
+        formData.append("description", work.description);
+        const res = await addWork(formData);
+        const serverWork = res.data.work || res.data;
+        results.push({
           id: serverWork.id,
           description: serverWork.description,
           preview: getImageUrl(serverWork.image),
           image: serverWork.image,
           created_at: serverWork.created_at,
-        },
-      ]);
+        });
+      }
 
+      onWorksChange((prev) => [...prev, ...results]);
+      toastSuccess(`${toPersianDigits(results.length)} اثر با موفقیت ثبت شد`);
+      setUploadedWorks([]);
       setCurrentWork({ file: null, description: "", preview: null });
-      toastSuccess(getServerMessage(res, "عکس با موفقیت اضافه شد"));
     } catch (err) {
       if (!err.handledByInterceptor) {
-        toastError(err?.response?.data?.error || err?.response?.data?.message || "خطا در افزودن عکس");
+        toastError(err?.response?.data?.error || "خطا در ارسال آثار");
       }
     } finally {
-      setAddingWork(false);
+      setUploading(false);
     }
-  };
-
-  const handleSubmitAll = () => {
-    if (uploadedWorks.length === 0) {
-      toastError("لطفاً حداقل یک عکس اضافه کنید");
-      return;
-    }
-    onWorksChange((prev) => [...prev, ...uploadedWorks]);
-    toastSuccess(
-      `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ثبت شد`,
-    );
-    setUploadedWorks([]);
   };
 
   const removeWork = (index) => {
@@ -328,6 +334,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
               if (e.target.files[0]) {
                 handleFileSelect(e.target.files[0]);
               }
+              e.target.value = "";
             }}
           />
           <label
@@ -387,25 +394,25 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
           onClick={addWorkHandler}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
-          disabled={combinedCount >= maxWorks || addingWork}
+          disabled={combinedCount >= maxWorks}
           style={{
             minWidth: "46px",
             height: "42px",
             background:
-              combinedCount >= maxWorks || addingWork
+              combinedCount >= maxWorks
                 ? "rgba(255,255,255,0.05)"
                 : "linear-gradient(135deg, #A4874D, #C9A84C)",
             color:
-              combinedCount >= maxWorks || addingWork
+              combinedCount >= maxWorks
                 ? "rgba(255,255,255,0.2)"
                 : "#ffffff",
             borderRadius: "10px",
             border: "none",
             cursor:
-              combinedCount >= maxWorks || addingWork
+              combinedCount >= maxWorks
                 ? "not-allowed"
                 : "pointer",
-            opacity: combinedCount >= maxWorks || addingWork ? 0.4 : 1,
+            opacity: combinedCount >= maxWorks ? 0.4 : 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -413,7 +420,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
             fontWeight: 300,
             transition: "all 0.2s ease",
             boxShadow:
-              combinedCount >= maxWorks || addingWork
+              combinedCount >= maxWorks
                 ? "none"
                 : "0 3px 10px rgba(164,135,77,0.25)",
           }}

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { uploadWork, submitAllWorks } from "../../services/onboardingService";
+import { uploadWork, submitAllWorks, deleteWork } from "../../services/onboardingService";
 import toPersianDigits from "../../utils/toPersianNumber";
 import {
   success as toastSuccess,
@@ -174,7 +174,17 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
     }
   };
 
-  const removeWork = (index) => {
+  const removeWork = async (index) => {
+    const work = uploadedWorks[index];
+    if (work?.id) {
+      try {
+        await deleteWork(work.id);
+      } catch (err) {
+        if (!err.handledByInterceptor) {
+          console.error("خطا در حذف از سرور:", err);
+        }
+      }
+    }
     setUploadedWorksPersisted((prev) => prev.filter((_, i) => i !== index));
     const newProgress = { ...uploadProgress };
     delete newProgress[index];
@@ -383,6 +393,7 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
               if (e.target.files[0]) {
                 handleFileSelect(e.target.files[0]);
               }
+              e.target.value = "";
             }}
           />
           <label
