@@ -3,9 +3,12 @@
 // ============================================
 // ✅ اعتبارسنجی شماره موبایل
 // ============================================
+const toEnglishDigits = (str) =>
+  String(str).replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+
 export const validateMobile = (value) => {
   if (!value) return "شماره موبایل الزامی است";
-  const clean = String(value).replace(/\s/g, "");
+  const clean = toEnglishDigits(String(value).replace(/\s/g, ""));
   if (!/^09\d{9}$/.test(clean)) {
     return "شماره موبایل باید با ۰۹ شروع و ۱۱ رقم باشد";
   }
@@ -17,7 +20,7 @@ export const validateMobile = (value) => {
 // ============================================
 export const validateNationalCode = (value) => {
   if (!value) return "کد ملی الزامی است";
-  const clean = String(value).replace(/\s/g, "");
+  const clean = toEnglishDigits(String(value).replace(/\s/g, ""));
   if (!/^\d{10}$/.test(clean)) {
     return "کد ملی باید ۱۰ رقم باشد";
   }
@@ -42,9 +45,7 @@ export const validateNationalCode = (value) => {
 // ============================================
 export const validatePostalCode = (value) => {
   if (!value) return "کدپستی الزامی است";
-  const clean = String(value)
-    .replace(/\s/g, "")
-    .replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+  const clean = toEnglishDigits(String(value).replace(/\s/g, ""));
   if (!/^\d{10}$/.test(clean)) {
     return "کدپستی باید ۱۰ رقم باشد";
   }
