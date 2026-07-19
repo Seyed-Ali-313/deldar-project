@@ -166,6 +166,12 @@ export default function PersonalInfo() {
           className="register-input"
           placeholder="تلفن همراه*"
           {...register("mobile")}
+          onChange={(e) => {
+            const v = e.target.value;
+            const conv = v.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+            if (conv !== v) e.target.value = conv;
+            register("mobile").onChange(e);
+          }}
         />
         {!mobileVerified && (
           <motion.span
@@ -250,7 +256,11 @@ export default function PersonalInfo() {
               className="register-input"
               placeholder="کد تایید"
               value={otpCode}
-              onChange={(e) => setOtpCode(e.target.value)}
+              onChange={(e) => {
+                const v = e.target.value;
+                const conv = v.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+                setOtpCode(conv);
+              }}
               maxLength={4}
               inputMode="numeric"
             />
