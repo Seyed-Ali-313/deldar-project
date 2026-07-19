@@ -179,7 +179,7 @@ export default function AdditionalInfoForm({ onSuccess }) {
         error={getFieldError("telegram_id")}
       />
 
-      <div className="submit-row" style={{ gridColumn: "1 / -1" }}>
+      <div className="submit-row">
         <motion.button
           type="submit"
           className="submit-btn"

@@ -1,7 +1,7 @@
 // src/pages/dashboard/SubmitWorks.jsx
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { addWork } from "../../services/dashboardService";
+import { addWork, deleteWork } from "../../services/dashboardService";
 import toPersianDigits from "../../utils/toPersianNumber";
 import {
   success as toastSuccess,
@@ -61,6 +61,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
   });
   const [uploadedWorks, setUploadedWorks] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [addingWork, setAddingWork] = useState(false);
   const [previewWork, setPreviewWork] = useState(null);
   const containerRef = useRef(null);
 
@@ -96,7 +97,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
     reader.readAsDataURL(file);
   };
 
-  const addWorkHandler = () => {
+  const addWorkHandler = async () => {
     if (!currentWork.file) {
       toastError("لطفاً ابتدا یک عکس انتخاب کنید");
       return;
@@ -112,18 +113,34 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
       return;
     }
 
-    setUploadedWorks((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        file: currentWork.file,
-        description: currentWork.description.trim(),
-        preview: currentWork.preview,
-      },
-    ]);
+    setAddingWork(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", currentWork.file);
+      formData.append("description", currentWork.description.trim());
 
-    setCurrentWork({ file: null, description: "", preview: null });
-    toastSuccess("عکس به لیست اضافه شد");
+      const res = await addWork(formData);
+      const serverWork = res.data.work || res.data;
+
+      setUploadedWorks((prev) => [
+        ...prev,
+        {
+          id: serverWork.id,
+          file: currentWork.file,
+          description: serverWork.description || currentWork.description.trim(),
+          preview: getImageUrl(serverWork.image) || currentWork.preview,
+          image: serverWork.image,
+          created_at: serverWork.created_at,
+        },
+      ]);
+
+      setCurrentWork({ file: null, description: "", preview: null });
+      toastSuccess("عکس با موفقیت به سرور ارسال شد");
+    } catch (err) {
+      showError(err, "خطا در افزودن عکس");
+    } finally {
+      setAddingWork(false);
+    }
   };
 
   const handleSubmitAll = async () => {
@@ -134,21 +151,13 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
 
     setUploading(true);
     try {
-      const results = [];
-      for (const work of uploadedWorks) {
-        const formData = new FormData();
-        formData.append("image", work.file);
-        formData.append("description", work.description);
-        const res = await addWork(formData);
-        const serverWork = res.data.work || res.data;
-        results.push({
-          id: serverWork.id,
-          description: serverWork.description,
-          preview: getImageUrl(serverWork.image),
-          image: serverWork.image,
-          created_at: serverWork.created_at,
-        });
-      }
+      const results = uploadedWorks.map((w) => ({
+        id: w.id,
+        description: w.description,
+        preview: w.preview || getImageUrl(w.image),
+        image: w.image,
+        created_at: w.created_at,
+      }));
 
       onWorksChange((prev) => [...prev, ...results]);
       toastSuccess(`${toPersianDigits(results.length)} اثر با موفقیت ثبت شد`);
@@ -161,7 +170,17 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
     }
   };
 
-  const removeWork = (index) => {
+  const removeWork = async (index) => {
+    const work = uploadedWorks[index];
+    if (work?.id) {
+      try {
+        await deleteWork(work.id);
+      } catch (err) {
+        if (!err.handledByInterceptor) {
+          console.error("خطا در حذف از سرور:", err);
+        }
+      }
+    }
     setUploadedWorks((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -393,25 +412,25 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
           onClick={addWorkHandler}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
-          disabled={combinedCount >= maxWorks}
+          disabled={combinedCount >= maxWorks || addingWork}
           style={{
             minWidth: "46px",
             height: "42px",
             background:
-              combinedCount >= maxWorks
+              combinedCount >= maxWorks || addingWork
                 ? "rgba(255,255,255,0.05)"
                 : "linear-gradient(135deg, #A4874D, #C9A84C)",
             color:
-              combinedCount >= maxWorks
+              combinedCount >= maxWorks || addingWork
                 ? "rgba(255,255,255,0.2)"
                 : "#ffffff",
             borderRadius: "10px",
             border: "none",
             cursor:
-              combinedCount >= maxWorks
+              combinedCount >= maxWorks || addingWork
                 ? "not-allowed"
                 : "pointer",
-            opacity: combinedCount >= maxWorks ? 0.4 : 1,
+            opacity: combinedCount >= maxWorks || addingWork ? 0.4 : 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

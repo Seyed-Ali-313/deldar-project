@@ -208,7 +208,7 @@ export default function PersonalInfoForm({ onSuccess }) {
         validate={validateMobile}
       />
 
-      <div className="submit-row" style={{ gridColumn: "1 / -1" }}>
+      <div className="submit-row">
         <motion.button
           type="submit"
           className="submit-btn"

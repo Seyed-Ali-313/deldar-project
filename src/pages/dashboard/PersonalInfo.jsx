@@ -106,6 +106,7 @@ export default function PersonalInfo() {
   }
 
   return (
+    <div style={{ maxWidth: 785, width: "90%", margin: "0 auto" }}>
     <form onSubmit={handleSubmit(onSubmit, (formErrors) => {
       const msgs = [];
       for (const [, err] of Object.entries(formErrors)) {
@@ -267,7 +268,7 @@ export default function PersonalInfo() {
         </motion.div>
       )}
 
-      <div className="submit-row" style={{ gridColumn: "1 / -1" }}>
+      <div className="submit-row">
         <motion.button
           type="submit"
           className="submit-btn"
@@ -278,5 +279,7 @@ export default function PersonalInfo() {
         </motion.button>
       </div>
     </form>
+    </div>
   );
 }
+

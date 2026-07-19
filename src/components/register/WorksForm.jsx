@@ -82,6 +82,7 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
   const containerRef = useRef(null);
 
   const combinedCount = uploadedWorks.length;
+  const hasUnsubmitted = uploadedWorks.some((w) => !w.submitted);
 
   useEffect(() => {
     if (containerRef.current && uploadedWorks.length > 0) {
@@ -160,6 +161,7 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
           description: serverWork.description || currentWork.description,
           preview: getImageUrl(serverWork.image) || currentWork.preview,
           image: serverWork.image,
+          submitted: false,
         },
       ]);
 
@@ -174,6 +176,10 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
 
   const removeWork = async (index) => {
     const work = uploadedWorks[index];
+    if (work?.submitted) {
+      toastError("این اثر قبلاً ارسال شده و در داشبورد می‌توانید مدیریت کنید");
+      return;
+    }
     if (work?.id) {
       try {
         await deleteWork(work.id);
@@ -205,7 +211,10 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
       toastSuccess(
         getServerMessage(res, `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ثبت شد`),
       );
-      setUploadedWorksPersisted([]);
+
+      setUploadedWorksPersisted((prev) =>
+        prev.map((w) => ({ ...w, submitted: true }))
+      );
 
       setTimeout(() => {
         toastInfo("در حال انتقال به صفحه دریافت کد تأیید پیامکی");
@@ -338,6 +347,7 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
         </span>
       </div>
 
+{hasUnsubmitted && (
       <div
         className="submit-works-add-row"
         style={{
@@ -483,6 +493,7 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
           +
         </motion.button>
       </div>
+      )}
 
       <div
         ref={containerRef}
@@ -508,7 +519,7 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
               transition={{ duration: 0.2 }}
               style={{
                 display: "grid",
-                gridTemplateColumns: "36px 1fr 28px",
+                gridTemplateColumns: "36px 1fr auto",
                 gap: "10px",
                 alignItems: "center",
                 background: "rgba(164, 135, 77, 0.03)",
@@ -564,38 +575,54 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
                 {work.description}
               </span>
 
-              <motion.button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeWork(index);
-                }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                style={{
-                  background: "rgba(176, 1, 1, 0.06)",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: "28px",
-                  height: "28px",
-                  cursor: "pointer",
-                  color: "#B00101",
-                  fontSize: "12px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.2s ease",
-                  flexShrink: 0,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.15)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(176, 1, 1, 0.06)";
-                }}
-              >
-                ✕
-              </motion.button>
+              {work.submitted ? (
+                <span style={{
+                  fontSize: "11px",
+                  color: "#2ecc71",
+                  fontFamily: "w_Lotus, sans-serif",
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                  padding: "2px 6px",
+                  background: "rgba(46, 204, 113, 0.1)",
+                  borderRadius: "6px",
+                  border: "1px solid rgba(46, 204, 113, 0.15)",
+                }}>
+                  ✓ ارسال شده
+                </span>
+              ) : (
+                <motion.button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeWork(index);
+                  }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  style={{
+                    background: "rgba(176, 1, 1, 0.06)",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: "28px",
+                    height: "28px",
+                    cursor: "pointer",
+                    color: "#B00101",
+                    fontSize: "12px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "all 0.2s ease",
+                    flexShrink: 0,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(176, 1, 1, 0.15)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(176, 1, 1, 0.06)";
+                  }}
+                >
+                  ✕
+                </motion.button>
+              )}
             </motion.div>
           ))}
         </AnimatePresence>
@@ -627,45 +654,45 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
         )}
       </div>
 
-      <motion.button
-        type="button"
-        onClick={handleSubmitAll}
-        disabled={uploading || uploadedWorks.length === 0}
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.98 }}
-        style={{
-          width: "100%",
-          minHeight: "44px",
-          background:
-            uploading || uploadedWorks.length === 0
-              ? "rgba(255,255,255,0.04)"
-              : "linear-gradient(135deg, #A4874D, #C9A84C)",
-          color:
-            uploading || uploadedWorks.length === 0
-              ? "rgba(255,255,255,0.2)"
-              : "#ffffff",
-          borderRadius: "20px",
-          border: "none",
-          fontSize: "15px",
-          fontWeight: 700,
-          cursor:
-            uploading || uploadedWorks.length === 0 ? "not-allowed" : "pointer",
-          opacity: uploading || uploadedWorks.length === 0 ? 0.4 : 1,
-          boxShadow:
-            uploading || uploadedWorks.length === 0
-              ? "none"
-              : "0 3px 20px rgba(164,135,77,0.3)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "8px",
-          transition: "all 0.3s ease",
-          fontFamily: "w_Lotus, sans-serif",
-          flexShrink: 0,
-          letterSpacing: "0.3px",
-          // marginBottom: "20px",
-        }}
-      >
+      {hasUnsubmitted && (
+        <motion.button
+          type="button"
+          onClick={handleSubmitAll}
+          disabled={uploading || uploadedWorks.length === 0}
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.98 }}
+          style={{
+            width: "100%",
+            minHeight: "44px",
+            background:
+              uploading || uploadedWorks.length === 0
+                ? "rgba(255,255,255,0.04)"
+                : "linear-gradient(135deg, #A4874D, #C9A84C)",
+            color:
+              uploading || uploadedWorks.length === 0
+                ? "rgba(255,255,255,0.2)"
+                : "#ffffff",
+            borderRadius: "20px",
+            border: "none",
+            fontSize: "15px",
+            fontWeight: 700,
+            cursor:
+              uploading || uploadedWorks.length === 0 ? "not-allowed" : "pointer",
+            opacity: uploading || uploadedWorks.length === 0 ? 0.4 : 1,
+            boxShadow:
+              uploading || uploadedWorks.length === 0
+                ? "none"
+                : "0 3px 20px rgba(164,135,77,0.3)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px",
+            transition: "all 0.3s ease",
+            fontFamily: "w_Lotus, sans-serif",
+            flexShrink: 0,
+            letterSpacing: "0.3px",
+          }}
+        >
         {uploading ? (
           <>
             <span
@@ -688,6 +715,7 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
           </>
         )}
       </motion.button>
+      )}
 
       <AnimatePresence>
         {previewWork && (

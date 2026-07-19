@@ -155,37 +155,6 @@ export default function Register() {
             z-index: 4 !important;
           }
 
-          .pill-grid {
-            grid-template-columns: 1fr !important;
-            gap: 20px !important;
-            padding: 8px 0 !important;
-            max-width: 100% !important;
-            position: relative !important;
-            z-index: 4 !important;
-          }
-
-          .pill {
-            margin: 0 auto !important;
-            height: 44px !important;
-            border-radius: 20px !important;
-            position: relative !important;
-            z-index: 4 !important;
-          }
-
-          .submit-row {
-            justify-content: center !important;
-            margin-top: 12px !important;
-            width: 100% !important;
-          }
-
-          .submit-btn {
-            width: 85% !important;
-            max-width: 350px !important;
-            height: 48px !important;
-            font-size: 15px !important;
-            border-radius: 20px !important;
-          }
-
           .rmdp-wrapper {
             transform: scale(0.78) !important;
             transform-origin: top center !important;
@@ -193,12 +162,6 @@ export default function Register() {
             margin: 0 auto !important;
             position: relative !important;
             z-index: 4 !important;
-          }
-
-          .works-submit-btn {
-            width: 85% !important;
-            max-width: 350px !important;
-            margin: 0 auto !important;
           }
         }
 
@@ -210,9 +173,6 @@ export default function Register() {
           .logo-pm {
             margin-top: 3px !important;
           }
-          .pill-grid {
-            gap: 20px !important;
-          }
         }
 
         /* ----- 700px ----- */
@@ -222,9 +182,6 @@ export default function Register() {
           }
           .logo-pm {
             margin-top: 2px !important;
-          }
-          .pill-grid {
-            gap: 20px !important;
           }
         }
 
@@ -236,19 +193,6 @@ export default function Register() {
           .logo-pm {
             margin-top: 1px !important;
           }
-          .pill {
-            height: 42px !important;
-          }
-          .pill-grid {
-            gap: 18px !important;
-          }
-          .submit-row {
-            margin-top: 14px !important;
-          }
-          .submit-btn {
-            height: 46px !important;
-            font-size: 14px !important;
-          }
         }
 
         /* ----- 500px ----- */
@@ -258,19 +202,6 @@ export default function Register() {
           }
           .logo-pm {
             margin-top: 1px !important;
-          }
-          .pill {
-            height: 40px !important;
-          }
-          .pill-grid {
-            gap: 18px !important;
-          }
-          .submit-row {
-            margin-top: 16px !important;
-          }
-          .submit-btn {
-            height: 44px !important;
-            font-size: 13px !important;
           }
           .rmdp-wrapper {
             transform: scale(0.72) !important;
@@ -286,28 +217,9 @@ export default function Register() {
           .logo-pm {
             margin-top: 1px !important;
           }
-          .pill {
-            height: 38px !important;
-          }
-          .pill-grid {
-            gap: 16px !important;
-          }
-          .submit-row {
-            margin-top: 18px !important;
-          }
-          .submit-btn {
-            width: 88% !important;
-            max-width: 280px !important;
-            height: 42px !important;
-            font-size: 12px !important;
-          }
           .rmdp-wrapper {
             transform: scale(0.68) !important;
             max-width: 260px !important;
-          }
-          .works-submit-btn {
-            width: 88% !important;
-            max-width: 280px !important;
           }
         }
 
@@ -319,29 +231,9 @@ export default function Register() {
           .logo-pm {
             margin-top: 0px !important;
           }
-          .pill {
-            max-width: 100% !important;
-            height: 36px !important;
-          }
-          .pill-grid {
-            gap: 16px !important;
-          }
-          .submit-row {
-            margin-top: 18px !important;
-          }
-          .submit-btn {
-            width: 92% !important;
-            max-width: 260px !important;
-            height: 40px !important;
-            font-size: 11px !important;
-          }
           .rmdp-wrapper {
             transform: scale(0.62) !important;
             max-width: 240px !important;
-          }
-          .works-submit-btn {
-            width: 92% !important;
-            max-width: 260px !important;
           }
         }
 
@@ -353,34 +245,9 @@ export default function Register() {
           .logo-pm {
             margin-top: 0px !important;
           }
-          .pill {
-            max-height: 32px !important;
-            border-radius: 14px !important;
-          }
-          .pill-grid {
-            gap: 14px !important;
-          }
-          .submit-row {
-            margin-top: 20px !important;
-          }
-          .register-input {
-            font-size: 10px !important;
-            padding: 0 28px !important;
-          }
-          .submit-btn {
-            max-width: 220px !important;
-            height: 36px !important;
-            font-size: 10px !important;
-            border-radius: 14px !important;
-          }
           .rmdp-wrapper {
             transform: scale(0.50) !important;
             max-width: 180px !important;
-          }
-          .works-submit-btn {
-            max-width: 220px !important;
-            min-height: 36px !important;
-            font-size: 10px !important;
           }
         }
       `}</style>
