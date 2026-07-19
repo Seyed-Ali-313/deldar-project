@@ -123,7 +123,6 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
       const serverWork = res.data.work || res.data;
 
       setUploadedWorks((prev) => [
-        ...prev,
         {
           id: serverWork.id,
           file: currentWork.file,
@@ -132,6 +131,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
           image: serverWork.image,
           created_at: serverWork.created_at,
         },
+        ...prev,
       ]);
 
       setCurrentWork({ file: null, description: "", preview: null });
@@ -159,7 +159,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
         created_at: w.created_at,
       }));
 
-      onWorksChange((prev) => [...prev, ...results]);
+      onWorksChange((prev) => [...results, ...prev]);
       toastSuccess(`${toPersianDigits(results.length)} اثر با موفقیت ثبت شد`);
       setUploadedWorks([]);
       setCurrentWork({ file: null, description: "", preview: null });
