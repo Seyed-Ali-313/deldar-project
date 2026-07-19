@@ -23,22 +23,18 @@ export default function Login() {
   const [error, setError] = useState("");
 
   const handleIdentifierChange = (e) => {
-    const value = e.target.value;
-    const cleaned = value.replace(/[^0-9۰-۹]/g, "");
+    let value = e.target.value;
+    value = value.replace(/[^0-9۰-۹]/g, "");
+    value = value.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
 
-    if (cleaned.length > 11) {
+    if (value.length > 11) {
       setError("شماره موبایل یا کدملی معتبر نیست");
       setTimeout(() => setError(""), 2500);
       return;
     }
 
-    if (value !== cleaned) {
-      setError("لطفاً فقط از اعداد استفاده کنید");
-      setTimeout(() => setError(""), 2500);
-    } else {
-      setError("");
-    }
-    setIdentifier(cleaned);
+    setError("");
+    setIdentifier(value);
   };
 
   const handleRequestOtp = async (e) => {
@@ -202,7 +198,8 @@ export default function Login() {
                       maxLength={1}
                       value={otpCode[i] || ""}
                       onChange={(e) => {
-                        const val = e.target.value;
+                        let val = e.target.value;
+                        val = val.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
                         if (!/^\d?$/.test(val)) return;
                         const newOtp = otpCode.split("");
                         newOtp[i] = val;

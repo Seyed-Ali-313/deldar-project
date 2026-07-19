@@ -18,6 +18,14 @@ export default function NumericInput({
   const [error, setError] = useState("");
   const [touched, setTouched] = useState(false);
 
+  const convertToEnglishDigits = (value) => {
+    const persianMap = {
+      "۰": "0", "۱": "1", "۲": "2", "۳": "3", "۴": "4",
+      "۵": "5", "۶": "6", "۷": "7", "۸": "8", "۹": "9",
+    };
+    return String(value).replace(/[۰-۹]/g, (d) => persianMap[d] || d);
+  };
+
   const handleKeyDown = (e) => {
     const allowedKeys = [
       "Backspace",
@@ -47,7 +55,12 @@ export default function NumericInput({
 
   const handleBlur = (e) => {
     setTouched(true);
-    const value = e.target.value;
+    let value = e.target.value;
+    const english = convertToEnglishDigits(value);
+    if (english !== value) {
+      e.target.value = english;
+      value = english;
+    }
     const cleanValue = value.replace(/[^0-9]/g, "");
 
     if (validate) {
@@ -69,9 +82,12 @@ export default function NumericInput({
   };
 
   const handleChange = (e) => {
-    const val = e.target.value;
-    // ✅ فقط اعداد مجاز
-    if (val && !/^[0-9۰-۹]*$/.test(val)) {
+    let val = e.target.value;
+    val = convertToEnglishDigits(val);
+    if (val !== e.target.value) {
+      e.target.value = val;
+    }
+    if (val && !/^[0-9]*$/.test(val)) {
       setError("فقط عدد مجاز است");
       setTimeout(() => setError(""), 2500);
     } else {
@@ -81,22 +97,6 @@ export default function NumericInput({
 
   // ✅ نمایش خطا
   const displayError = error || serverError || null;
-
-  const convertToEnglishDigits = (value) => {
-    const persianMap = {
-      "۰": "0",
-      "۱": "1",
-      "۲": "2",
-      "۳": "3",
-      "۴": "4",
-      "۵": "5",
-      "۶": "6",
-      "۷": "7",
-      "۸": "8",
-      "۹": "9",
-    };
-    return String(value).replace(/[۰-۹]/g, (d) => persianMap[d] || d);
-  };
 
   // ✅ فقط از register استفاده کن، نه value و onChange جدا
   const regOptions = register
@@ -121,7 +121,8 @@ export default function NumericInput({
           : undefined,
         validate: exactLength
           ? (value) => {
-              const cleanValue = value.replace(/[^0-9]/g, "");
+              const english = convertToEnglishDigits(value);
+              const cleanValue = english.replace(/[^0-9]/g, "");
               if (cleanValue.length === 0) return true;
               return (
                 cleanValue.length === exactLength ||

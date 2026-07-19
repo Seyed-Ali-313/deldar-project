@@ -39,15 +39,26 @@ export default function FormInput({
     const val = e.target.value;
     setValue(val);
 
-    // اگر pattern عددی هست و عدد نیست، فیلتر کن
-    if (pattern === "[0-9]*" && val && !/^[0-9]*$/.test(val)) {
-      const cleaned = val.replace(/[^0-9]/g, "");
-      e.target.value = cleaned;
-      setValue(cleaned);
-      if (register && name) {
-        register(name).onChange(e);
+    // اگر pattern عددی هست، اعداد فارسی رو به انگلیسی تبدیل کن
+    if (pattern === "[0-9]*" && val) {
+      const converted = String(val).replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+      if (converted !== val) {
+        e.target.value = converted;
+        setValue(converted);
+        if (register && name) {
+          register(name).onChange(e);
+        }
+        return;
       }
-      return;
+      if (!/^[0-9]*$/.test(val)) {
+        const cleaned = val.replace(/[^0-9]/g, "");
+        e.target.value = cleaned;
+        setValue(cleaned);
+        if (register && name) {
+          register(name).onChange(e);
+        }
+        return;
+      }
     }
 
     if (register && name) {

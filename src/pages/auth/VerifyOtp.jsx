@@ -132,6 +132,7 @@ export default function VerifyOtp() {
   }, [otp]);
 
   const handleChange = (index, value) => {
+    value = String(value).replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
     if (!/^\d?$/.test(value)) return;
     const updated = [...otp];
     updated[index] = value;
@@ -146,7 +147,8 @@ export default function VerifyOtp() {
   };
 
   const handlePaste = (e) => {
-    const text = e.clipboardData.getData("text").replace(/\D/g, "");
+    let text = e.clipboardData.getData("text");
+    text = text.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/\D/g, "");
     if (!text) return;
     e.preventDefault();
     const digits = text.slice(0, OTP_LENGTH).split("");
