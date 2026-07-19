@@ -187,7 +187,6 @@ export default function Login() {
                 exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.3 }}
               >
-                <span className="lg-eyebrow">تایید هویت</span>
                 <h1 className="lg-title">کد تایید</h1>
                 <p className="lg-subtitle">
                   کد ۴ رقمی ارسال‌شده به{" "}
