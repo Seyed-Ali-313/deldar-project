@@ -98,7 +98,32 @@ export default function Announcement() {
             <div className="announcement-iframe-wrap">
               {loading && (
                 <div className="announcement-pdf-loading">
-                  در حال بارگذاری...
+                  <div className="announcement-loader">
+                    <div className="announcement-loader-icon">
+                      <svg
+                        width="40"
+                        height="40"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#C9A84C"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                      </svg>
+                    </div>
+                    <div className="announcement-loader-bar">
+                      <div className="announcement-loader-bar-inner" />
+                    </div>
+                    <span className="announcement-loader-text">
+                      بارگذاری فراخوان
+                    </span>
+                  </div>
                 </div>
               )}
               {pdfError && (
@@ -227,14 +252,82 @@ export default function Announcement() {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-family: "w_Lotus", sans-serif;
-          font-size: clamp(13px, 1.6vw, 15px);
-          color: rgba(255,255,255,0.6);
-          text-align: center;
           padding: 20px;
         }
+
+        .announcement-loader {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        }
+
+        .announcement-loader-icon {
+          width: 68px;
+          height: 68px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.02));
+          border: 1.5px solid rgba(201,168,76,0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: announcementPulse 1.8s ease-in-out infinite;
+          box-shadow: 0 0 40px rgba(201,168,76,0.06);
+        }
+
+        .announcement-loader-icon svg {
+          animation: announcementBounce 1.8s ease-in-out infinite;
+        }
+
+        .announcement-loader-bar {
+          width: 140px;
+          height: 3px;
+          background: rgba(201,168,76,0.1);
+          border-radius: 4px;
+          overflow: hidden;
+        }
+
+        .announcement-loader-bar-inner {
+          height: 100%;
+          width: 35%;
+          background: linear-gradient(90deg, transparent, #C9A84C, transparent);
+          border-radius: 4px;
+          animation: announcementSlide 1.4s ease-in-out infinite;
+        }
+
+        .announcement-loader-text {
+          font-family: "w_Lotus", sans-serif;
+          font-size: clamp(13px, 1.6vw, 15px);
+          color: rgba(255,255,255,0.45);
+          letter-spacing: 1.5px;
+          animation: announcementFade 1.8s ease-in-out infinite;
+        }
+
+        @keyframes announcementPulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.06); opacity: 0.7; }
+        }
+
+        @keyframes announcementBounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-4px); }
+        }
+
+        @keyframes announcementSlide {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(350%); }
+        }
+
+        @keyframes announcementFade {
+          0%, 100% { opacity: 0.45; }
+          50% { opacity: 1; }
+        }
+
         .announcement-pdf-error {
           color: rgba(255,180,80,0.8);
+          font-family: "w_Lotus", sans-serif;
+          font-size: clamp(13px, 1.6vw, 15px);
+          text-align: center;
         }
 
         .announcement-iframe-wrap {
@@ -256,7 +349,7 @@ export default function Announcement() {
             min-height: 100vh;
             display: flex;
             align-items: center;
-            padding: clamp(54px, 4vh, 48px) clamp(16px, 5vw, 40px) !important ;
+            padding: clamp(54 px, 4vh, 48px) clamp(16px, 5vw, 40px) !important ;
           }
           .announcement-inner {
             width: 100%;
