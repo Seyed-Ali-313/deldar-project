@@ -256,7 +256,7 @@ export default function Announcement() {
             min-height: 100vh;
             display: flex;
             align-items: center;
-            padding: clamp(60px, 4vh, 48px) clamp(16px, 5vw, 40px) ;
+            padding: clamp(54px, 4vh, 48px) clamp(16px, 5vw, 40px) !important ;
           }
           .announcement-inner {
             width: 100%;
