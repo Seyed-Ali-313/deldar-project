@@ -350,6 +350,7 @@ export default function Announcement() {
             display: flex;
             align-items: center;
             padding: clamp(54 px, 4vh, 48px) clamp(16px, 5vw, 40px) !important ;
+            margin-top: 20px;
           }
           .announcement-inner {
             width: 100%;
