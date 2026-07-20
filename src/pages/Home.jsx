@@ -800,7 +800,7 @@ export default function Home() {
   }
 
   .hm-caption {
-    margin-left: clamp(12px, 2.5vw, 36px) !important;
+    margin-left: clamp(14px, 3.5vw, 48px) !important;
     margin-top: -41px !important;
     margin-bottom: 32px;
   }
