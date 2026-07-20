@@ -1,11 +1,51 @@
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
-const PDF_URL = `${import.meta.env.BASE_URL}pdf/Deldar-Farakhan.pdf#navpanes=0&page=1&view=FitH`;
+const PDF_PATH = `${import.meta.env.BASE_URL}pdf/Deldar-Farakhan.pdf`;
 
 export default function Announcement() {
+  const [pdfUrl, setPdfUrl] = useState("");
+  const [pdfError, setPdfError] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const objectUrlRef = useRef(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch(PDF_PATH)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load PDF");
+        const contentType = res.headers.get("content-type") || "";
+        if (!contentType.includes("application/pdf")) {
+          throw new Error("Response is not PDF");
+        }
+        return res.blob();
+      })
+      .then((blob) => {
+        if (cancelled) return;
+        const url = URL.createObjectURL(blob);
+        objectUrlRef.current = url;
+        setPdfUrl(url);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPdfError(true);
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+    };
+  }, []);
+
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.href = PDF_URL;
+    link.href = PDF_PATH;
     link.download = "Deldar-Farakhan.pdf";
     document.body.appendChild(link);
     link.click();
@@ -56,11 +96,21 @@ export default function Announcement() {
 
           <div className="announcement-pdf-box">
             <div className="announcement-iframe-wrap">
-              <iframe
-                src={PDF_URL}
-                title="فراخوان"
-                className="announcement-iframe"
-              />
+              {loading && (
+                <div className="announcement-pdf-loading">در حال بارگذاری...</div>
+              )}
+              {pdfError && (
+                <div className="announcement-pdf-error">
+                  امکان نمایش فایل وجود ندارد. لطفاً از دکمه دانلود استفاده کنید.
+                </div>
+              )}
+              {pdfUrl && (
+                <iframe
+                  src={pdfUrl}
+                  title="فراخوان"
+                  className="announcement-iframe"
+                />
+              )}
             </div>
           </div>
         </div>
@@ -164,6 +214,24 @@ export default function Announcement() {
           min-height: clamp(380px, 60vh, 620px);
           display: flex;
           flex-direction: column;
+          position: relative;
+        }
+
+        .announcement-pdf-loading,
+        .announcement-pdf-error {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: "w_Lotus", sans-serif;
+          font-size: clamp(13px, 1.6vw, 15px);
+          color: rgba(255,255,255,0.6);
+          text-align: center;
+          padding: 20px;
+        }
+        .announcement-pdf-error {
+          color: rgba(255,180,80,0.8);
         }
 
         .announcement-iframe-wrap {
