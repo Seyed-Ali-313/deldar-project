@@ -97,11 +97,14 @@ export default function Announcement() {
           <div className="announcement-pdf-box">
             <div className="announcement-iframe-wrap">
               {loading && (
-                <div className="announcement-pdf-loading">در حال بارگذاری...</div>
+                <div className="announcement-pdf-loading">
+                  در حال بارگذاری...
+                </div>
               )}
               {pdfError && (
                 <div className="announcement-pdf-error">
-                  امکان نمایش فایل وجود ندارد. لطفاً از دکمه دانلود استفاده کنید.
+                  امکان نمایش فایل وجود ندارد. لطفاً از دکمه دانلود استفاده
+                  کنید.
                 </div>
               )}
               {pdfUrl && (
@@ -253,7 +256,7 @@ export default function Announcement() {
             min-height: 100vh;
             display: flex;
             align-items: center;
-            padding: clamp(53px, 4vh, 48px) clamp(16px, 5vw, 40px) ;
+            padding: clamp(60px, 4vh, 48px) clamp(16px, 5vw, 40px) ;
           }
           .announcement-inner {
             width: 100%;

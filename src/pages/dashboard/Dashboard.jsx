@@ -13,6 +13,18 @@ const TABS = [
   { key: "add", label: "اضافه کردن اثر جدید" },
 ];
 
+function sortWorksByDate(works) {
+  return [...works].sort((a, b) => {
+    const dateA = new Date(
+      a.created_at || a.createdAt || a.date_created || a.uploaded_at || a.created || a.date || a.timestamp || 0,
+    );
+    const dateB = new Date(
+      b.created_at || b.createdAt || b.date_created || b.uploaded_at || b.created || b.date || b.timestamp || 0,
+    );
+    return dateB - dateA;
+  });
+}
+
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("edit");
   const [works, setWorks] = useState([]);
@@ -26,7 +38,7 @@ export default function Dashboard() {
     }
     getWorks()
       .then((res) => {
-        setWorks(res.data);
+        setWorks(sortWorksByDate(res.data));
         setLoading(false);
       })
       .catch((err) => {
@@ -38,6 +50,10 @@ export default function Dashboard() {
   useEffect(() => {
     fetchWorks();
   }, [fetchWorks]);
+
+  const handleWorksChange = (updater) => {
+    setWorks((prev) => sortWorksByDate(updater(prev)));
+  };
 
   const totalCount = works.length;
   const MAX_WORKS = 50;
@@ -54,7 +70,7 @@ export default function Dashboard() {
             loading={loading}
             totalCount={totalCount}
             maxWorks={MAX_WORKS}
-            onWorksChange={setWorks}
+            onWorksChange={handleWorksChange}
           />
         )}
         {activeTab === "add" && (
@@ -62,7 +78,7 @@ export default function Dashboard() {
             existingWorks={works}
             totalCount={totalCount}
             maxWorks={MAX_WORKS}
-            onWorksChange={setWorks}
+            onWorksChange={handleWorksChange}
           />
         )}
       </div>
