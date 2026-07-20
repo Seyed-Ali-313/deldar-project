@@ -1,14 +1,13 @@
-// src/pages/dashboard/SubmitWorks.jsx
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { addWork } from "../../services/dashboardService";
+import { addWork, deleteWork } from "../../services/dashboardService";
 import toPersianDigits from "../../utils/toPersianNumber";
 import {
   success as toastSuccess,
   error as toastError,
   warn as toastWarn,
 } from "../../utils/toast";
-import { showError } from "../../utils/errorHandler";
+import { showError, getServerMessage } from "../../utils/errorHandler";
 import getImageUrl from "../../utils/getImageUrl";
 
 function SkeletonImage({ src, alt, style, className, onError }) {
@@ -60,7 +59,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
     preview: null,
   });
   const [uploadedWorks, setUploadedWorks] = useState([]);
-  const [uploading, setUploading] = useState(false);
+  const [addingWork, setAddingWork] = useState(false);
   const [previewWork, setPreviewWork] = useState(null);
   const containerRef = useRef(null);
 
@@ -96,7 +95,8 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
     reader.readAsDataURL(file);
   };
 
-  const addWorkHandler = () => {
+  // ✅ همون منطق ثبت‌نام: بلافاصله به بک‌اند بفرست و اعتبارسنجی کن
+  const addWorkHandler = async () => {
     if (!currentWork.file) {
       toastError("لطفاً ابتدا یک عکس انتخاب کنید");
       return;
@@ -112,56 +112,59 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
       return;
     }
 
-    setUploadedWorks((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        file: currentWork.file,
-        description: currentWork.description.trim(),
-        preview: currentWork.preview,
-      },
-    ]);
+    setAddingWork(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", currentWork.file);
+      formData.append("description", currentWork.description.trim());
 
-    setCurrentWork({ file: null, description: "", preview: null });
-    toastSuccess("عکس به لیست اضافه شد");
+      const res = await addWork(formData);
+      const serverWork = res.data.work || res.data;
+
+      const newWork = {
+        id: serverWork.id,
+        description: serverWork.description,
+        preview: getImageUrl(serverWork.image) || currentWork.preview,
+        image: serverWork.image,
+        created_at: serverWork.created_at,
+      };
+
+      setUploadedWorks((prev) => [...prev, newWork]);
+      onWorksChange((prev) => [...prev, serverWork]);
+
+      setCurrentWork({ file: null, description: "", preview: null });
+      toastSuccess(getServerMessage(res, "عکس با موفقیت اضافه شد"));
+    } catch (err) {
+      showError(err, "خطا در افزودن عکس");
+    } finally {
+      setAddingWork(false);
+    }
   };
 
-  const handleSubmitAll = async () => {
+  // ✅ چون هر عکس همون لحظه به بک‌اند اضافه می‌شه، دکمه نهایی فقط لیست موقت رو خالی می‌کنه
+  const handleSubmitAll = () => {
     if (uploadedWorks.length === 0) {
       toastError("لطفاً حداقل یک عکس اضافه کنید");
       return;
     }
-
-    setUploading(true);
-    try {
-      const results = [];
-      for (const work of uploadedWorks) {
-        const formData = new FormData();
-        formData.append("image", work.file);
-        formData.append("description", work.description);
-        const res = await addWork(formData);
-        const serverWork = res.data.work || res.data;
-        results.push({
-          id: serverWork.id,
-          description: serverWork.description,
-          preview: getImageUrl(serverWork.image),
-          image: serverWork.image,
-          created_at: serverWork.created_at,
-        });
-      }
-
-      onWorksChange((prev) => [...prev, ...results]);
-      toastSuccess(`${toPersianDigits(results.length)} اثر با موفقیت ثبت شد`);
-      setUploadedWorks([]);
-      setCurrentWork({ file: null, description: "", preview: null });
-    } catch (err) {
-      showError(err, "خطا در ارسال آثار");
-    } finally {
-      setUploading(false);
-    }
+    toastSuccess(
+      `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ثبت شد`,
+    );
+    setUploadedWorks([]);
   };
 
-  const removeWork = (index) => {
+  // ✅ حذف از لیست موقت این تب => باید از بک‌اند هم حذف بشه (چون واقعاً آپلود شده)
+  const removeWork = async (index) => {
+    const work = uploadedWorks[index];
+    if (work?.id) {
+      try {
+        await deleteWork(work.id);
+        onWorksChange((prev) => prev.filter((w) => w.id !== work.id));
+      } catch (err) {
+        showError(err, "خطا در حذف عکس");
+        return;
+      }
+    }
     setUploadedWorks((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -202,13 +205,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
             margin: 0,
           }}
         >
-          <span
-            style={{
-              color: "#C9A84C",
-              fontWeight: 700,
-              fontSize: "13px",
-            }}
-          >
+          <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: "13px" }}>
             توجه:
           </span>
           <br />
@@ -307,10 +304,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
             onChange={(e) =>
               setCurrentWork({ ...currentWork, description: e.target.value })
             }
-            style={{
-              height: "100%",
-              color: "#000000",
-            }}
+            style={{ height: "100%", color: "#000000" }}
           />
         </div>
 
@@ -393,20 +387,25 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
           onClick={addWorkHandler}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
-          disabled={combinedCount >= maxWorks}
+          disabled={combinedCount >= maxWorks || addingWork}
           style={{
             minWidth: "46px",
             height: "42px",
             background:
-              combinedCount >= maxWorks
+              combinedCount >= maxWorks || addingWork
                 ? "rgba(255,255,255,0.05)"
                 : "linear-gradient(135deg, #A4874D, #C9A84C)",
             color:
-              combinedCount >= maxWorks ? "rgba(255,255,255,0.2)" : "#ffffff",
+              combinedCount >= maxWorks || addingWork
+                ? "rgba(255,255,255,0.2)"
+                : "#ffffff",
             borderRadius: "10px",
             border: "none",
-            cursor: combinedCount >= maxWorks ? "not-allowed" : "pointer",
-            opacity: combinedCount >= maxWorks ? 0.4 : 1,
+            cursor:
+              combinedCount >= maxWorks || addingWork
+                ? "not-allowed"
+                : "pointer",
+            opacity: combinedCount >= maxWorks || addingWork ? 0.4 : 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -414,7 +413,7 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
             fontWeight: 300,
             transition: "all 0.2s ease",
             boxShadow:
-              combinedCount >= maxWorks
+              combinedCount >= maxWorks || addingWork
                 ? "none"
                 : "0 3px 10px rgba(164,135,77,0.25)",
           }}
@@ -566,29 +565,26 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
       <motion.button
         type="button"
         onClick={handleSubmitAll}
-        disabled={uploading || uploadedWorks.length === 0}
+        disabled={uploadedWorks.length === 0}
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.98 }}
         style={{
           width: "100%",
           minHeight: "44px",
           background:
-            uploading || uploadedWorks.length === 0
+            uploadedWorks.length === 0
               ? "rgba(255,255,255,0.04)"
               : "linear-gradient(135deg, #A4874D, #C9A84C)",
           color:
-            uploading || uploadedWorks.length === 0
-              ? "rgba(255,255,255,0.2)"
-              : "#ffffff",
+            uploadedWorks.length === 0 ? "rgba(255,255,255,0.2)" : "#ffffff",
           borderRadius: "20px",
           border: "none",
           fontSize: "15px",
           fontWeight: 700,
-          cursor:
-            uploading || uploadedWorks.length === 0 ? "not-allowed" : "pointer",
-          opacity: uploading || uploadedWorks.length === 0 ? 0.4 : 1,
+          cursor: uploadedWorks.length === 0 ? "not-allowed" : "pointer",
+          opacity: uploadedWorks.length === 0 ? 0.4 : 1,
           boxShadow:
-            uploading || uploadedWorks.length === 0
+            uploadedWorks.length === 0
               ? "none"
               : "0 3px 20px rgba(164,135,77,0.3)",
           display: "flex",
@@ -602,27 +598,9 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
           marginBottom: "20px",
         }}
       >
-        {uploading ? (
-          <>
-            <span
-              style={{
-                display: "inline-block",
-                animation: "spin 1s linear infinite",
-                fontSize: "18px",
-              }}
-            >
-              ⏳
-            </span>
-            <span>در حال ارسال آثار...</span>
-          </>
-        ) : (
-          <>
-            <span style={{ fontSize: "18px" }}></span>
-            <span>
-              ارسال مجموع آثار ({toPersianDigits(uploadedWorks.length)} عکس)
-            </span>
-          </>
-        )}
+        <span>
+          پایان و بستن لیست ({toPersianDigits(uploadedWorks.length)} عکس)
+        </span>
       </motion.button>
 
       <AnimatePresence>
@@ -674,160 +652,50 @@ export default function SubmitWorks({ totalCount, maxWorks, onWorksChange }) {
       </AnimatePresence>
 
       <style>{`
-  .submit-works-scroll::-webkit-scrollbar {
-    width: 3px;
-  }
-  .submit-works-scroll::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 4px;
-  }
-  .submit-works-scroll::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #A4874D, #C9A84C);
-    border-radius: 4px;
-  }
-  .submit-works-scroll::-webkit-scrollbar-thumb:hover {
-    background: #C9A84C;
-  }
-
-  .submit-works-input {
-    font-size: 17px !important;
-    font-weight: 500 !important;
-  }
-  .submit-works-input::placeholder {
-    font-size: 17px !important;
-    font-weight: 500 !important;
-  }
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
+  .submit-works-scroll::-webkit-scrollbar { width: 3px; }
+  .submit-works-scroll::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 4px; }
+  .submit-works-scroll::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #A4874D, #C9A84C); border-radius: 4px; }
+  .submit-works-scroll::-webkit-scrollbar-thumb:hover { background: #C9A84C; }
+  .submit-works-input { font-size: 17px !important; font-weight: 500 !important; }
+  .submit-works-input::placeholder { font-size: 17px !important; font-weight: 500 !important; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
   .work-preview-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(4px);
-    z-index: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    cursor: pointer;
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px); z-index: 500; display: flex;
+    align-items: center; justify-content: center; padding: 24px; cursor: pointer;
   }
-
   .work-preview-card {
-    position: relative;
-    background: #0a2416;
-    border: 1px solid rgba(201, 168, 76, 0.25);
-    border-radius: 18px;
-    padding: 16px;
-    max-width: 420px;
-    width: 100%;
-    max-height: 85vh;
-    overflow: auto;
-    cursor: default;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    position: relative; background: #0a2416; border: 1px solid rgba(201, 168, 76, 0.25);
+    border-radius: 18px; padding: 16px; max-width: 420px; width: 100%;
+    max-height: 85vh; overflow: auto; cursor: default; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
   }
-
-  .work-preview-img {
-    width: 100%;
-    max-height: 60vh;
-    object-fit: contain;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
-  }
-
-  .work-preview-desc {
-    margin: 12px 0 0;
-    color: rgba(255, 255, 255, 0.9);
-    font-family: "w_Lotus", sans-serif;
-    font-size: 17px;
-    font-weight: 600;
-    line-height: 1.8;
-    text-align: center;
-  }
-
+  .work-preview-img { width: 100%; max-height: 60vh; object-fit: contain; border-radius: 12px; background: rgba(255, 255, 255, 0.03); }
+  .work-preview-desc { margin: 12px 0 0; color: rgba(255, 255, 255, 0.9); font-family: "w_Lotus", sans-serif; font-size: 17px; font-weight: 600; line-height: 1.8; text-align: center; }
   .work-preview-close {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
+    position: absolute; top: 10px; left: 10px; width: 30px; height: 30px; border-radius: 50%;
+    border: none; background: rgba(255, 255, 255, 0.1); color: #fff; font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; z-index: 2;
   }
-
-  .work-preview-close:hover {
-    background: rgba(192, 57, 43, 0.5);
-  }
+  .work-preview-close:hover { background: rgba(192, 57, 43, 0.5); }
 
   @media (max-width: 900px) {
-    .submit-works-container {
-      max-height: 520px !important;
-      margin: 0 auto !important;
-    }
-    .submit-works-add-row {
-      grid-template-columns: 1fr 1fr !important;
-      grid-template-rows: auto auto !important;
-    }
-    .submit-works-add-row > button {
-      grid-column: 1 / -1 !important;
-      width: 100% !important;
-      min-width: unset !important;
-      height: 42px !important;
-    }
-    .submit-works-scroll {
-      height: 140px !important;
-    }
-    .submit-work-item {
-      
-    }
+    .submit-works-container { max-height: 520px !important; margin: 0 auto !important; }
+    .submit-works-add-row { grid-template-columns: 1fr 1fr !important; grid-template-rows: auto auto !important; }
+    .submit-works-add-row > button { grid-column: 1 / -1 !important; width: 100% !important; min-width: unset !important; height: 42px !important; }
+    .submit-works-scroll { height: 140px !important; }
   }
 
   @media (max-width: 480px) {
-    .submit-works-container {
-      padding-top: 0 !important;
-    }
-    .submit-works-add-row {
-      grid-template-columns: 1fr !important;
-      grid-template-rows: auto auto auto !important;
-      gap: 6px !important;
-    }
-    .submit-works-add-row .pill {
-      height: 42px !important;
-    }
-    .submit-works-add-row .register-input {
-      font-size: 16px !important;
-    }
-    .submit-work-item {
-      grid-template-columns: 28px 1fr 22px !important;
-      gap: 8px !important;
-      padding: 4px 6px !important;
-    }
-    .submit-work-item > div:first-child {
-      width: 28px !important;
-      height: 28px !important;
-    }
-    .submit-work-item > div:first-child img {
-      width: 28px !important;
-      height: 28px !important;
-    }
-    .submit-work-item > span {
-      font-size: 11.5px !important;
-    }
-    .submit-work-item > button {
-      width: 22px !important;
-      height: 22px !important;
-      font-size: 10px !important;
-    }
+    .submit-works-container { padding-top: 0 !important; }
+    .submit-works-add-row { grid-template-columns: 1fr !important; grid-template-rows: auto auto auto !important; gap: 6px !important; }
+    .submit-works-add-row .pill { height: 42px !important; }
+    .submit-works-add-row .register-input { font-size: 16px !important; }
+    .submit-work-item { grid-template-columns: 28px 1fr 22px !important; gap: 8px !important; padding: 4px 6px !important; }
+    .submit-work-item > div:first-child { width: 28px !important; height: 28px !important; }
+    .submit-work-item > div:first-child img { width: 28px !important; height: 28px !important; }
+    .submit-work-item > span { font-size: 11.5px !important; }
+    .submit-work-item > button { width: 22px !important; height: 22px !important; font-size: 10px !important; }
   }
 `}</style>
     </div>
