@@ -64,12 +64,11 @@ export default function Announcement() {
             </div>
           </div>
         </div>
-
       </div>
 
       <style>{`
         .announcement-page {
-          padding: clamp(24px, 4vh, 48px) clamp(16px, 5vw, 40px);
+          padding: clamp(24px, 4vh, 48px) clamp(16px, 5vw, 40px)!important;
         }
 
         .announcement-inner {
@@ -186,7 +185,7 @@ export default function Announcement() {
             min-height: 100vh;
             display: flex;
             align-items: center;
-            padding: 0;
+            padding: clamp(53px, 4vh, 48px) clamp(16px, 5vw, 40px) ;
           }
           .announcement-inner {
             width: 100%;
@@ -203,7 +202,7 @@ export default function Announcement() {
         }
 
         @media (max-width: 480px) {
-          .announcement-page { padding: 24px 14px; }
+          .announcement-page { padding: 24px 14px !important; }
           .announcement-card { padding: 22px 18px; border-radius: 18px; }
           .announcement-pdf-box { border-radius: 18px; min-height: 320px; }
         }
