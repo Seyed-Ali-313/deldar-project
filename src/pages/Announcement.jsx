@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-const PDF_URL = "/pdf/Deldar-Farakhan.pdf#navpanes=0&page=1&zoom=90";
+const PDF_URL = `${import.meta.env.BASE_URL}pdf/Deldar-Farakhan.pdf#navpanes=0&page=1&view=FitH`;
 
 export default function Announcement() {
   const handleDownload = () => {
@@ -179,6 +179,18 @@ export default function Announcement() {
           width: 100%;
           height: 100%;
           border: none;
+        }
+
+        @media (min-width: 901px) {
+          .announcement-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0;
+          }
+          .announcement-inner {
+            width: 100%;
+          }
         }
 
         @media (max-width: 900px) {

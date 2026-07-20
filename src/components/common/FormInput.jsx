@@ -87,8 +87,6 @@ export default function FormInput({
           type={type}
           className="register-input"
           placeholder={displayPlaceholder}
-          onBlur={handleBlur}
-          onChange={handleChange}
           style={{
             color: displayError ? "#c0392b" : "#1a1a1a",
           }}
@@ -99,6 +97,36 @@ export default function FormInput({
                 required: required ? "این فیلد الزامی است" : false,
               })
             : {})}
+          onBlur={(e) => {
+            setTouched(true);
+            if (validate) {
+              const result = validate(e.target.value);
+              setClientError(result);
+            }
+            if (onBlur) onBlur(e);
+            if (register && name) register(name).onBlur(e);
+          }}
+          onChange={(e) => {
+            const val = e.target.value;
+            setValue(val);
+            if (pattern === "[0-9]*" && val) {
+              const converted = String(val).replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+              if (converted !== val) {
+                e.target.value = converted;
+                setValue(converted);
+                if (register && name) register(name).onChange(e);
+                return;
+              }
+              if (!/^[0-9]*$/.test(val)) {
+                const cleaned = val.replace(/[^0-9]/g, "");
+                e.target.value = cleaned;
+                setValue(cleaned);
+                if (register && name) register(name).onChange(e);
+                return;
+              }
+            }
+            if (register && name) register(name).onChange(e);
+          }}
           {...props}
         />
         {required && <span className="req">*</span>}

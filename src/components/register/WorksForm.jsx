@@ -1,6 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { uploadWork, submitAllWorks, deleteWork } from "../../services/onboardingService";
+import {
+  uploadWork,
+  submitAllWorks,
+  deleteWork,
+} from "../../services/onboardingService";
 import toPersianDigits from "../../utils/toPersianNumber";
 import {
   success as toastSuccess,
@@ -82,7 +86,6 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
   const containerRef = useRef(null);
 
   const combinedCount = uploadedWorks.length;
-  const hasUnsubmitted = uploadedWorks.some((w) => !w.submitted);
 
   useEffect(() => {
     if (containerRef.current && uploadedWorks.length > 0) {
@@ -176,10 +179,6 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
 
   const removeWork = async (index) => {
     const work = uploadedWorks[index];
-    if (work?.submitted) {
-      toastError("این اثر قبلاً ارسال شده و در داشبورد می‌توانید مدیریت کنید");
-      return;
-    }
     if (work?.id) {
       try {
         await deleteWork(work.id);
@@ -209,11 +208,14 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
       }
 
       toastSuccess(
-        getServerMessage(res, `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ثبت شد`),
+        getServerMessage(
+          res,
+          `${toPersianDigits(uploadedWorks.length)} اثر با موفقیت ثبت شد`,
+        ),
       );
 
       setUploadedWorksPersisted((prev) =>
-        prev.map((w) => ({ ...w, submitted: true }))
+        prev.map((w) => ({ ...w, submitted: true })),
       );
 
       setTimeout(() => {
@@ -347,7 +349,6 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
         </span>
       </div>
 
-{hasUnsubmitted && (
       <div
         className="submit-works-add-row"
         style={{
@@ -493,7 +494,6 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
           +
         </motion.button>
       </div>
-      )}
 
       <div
         ref={containerRef}
@@ -575,22 +575,7 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
                 {work.description}
               </span>
 
-              {work.submitted ? (
-                <span style={{
-                  fontSize: "11px",
-                  color: "#2ecc71",
-                  fontFamily: "w_Lotus, sans-serif",
-                  fontWeight: 600,
-                  whiteSpace: "nowrap",
-                  padding: "2px 6px",
-                  background: "rgba(46, 204, 113, 0.1)",
-                  borderRadius: "6px",
-                  border: "1px solid rgba(46, 204, 113, 0.15)",
-                }}>
-                  ✓ ارسال شده
-                </span>
-              ) : (
-                <motion.button
+              <motion.button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -622,7 +607,6 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
                 >
                   ✕
                 </motion.button>
-              )}
             </motion.div>
           ))}
         </AnimatePresence>
@@ -654,7 +638,6 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
         )}
       </div>
 
-      {hasUnsubmitted && (
         <motion.button
           type="button"
           onClick={handleSubmitAll}
@@ -677,7 +660,9 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
             fontSize: "15px",
             fontWeight: 700,
             cursor:
-              uploading || uploadedWorks.length === 0 ? "not-allowed" : "pointer",
+              uploading || uploadedWorks.length === 0
+                ? "not-allowed"
+                : "pointer",
             opacity: uploading || uploadedWorks.length === 0 ? 0.4 : 1,
             boxShadow:
               uploading || uploadedWorks.length === 0
@@ -693,29 +678,28 @@ export default function WorksForm({ onSuccess, showFinalSubmit = true }) {
             letterSpacing: "0.3px",
           }}
         >
-        {uploading ? (
-          <>
-            <span
-              style={{
-                display: "inline-block",
-                animation: "spin 1s linear infinite",
-                fontSize: "18px",
-              }}
-            >
-              ⏳
-            </span>
-            <span>در حال ارسال آثار...</span>
-          </>
-        ) : (
-          <>
-            <span style={{ fontSize: "18px" }}></span>
-            <span>
-              ارسال مجموع آثار ({toPersianDigits(uploadedWorks.length)} عکس)
-            </span>
-          </>
-        )}
-      </motion.button>
-      )}
+          {uploading ? (
+            <>
+              <span
+                style={{
+                  display: "inline-block",
+                  animation: "spin 1s linear infinite",
+                  fontSize: "18px",
+                }}
+              >
+                ⏳
+              </span>
+              <span>در حال ارسال آثار...</span>
+            </>
+          ) : (
+            <>
+              <span style={{ fontSize: "18px" }}></span>
+              <span>
+                ارسال مجموع آثار ({toPersianDigits(uploadedWorks.length)} عکس)
+              </span>
+            </>
+          )}
+        </motion.button>
 
       <AnimatePresence>
         {previewWork && (

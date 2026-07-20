@@ -53,46 +53,8 @@ export default function NumericInput({
     }
   };
 
-  const handleBlur = (e) => {
-    setTouched(true);
-    let value = e.target.value;
-    const english = convertToEnglishDigits(value);
-    if (english !== value) {
-      e.target.value = english;
-      value = english;
-    }
-    const cleanValue = value.replace(/[^0-9]/g, "");
-
-    if (validate) {
-      const result = validate(value);
-      setError(result || "");
-    }
-
-    if (
-      exactLength &&
-      cleanValue.length > 0 &&
-      cleanValue.length !== exactLength
-    ) {
-      setError(`باید دقیقاً ${toPersianNumber(exactLength)} رقم باشد`);
-    }
-  };
-
   const handleFocus = () => {
     setError("");
-  };
-
-  const handleChange = (e) => {
-    let val = e.target.value;
-    val = convertToEnglishDigits(val);
-    if (val !== e.target.value) {
-      e.target.value = val;
-    }
-    if (val && !/^[0-9]*$/.test(val)) {
-      setError("فقط عدد مجاز است");
-      setTimeout(() => setError(""), 2500);
-    } else {
-      setError("");
-    }
   };
 
   // ✅ نمایش خطا
@@ -169,8 +131,6 @@ export default function NumericInput({
           maxLength={maxLength || exactLength || 20}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
-          onChange={handleChange}
-          onBlur={handleBlur}
           onFocus={handleFocus}
           style={{
             color: displayError ? "#c0392b" : "#1a1a1a",
@@ -178,6 +138,36 @@ export default function NumericInput({
             textAlign: "right",
           }}
           {...regOptions}
+          onChange={(e) => {
+            let val = e.target.value;
+            val = convertToEnglishDigits(val);
+            if (val !== e.target.value) e.target.value = val;
+            if (val && !/^[0-9]*$/.test(val)) {
+              setError("فقط عدد مجاز است");
+              setTimeout(() => setError(""), 2500);
+            } else {
+              setError("");
+            }
+            if (register && name) register(name).onChange(e);
+          }}
+          onBlur={(e) => {
+            setTouched(true);
+            let value = e.target.value;
+            const english = convertToEnglishDigits(value);
+            if (english !== value) {
+              e.target.value = english;
+              value = english;
+            }
+            const cleanValue = value.replace(/[^0-9]/g, "");
+            if (validate) {
+              const result = validate(value);
+              setError(result || "");
+            }
+            if (exactLength && cleanValue.length > 0 && cleanValue.length !== exactLength) {
+              setError(`باید دقیقاً ${toPersianNumber(exactLength)} رقم باشد`);
+            }
+            if (register && name) register(name).onBlur(e);
+          }}
           {...props}
         />
         {required && !label && <span className="req">*</span>}
