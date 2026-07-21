@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import emtiaz from "../assets/images/emtiaz.svg";
 
 const PDF_PATH = `${import.meta.env.BASE_URL}pdf/Deldar-Farakhan.pdf`;
 
@@ -57,18 +58,22 @@ export default function Announcement() {
       <div className="announcement-inner">
         <div className="announcement-grid">
           <div className="announcement-card">
-            <h2 className="announcement-card-title">درباره فراخوان</h2>
+            <h2 className="announcement-card-title">
+              <span className="announcement-title-icon" aria-hidden="true">
+                <img src={emtiaz} alt="" style={{ width: 18 }} />
+              </span>
+              درباره فراخوان
+            </h2>
             <div className="announcement-text">
               <p>
-                جشنواره ملی عکس دلدار با هدف کشف و معرفی استعدادهای برتر در حوزه
-                عکاسی برگزار می‌گردد. هنرمندان و عکاسان سراسر کشور می‌توانند با
-                مطالعه دقیق فراخوان و رعایت شرایط ذکر شده، آثار خود را در این
-                رویداد هنری به ثبت رسانند.
-              </p>
-              <p>
-                برای آگاهی از شرایط عمومی و اختصاصی شرکت در جشنواره، موارد مربوط
-                به تعداد آثار، ابعاد و کیفیت تصاویر، مهلت ارسال و نحوه داوری،
-                لطفاً فایل فراخوان را مطالعه فرمایید.
+                تاریخ، لحظاتی نادر و بیبازگشت پیش رو ی انسان میگشاید که تنها
+                یکبار یک مراسم رسمی رخ میدهند. آنچه در این روزها شاهدش هستیم،
+                صرفا نیست؛ رخدادی تمدنی است، نمایشی از پیوند عمیق یک ملت با
+                آرمانها و حافظهی تار یخی خود. خانه عکاسان ایران، همه هنرمندان و
+                عالقهمندان به عکاسی مستند را به مشارکت در پروژهی ملی »دلدار «
+                دعوت میکند؛ روایتــی تصویــری از وداع، تشــییع و تدفیــن رهبــر
+                شــهید انقــاب اســامی در تمام ابعاد اجتماعی، عاطفی، آیینی و تار
+                یخی آن.
               </p>
             </div>
 
@@ -181,42 +186,55 @@ export default function Announcement() {
 
         .announcement-card-title {
           font-family: "w_Nian", sans-serif;
-          font-size: clamp(16px, 2.2vw, 19px);
+          font-size: clamp(17px, 2.4vw, 21px);
+          font-weight: 700;
           color: #C9A84C;
           margin: 0 0 16px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .announcement-title-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          line-height: 0;
         }
 
         .announcement-text {
           font-family: "w_Lotus", sans-serif;
-          font-size: clamp(12.5px, 1.6vw, 14.5px);
+          font-size: clamp(15px, 1.7vw, 16px);
           line-height: 2.1;
           color: rgba(255,255,255,0.82);
           text-align: justify;
         }
 
         .announcement-text p {
-          margin-bottom: 14px;
+          margin-bottom: 42px;
         }
 
-                .announcement-download-btn {
+        .announcement-download-btn {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 10px;
-          margin-top: 22px;
-          padding: 15px 36px;
+          gap: 5px;
+          margin-top: auto;
+          margin-bottom: -9px;
+          padding: 10px 32px;
           background: linear-gradient(135deg, #A4874D, #C9A84C);
           color: #fff;
           border: none;
-          border-radius: 28px;
-          font-size: clamp(15px, 1.8vw, 17px);
+          border-radius: 999px;
+          font-size: clamp(14px, 1.6vw, 15.5px);
           font-weight: 700;
           font-family: "w_Lotus", sans-serif;
           cursor: pointer;
-          box-shadow: 0 8px 28px rgba(164,135,77,0.3);
-          align-self: flex-start;
-          letter-spacing: 0.5px;
-          transition: all 0.3s ease;
+          box-shadow: 0 6px 24px rgba(164,135,77,0.25);
+          align-self: stretch;
+          letter-spacing: 0.3px;
+          transition: box-shadow 0.3s ease, transform 0.2s ease;
           position: relative;
           overflow: hidden;
         }
@@ -224,13 +242,13 @@ export default function Announcement() {
           content: "";
           position: absolute;
           inset: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+          background: linear-gradient(135deg, rgba(255,255,255,0.18), transparent);
           opacity: 0;
           transition: opacity 0.3s ease;
+          border-radius: 999px;
         }
         .announcement-download-btn:hover {
-          background: linear-gradient(135deg, #B89B5A, #D4B85A);
-          box-shadow: 0 10px 36px rgba(164,135,77,0.5);
+          box-shadow: 0 10px 32px rgba(164,135,77,0.45);
           transform: translateY(-1px);
         }
         .announcement-download-btn:hover::before {
@@ -362,7 +380,7 @@ export default function Announcement() {
             grid-template-columns: 1fr;
           }
           .announcement-download-btn {
-            align-self: stretch;
+            justify-content: center;
           }
         }
 
